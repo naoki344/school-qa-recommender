@@ -1,0 +1,31 @@
+service: school-authentication
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-northeast-1
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - "Ref" : "ServerlessDeploymentBucket"
+            - "/*"
+
+custom:
+  stageName: "${opt:stage, self:provider.stage}"
+  resourcePrefix: "${self:custom.stageName}-school" 
+  # cognitoEmailSendingAccount: ${env:COGNITO_EMAIL_SENDING_ACCOUNT, "DEVELOPER"}
+
+resources:
+  - ${file(resources/cognito_admin.yml)}
+
