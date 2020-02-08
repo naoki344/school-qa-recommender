@@ -9,13 +9,30 @@ class CreateQuestion:
                  logger: Logger) -> None:
         self.datasource = question_datasource
 
-    def run(self, item: Question) -> None:
-        self.datasource.insert_item(item)
+    def run(self, item: dict) -> Question:
+        item["question_id"] = self.datasource.fetch_sequesnse_id()
+        question = Question.from_dict(item)
+        # NOTE: validation
+        self.datasource.insert_item(question)
+        return question
+
+
+class UpdateQuestion:
+    def __init__(self, question_datasource: QuestionDatasource,
+                 logger: Logger) -> Question:
+        self.datasource = question_datasource
+
+    def run(self, question_id: QuestionId, item: dict) -> None:
+        question = Question.from_dict(item)
+        if question_id != question.question_id:
+            raise Exception("更新するItemとKeyのIDが一致していません")
+        self.datasource.put_item(question)
+        return question
 
 
 class FindQuestion:
     def __init__(self, question_datasource: QuestionDatasource,
-                 logger: Logger) -> None:
+                 logger: Logger) -> Question:
         self.datasource = question_datasource
 
     def run(self, question_id: QuestionId) -> Question:

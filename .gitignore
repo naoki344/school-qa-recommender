@@ -16,6 +16,9 @@ var/
 .installed.cfg
 *.egg
 *.pyc
+*node_modules/
+.DS_Store
+.envrc
 
 # Serverless directories
 .serverless

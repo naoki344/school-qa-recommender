@@ -3,15 +3,27 @@ from logging import Logger
 from app.model.question.question import Question
 from app.model.question.question import QuestionId
 from app.dataaccess.aws.dynamodb import DynamoDBClient
+from app.dataaccess.dynamodb.sequences import SequensesDatasource
 
 
 class QuestionDatasource:
-    def __init__(self, client: DynamoDBClient, logger: Logger) -> None:
+    def __init__(self, client: DynamoDBClient,
+                 sequenses_table: SequensesDatasource,
+                 logger: Logger) -> None:
         self.client = client
+        self.sequenses_table = sequenses_table
         self.logger = logger
 
     def insert_item(self, item: Question) -> None:
+        self.client.insert_item(item.to_dict(), "question_id")
+
+    def put_item(self, item: Question) -> None:
         self.client.put_item(item.to_dict())
+
+    def fetch_sequesnse_id(self) -> int:
+        name = f"Dynamodb#{self.client.table.table_name}"
+        _id = self.sequenses_table.fetch_sequense_id(name)
+        return _id
 
     def find_by_id(self, question_id: QuestionId) -> Question:
         data = self.client.get_item(

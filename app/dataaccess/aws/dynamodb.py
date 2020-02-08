@@ -1,4 +1,6 @@
 import json
+from enum import Enum
+from enum import auto
 from datetime import date as Date
 from datetime import datetime as DateTime
 from logging import Logger
@@ -16,11 +18,19 @@ class TableResource:
         return boto3.resource('dynamodb').Table(table_name)
 
 
+class ReturnType(Enum):
+    NONE = auto()
+    ALL_OLD = auto()
+    ALL_NEW = auto()
+    UPDATED_OLD = auto()
+    UPDATED_NEW = auto()
+
+
 class DynamoDBClient:
     def __init__(
-            self, table_resource: TableResource,
+            self, table: TableResource,
             logger: Logger) -> None:
-        self.table = table_resource
+        self.table = table
         self.logger = logger
 
     def scan(self) -> Generator[dict, None, None]:
@@ -50,9 +60,24 @@ class DynamoDBClient:
             json.dumps(encoded_data, cls=CustomJSONEncoder)))
         self.table.put_item(Item=encoded_data)
 
-    def put_item_idempotency(self, data: dict, condition: str):
+    def insert_item(
+            self, data: dict, hash_key: str,
+            sort_key: Optional[str] = None) -> None:
+        condition = f"attribute_not_exists({hash_key})"
+        if sort_key:
+            condition += f" AND attribute_not_exists({sort_key})"
         encoded_data = DynamoDBClient.dynamo_type_encode(data)
-        self.table.put_item(Item=encoded_data, ConditionExpression=condition)
+        self.table.put_item(
+            Item=encoded_data, ConditionExpression=condition)
+
+    def put_item_condition(
+            self, data: dict, condition: str,
+            attribute_values: dict, attribute_names: dict):
+        encoded_data = DynamoDBClient.dynamo_type_encode(data)
+        self.table.put_item(
+            Item=encoded_data, ConditionExpression=condition,
+            ExpressionAttributeNames=attribute_names,
+            ExpressionAttributeValues=attribute_values)
 
     def delete_item(self, key: dict) -> None:
         self.logger.debug('Delete an item from {} table.[Key={}]'.format(
@@ -77,3 +102,14 @@ class DynamoDBClient:
             return obj.isoformat()
         else:
             return obj
+
+    def update_item(self, keys: dict, updates: dict,
+                    return_type: Optional[ReturnType] = ReturnType.ALL_NEW,
+                    ) -> dict:
+        self.logger.debug('Update an item to {} table.[Key={}]'.format(
+            self.table.table_name,
+            json.dumps(keys, cls=CustomJSONEncoder)))
+        data = self.table.update_item(
+            Key=keys, AttributeUpdates=updates,
+            ReturnValues=return_type.name)
+        return data["Attributes"]
