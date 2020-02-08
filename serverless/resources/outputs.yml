@@ -1,0 +1,14 @@
+Outputs:
+  QARecommenderApiId:
+    Value:
+      Ref: ApiGatewayRestApi
+    Export:
+      Name: ${self:custom.stageName}-QARecommenderApiId
+
+  QARecommenderApiRootResourceId:
+    Value:
+      Fn::GetAtt:
+        - ApiGatewayRestApi
+        - RootResourceId
+    Export:
+      Name: ${self:custom.stageName}-QARecommenderApiRootResourceId

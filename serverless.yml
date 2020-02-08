@@ -5,125 +5,74 @@ provider:
   runtime: python3.8
   stage: dev
   region: ap-northeast-1
-
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-    - Effect: "Allow"
-      Action:
-        - "s3:PutObject"
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:s3:::"
-            - "Ref" : "ServerlessDeploymentBucket"
-            - "/*"
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:dynamodb:"
-            - Ref: AWS::Region
-            - ":"
-            - Ref: AWS::AccountId
-            - ":table/${self:custom.resourcePrefix}-*"
-
+    ${file(serverless/iam_role.yml):iamRoleStatements}
   environment:
     STAGE_NAME: "${self:custom.stageName}"
+
+plugins:
+  - serverless-plugin-split-stacks
+
+package:
+  execute:
+    - node_modules/**
+    - authentication/**
 
 custom:
   stageName: "${opt:stage, self:provider.stage}"
   resourcePrefix: "${self:custom.stageName}-qa" 
   lambdaHandlerPrefix: "app/interfaces/"
+  splitStacks:
+    perFunction: false
+    perType: true
+    perGroupFunction: true
+    nestedStackCount: 50
 
 
 functions:
-  LambdaCreateQuestion:
+  LambdaApiCreateQuestion:
     handler: ${self:custom.lambdaHandlerPrefix}api/question.create_question_handler
     name: ${self:custom.resourcePrefix}-create-question
     events:
       - http:
-          path: question
+          path: admin/question
           method: post
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:ap-northeast-1:663456595771:userpool/ap-northeast-1_tdnDpRB4D
+    tags:
+      TYPE: API
+      SERVICE: Question
 
-  LambdaFindQuestion:
+
+  LambdaApiFindQuestion:
     handler: ${self:custom.lambdaHandlerPrefix}api/question.find_question_handler
     name: ${self:custom.resourcePrefix}-find-question
     events:
       - http:
-          path: question
+          path: admin/question/{question_id}
           method: get
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:ap-northeast-1:663456595771:userpool/ap-northeast-1_tdnDpRB4D
+    tags:
+      TYPE: API
+      SERVICE: Question
+
+  LambdaApiUpdateQuestion:
+    handler: ${self:custom.lambdaHandlerPrefix}api/question.update_question_handler
+    name: ${self:custom.resourcePrefix}-update-question
+    events:
+      - http:
+          path: admin/question/{question_id}
+          method: put
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:ap-northeast-1:663456595771:userpool/ap-northeast-1_tdnDpRB4D
+    tags:
+      TYPE: API
+      SERVICE: Question
 
 resources:
-  Resources:
-    QAQuestionTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: "${self:custom.resourcePrefix}-Question"
-        AttributeDefinitions:
-          -
-            AttributeName: "question_id"
-            AttributeType: "N"
-          -
-            AttributeName: "register_user_id"
-            AttributeType: "N"
-          -
-            AttributeName: "register_date"
-            AttributeType: "S"
-          -
-            AttributeName: "subject_type"
-            AttributeType: "S"
-        KeySchema:
-          -
-            AttributeName: "question_id"
-            KeyType: "HASH"
-        ProvisionedThroughput: 
-          ReadCapacityUnits: "5"
-          WriteCapacityUnits: "5"
-        GlobalSecondaryIndexes: 
-          - 
-            IndexName: "RegisterUser-Index"
-            KeySchema: 
-              - 
-                AttributeName: "register_user_id"
-                KeyType: "HASH"
-              - 
-                AttributeName: "register_date"
-                KeyType: "RANGE"
-            Projection: 
-              NonKeyAttributes: 
-                - "question_id"
-                - "title"
-                - "caption"
-              ProjectionType: "INCLUDE"
-            ProvisionedThroughput: 
-              ReadCapacityUnits: "5"
-              WriteCapacityUnits: "5"
-          - 
-            IndexName: "SubjectType-Index"
-            KeySchema: 
-              - 
-                AttributeName: "subject_type"
-                KeyType: "HASH"
-              - 
-                AttributeName: "register_date"
-                KeyType: "RANGE"
-            Projection: 
-              NonKeyAttributes: 
-                - "question_id"
-                - "title"
-                - "caption"
-              ProjectionType: "INCLUDE"
-            ProvisionedThroughput: 
-              ReadCapacityUnits: "5"
-              WriteCapacityUnits: "5"
+  - ${file(serverless/resources/outputs.yml)}
+  - ${file(serverless/resources/dynamodb.yml)}

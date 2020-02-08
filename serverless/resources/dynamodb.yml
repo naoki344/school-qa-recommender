@@ -1,0 +1,78 @@
+Resources:
+  QAQuestionTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-Question"
+      AttributeDefinitions:
+        -
+          AttributeName: "question_id"
+          AttributeType: "N"
+        -
+          AttributeName: "register_user_id"
+          AttributeType: "N"
+        -
+          AttributeName: "register_date"
+          AttributeType: "S"
+        -
+          AttributeName: "subject_type"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "question_id"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes: 
+        - 
+          IndexName: "RegisterUser-Index"
+          KeySchema: 
+            - 
+              AttributeName: "register_user_id"
+              KeyType: "HASH"
+            - 
+              AttributeName: "register_date"
+              KeyType: "RANGE"
+          Projection: 
+            NonKeyAttributes: 
+              - "question_id"
+              - "title"
+              - "caption"
+            ProjectionType: "INCLUDE"
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+        - 
+          IndexName: "SubjectType-Index"
+          KeySchema: 
+            - 
+              AttributeName: "subject_type"
+              KeyType: "HASH"
+            - 
+              AttributeName: "register_date"
+              KeyType: "RANGE"
+          Projection: 
+            NonKeyAttributes: 
+              - "question_id"
+              - "title"
+              - "caption"
+            ProjectionType: "INCLUDE"
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+  QASequensesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-Sequenses"
+      AttributeDefinitions:
+        -
+          AttributeName: "name"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "name"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+
