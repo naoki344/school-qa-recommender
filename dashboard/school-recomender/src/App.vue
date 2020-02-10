@@ -36,21 +36,20 @@
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
     </v-app-bar>
-
     <v-content>
-      <HelloWorld/>
+      <QuestionIndex/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import QuestionIndex from './components/QuestionIndex';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    QuestionIndex,
   },
 
   data: () => ({
