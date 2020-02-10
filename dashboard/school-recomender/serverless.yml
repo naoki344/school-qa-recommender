@@ -1,0 +1,65 @@
+service: school-recommender-dashboard
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-northeast-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - "Ref" : "ServerlessDeploymentBucket"
+            - "/*"
+  environment:
+    STAGE_NAME: "${self:custom.stageName}"
+
+plugins:
+  # sls plugin install -n serverless-s3-sync
+  - serverless-s3-sync
+
+package:
+  execute:
+    - node_modules/**
+    - authentication/**
+
+custom:
+  stageName: "${opt:stage, self:provider.stage}"
+  resourcePrefix: "${self:custom.stageName}-qa" 
+  webSiteName: ${self:custom.stageName}-school-question-recommender
+  s3Sync:
+    - bucketName: ${self:custom.webSiteName}
+      localDir: dist
+
+resources:
+  Resources:
+    StaticSite:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.webSiteName}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+    StaticSiteS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: StaticSite
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+              - s3:GetObject
+              Resource:
+                Fn::Join: ["", ["arn:aws:s3:::",{"Ref": "StaticSite"},"/*"]]
