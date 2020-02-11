@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve --mode development",
+    "build": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "amazon-cognito-identity-js": "^3.2.4",
+    "amazon-cognito-js": "^1.1.0",
+    "aws-api-gateway-client": "^0.3.3",
+    "aws-sdk": "^2.614.0",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vuetify": "^2.1.0"

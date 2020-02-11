@@ -95,6 +95,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="green darken-1" text @click="dialog = false">閉じる</v-btn>
+              <v-btn color="green darken-1" @click="postApi">送信</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -104,6 +105,7 @@
 </template>
 
 <script>
+  import schoolApiClient from '../../api/common.js';
   export default {
     name: 'CreateQuestionDialog',
     data: () => ({
@@ -111,7 +113,31 @@
       subjectList: ["数学", "英語", "国語", "社会"],
       tagItems: ["因数分解", "初級"],
       timeList: [1, 3, 5, 15, 30, 60],
-      question: ["以下の問いに答えなさい\n {image}"]
+      question: "以下の問いに答えなさい\n {image}",
+      e1: [],
+      select: [],
     }),
+    methods: {
+      postApi() {
+        const cognitoConfig = {
+          region: process.env.VUE_APP_REGION,
+          userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
+          appClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
+          adminIdentifyPoolId: process.env.VUE_APP_ADMIN_IDENTITY_POOL_ID,
+          adminLoginsKey: process.env.VUE_APP_ADMIN_LOGINS_KEY
+        }
+        const cognitoUser = schoolApiClient.loginUser(cognitoConfig, {
+          Username: "trombone344@gmail.com",
+          Password: "q?J5kF"
+        });
+        const pathTemplate = '/devmiyoshi/admin/question/{QuestionId}'
+        const pathParams = {
+          QuestionId: '1',
+        };
+        schoolApiClient.fetchRestAPI(
+          cognitoConfig, cognitoUser, "GET", pathTemplate, pathParams, {}, {}
+		).then((result) => {this.question = JSON.stringify(result.data)});
+      },
+    },
   }
 </script>
