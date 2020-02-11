@@ -15,8 +15,10 @@ plugins:
 
 package:
   execute:
-    - node_modules/**
+    - node_modules/*
     - authentication/**
+    - dashboard/**
+    - tests/**
 
 custom:
   stageName: "${opt:stage, self:provider.stage}"
@@ -38,8 +40,7 @@ functions:
           path: admin/question
           method: post
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:ap-northeast-1:663456595771:userpool/ap-northeast-1_tdnDpRB4D
+          authorizer: aws_iam
     tags:
       TYPE: API
       SERVICE: Question
@@ -53,8 +54,7 @@ functions:
           path: admin/question/{question_id}
           method: get
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:ap-northeast-1:663456595771:userpool/ap-northeast-1_tdnDpRB4D
+          authorizer: aws_iam
     tags:
       TYPE: API
       SERVICE: Question
@@ -67,8 +67,7 @@ functions:
           path: admin/question/{question_id}
           method: put
           cors: true
-          authorizer:
-            arn: arn:aws:cognito-idp:ap-northeast-1:663456595771:userpool/ap-northeast-1_tdnDpRB4D
+          authorizer: aws_iam
     tags:
       TYPE: API
       SERVICE: Question

@@ -9,7 +9,7 @@ Resources:
           AttributeType: "N"
         -
           AttributeName: "register_user_id"
-          AttributeType: "N"
+          AttributeType: "S"
         -
           AttributeName: "register_date"
           AttributeType: "S"
