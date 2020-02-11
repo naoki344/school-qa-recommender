@@ -10,9 +10,9 @@ class CreateQuestion:
         self.datasource = question_datasource
 
     def run(self, item: dict) -> Question:
-        item["question_id"] = self.datasource.fetch_sequesnse_id()
-        question = Question.from_dict(item)
-        # NOTE: validation
+        question_id = self.datasource.fetch_sequesnse_id()
+        question = Question.create(question_id, item)
+        # TODO: validation
         self.datasource.insert_item(question)
         return question
 
