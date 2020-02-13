@@ -25,12 +25,11 @@ class QuestionTest(TestCase):
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
             'sort_tag_list': ['数学I', '初級']
-            }
+        }
 
         self.assertEqual(
             question_dict,
             Question.from_dict(question_dict).to_dict())
-
 
     @freezegun.freeze_time('2020-02-11T20:20:18.033712+09:00')
     def test_create(self):
@@ -51,7 +50,7 @@ class QuestionTest(TestCase):
             },
             'subject_type': 'math',
             'sort_tag_list': ['数学I', '初級']
-            }
+        }
         expect = {
             **question_dict,
             'question_id': 2,
@@ -82,7 +81,7 @@ class QuestionTest(TestCase):
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
             'sort_tag_list': ['数学I', '初級']
-            }
+        }
 
         self.assertEqual(
             question_dict,

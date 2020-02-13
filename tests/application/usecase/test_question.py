@@ -30,7 +30,7 @@ class CreateQuestionTest(TestCase):
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
             'sort_tag_list': ['数学I', '初級']
-            }
+        }
 
     @freezegun.freeze_time('2020-02-11T20:20:18.033712+09:00')
     def test_run(self):
@@ -72,7 +72,7 @@ class UpdateQuestionTest(TestCase):
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
             'sort_tag_list': ['数学I', '初級']
-            }
+        }
 
     def test_run_ok(self):
         datasource = MagicMock()
@@ -91,6 +91,7 @@ class UpdateQuestionTest(TestCase):
             question_datasource=datasource, logger=MagicMock())
         with self.assertRaises(Exception):
             usecase.run(QuestionId(2), deepcopy(self.question))
+
 
 class FindQuestionTest(TestCase):
     def setUp(self):
@@ -113,7 +114,7 @@ class FindQuestionTest(TestCase):
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
             'sort_tag_list': ['数学I', '初級']
-            }
+        }
 
     def test_run_ok(self):
         datasource = MagicMock()

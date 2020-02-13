@@ -17,6 +17,8 @@ timezone_jst = timezone(timedelta(hours=9))
 def datetime_jst_now() -> datetime:
     """JSTタイムゾーンの現在時刻のdatetimeオブジェクトを生成する"""
     return datetime.now(tz=timezone_jst)
+
+
 def datetime_jst(year, month, day, hour=0, minute=0, second=0, microsecond=0):
     """JSTタイムゾーンのdatetimeオブジェクトを生成する"""
     return datetime(
@@ -28,14 +30,20 @@ def datetime_jst(year, month, day, hour=0, minute=0, second=0, microsecond=0):
         second,
         microsecond,
         tzinfo=timezone_jst)
+
+
 def timestamp_full(dt=None):
     """マイクロ秒単位のタイムスタンプ文字列を生成する"""
     if dt is None:
         dt = datetime_jst_now()
     return dt.strftime('%Y%m%d%H%M%S%f')
+
+
 def parse_timestamp_full(ts_str: str) -> datetime:
     """マイクロ秒単位のタイムスタンプ文字列をdatetimeにパースする。"""
     return datetime.strptime(ts_str, '%Y%m%d%H%M%S%f')
+
+
 def parse_datetime_as_jst(dt_str: str) -> datetime:
     """
     時刻文字列のパース処理。
@@ -47,6 +55,8 @@ def parse_datetime_as_jst(dt_str: str) -> datetime:
         return dt.replace(tzinfo=timezone_jst)
     else:
         return dt.astimezone(timezone_jst)
+
+
 def parse_date(date_str: str) -> date:
     """
     日付文字列のパース処理

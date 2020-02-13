@@ -38,9 +38,9 @@ class QuestionSentence:
 
     def to_dict(self) -> Dict[str, any]:
         return {
-                'text': self.text.value,
-                'image_url': self.image_url.value if self.image_url else None
-                }
+            'text': self.text.value,
+            'image_url': self.image_url.value if self.image_url else None
+        }
 
 
 @dataclass(frozen=True)
@@ -57,9 +57,10 @@ class QuestionAnswer:
 
     def to_dict(self) -> Dict[str, any]:
         return {
-                'text': self.text.value,
-                'image_url': self.image_url.value if self.image_url else None
-                }
+            'text': self.text.value,
+            'image_url': self.image_url.value if self.image_url else None
+        }
+
 
 @dataclass(frozen=True)
 class QuestionCommentary:
@@ -75,9 +76,10 @@ class QuestionCommentary:
 
     def to_dict(self) -> Dict[str, any]:
         return {
-                'text': self.text.value,
-                'image_url': self.image_url.value if self.image_url else None
-                }
+            'text': self.text.value,
+            'image_url': self.image_url.value if self.image_url else None
+        }
+
 
 @dataclass(frozen=True)
 class EstimatedTime:
@@ -100,7 +102,6 @@ class SortTagList:
 
     def to_list(self) -> List[str]:
         return [s.value for s in self.values]
-
 
 
 @dataclass(frozen=True)
@@ -142,9 +143,11 @@ class Question:
             question_id=QuestionId(int(data['question_id'])),
             register_user_id=RegisterUserId(str(data['register_user_id'])),
             estimated_time=EstimatedTime(int(data['estimated_time'])),
-            question_sentence=QuestionSentence.from_dict(data['question_sentence']),
+            question_sentence=QuestionSentence.from_dict(
+                data['question_sentence']),
             question_answer=QuestionAnswer.from_dict(data['question_answer']),
-            question_commentary=QuestionCommentary.from_dict(data['question_commentary']),
+            question_commentary=QuestionCommentary.from_dict(
+                data['question_commentary']),
             register_date=RegisterDate.from_string(data['register_date']),
             subject_type=SubjectType[data['subject_type']],
             sort_tag_list=SortTagList.from_list(data['sort_tag_list']))
@@ -168,9 +171,11 @@ class Question:
             question_id=QuestionId(int(question_id)),
             register_user_id=RegisterUserId(str(data['register_user_id'])),
             estimated_time=EstimatedTime(int(data['estimated_time'])),
-            question_sentence=QuestionSentence.from_dict(data['question_sentence']),
+            question_sentence=QuestionSentence.from_dict(
+                data['question_sentence']),
             question_answer=QuestionAnswer.from_dict(data['question_answer']),
-            question_commentary=QuestionCommentary.from_dict(data['question_commentary']),
+            question_commentary=QuestionCommentary.from_dict(
+                data['question_commentary']),
             register_date=RegisterDate.create(),
             subject_type=SubjectType[data['subject_type']],
             sort_tag_list=SortTagList.from_list(data['sort_tag_list']))
