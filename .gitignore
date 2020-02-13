@@ -20,6 +20,7 @@ var/
 *node_modules/
 .DS_Store
 .envrc
+.python-version
 
 # Serverless directories
 .serverless
