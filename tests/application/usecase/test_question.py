@@ -14,9 +14,11 @@ class CreateQuestionTest(TestCase):
         self.question_dict = {
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
+            'register_user_name': '三好直紀',
             'estimated_time': 15,
             'question_sentence': {
                 'text': 'Question1 XXXX is ???',
+                'summary': 'Question1 XXXX is ???',
                 'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
             'question_answer': {
@@ -29,6 +31,7 @@ class CreateQuestionTest(TestCase):
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
+            'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
 
@@ -56,9 +59,11 @@ class UpdateQuestionTest(TestCase):
         self.question_dict = {
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
+            'register_user_name': '三好直紀',
             'estimated_time': 15,
             'question_sentence': {
                 'text': 'Question1 XXXX is ???',
+                'summary': 'Question1 XXXX is ???',
                 'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
             'question_answer': {
@@ -71,6 +76,7 @@ class UpdateQuestionTest(TestCase):
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
+            'question_type': 'describing',
             'sort_tag_list': ['数学I', '初級']
         }
 
@@ -98,9 +104,11 @@ class FindQuestionTest(TestCase):
         self.question_dict = {
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
+            'register_user_name': '三好直紀',
             'estimated_time': 15,
             'question_sentence': {
                 'text': 'Question1 XXXX is ???',
+                'summary': 'Question1 XXXX is ???',
                 'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
             'question_answer': {
@@ -113,6 +121,7 @@ class FindQuestionTest(TestCase):
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_type': 'math',
+            'question_type': 'describing',
             'sort_tag_list': ['数学I', '初級']
         }
 

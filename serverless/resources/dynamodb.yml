@@ -36,8 +36,13 @@ Resources:
           Projection: 
             NonKeyAttributes: 
               - "question_id"
-              - "title"
-              - "caption"
+              - "estimated_time"
+              - "register_user_name"
+              - "register_date"
+              - "subject_type"
+              - "sort_tag_list"
+              - "question_sentence"
+              - "question_type"
             ProjectionType: "INCLUDE"
           ProvisionedThroughput: 
             ReadCapacityUnits: "5"
@@ -54,8 +59,12 @@ Resources:
           Projection: 
             NonKeyAttributes: 
               - "question_id"
-              - "title"
-              - "caption"
+              - "register_user_id"
+              - "register_user_name"
+              - "estimated_time"
+              - "sort_tag_list"
+              - "question_sentence"
+              - "question_type"
             ProjectionType: "INCLUDE"
           ProvisionedThroughput: 
             ReadCapacityUnits: "5"

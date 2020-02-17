@@ -6,6 +6,10 @@ from datetime import datetime as DateTime
 from logging import Logger
 from typing import Generator
 from typing import Optional
+from typing import Union
+from typing import List
+from typing import Any
+from typing import Dict
 
 import boto3
 
@@ -52,6 +56,25 @@ class DynamoDBClient:
             return result['Item']
         else:
             return None
+
+    def query(
+            self, index_name: str,
+            names: Dict[str, Any], values: Dict[str, Any],
+            expression: str, limit: Optional[int] = 100
+    ) -> Union[List[dict], str]:
+        self.logger.debug(
+            'Get an item_list from {} table.[IndexName={}]'.format(
+                self.table.table_name, index_name))
+        result = self.table.query(
+            IndexName=index_name,
+            ExpressionAttributeNames=names,
+            ExpressionAttributeValues=values,
+            KeyConditionExpression=expression,
+            Limit=limit)
+        if 'Items' in result:
+            return result['Items'], result.get('LastEvaluatedKey')
+        else:
+            _list = [], None
 
     def put_item(self, data: dict) -> None:
         encoded_data = DynamoDBClient.dynamo_type_encode(data)

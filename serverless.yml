@@ -45,6 +45,18 @@ functions:
       TYPE: API
       SERVICE: Question
 
+  LambdaApiGetQuestionList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/question.get_question_list_handler
+    name: ${self:custom.resourcePrefix}-get-question-list
+    events:
+      - http:
+          path: admin/question
+          method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Question
 
   LambdaApiFindQuestion:
     handler: ${self:custom.lambdaHandlerPrefix}api/question.find_question_handler

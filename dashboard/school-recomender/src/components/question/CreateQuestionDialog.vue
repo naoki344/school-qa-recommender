@@ -127,8 +127,8 @@
           adminLoginsKey: process.env.VUE_APP_ADMIN_LOGINS_KEY
         }
         const cognitoUser = schoolApiClient.loginUser(cognitoConfig, {
-          Username: "trombone344@gmail.com",
-          Password: "q?J5kF"
+          Username: "",
+          Password: ""
         });
         const pathTemplate = '/devmiyoshi/admin/question/{QuestionId}'
         const pathParams = {
