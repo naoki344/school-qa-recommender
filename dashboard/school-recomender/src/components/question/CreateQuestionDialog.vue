@@ -20,64 +20,83 @@
                   <v-card-text>
                     <v-container fluid>
                       <v-row align="center">
-                        <v-col cols="4" md=1 lg=1>
+                        <v-col cols="4" md=2 lg=2>
                           <v-subheader>教科</v-subheader>
                         </v-col>
                         <v-col cols="8" md=2 lg=2>
                           <v-select
-                            v-model="e1"
+                            v-model="question.subjectName"
                             :items="subjectList"
                             menu-props="auto"
                             label="Select"
                             hide-details
                             single-line
                           ></v-select>
-                        </v-col> 
-                        <v-col cols="4" md=1 lg=1>
+                        </v-col>
+                        <v-col cols="4" md=2 lg=2>
                           <v-subheader>回答時間(目安)</v-subheader>
                         </v-col>
-                        <v-col cols="1" md=1 lg=1>
+                        <v-col cols="2" md=2 lg=2>
                           <v-select
-                            v-model="e1"
+                            v-model="question.estimatedTime"
                             :items="timeList"
                             menu-props="auto"
                             label="Select"
                             hide-details
                             single-line
                           ></v-select>
-                        </v-col> 
+                        </v-col>
                      </v-row>
                       <v-row>
-                        <v-col cols="4" md=1 lg=1>
+                        <v-col cols="4" md=2 lg=2>
                           <v-subheader>分類タグ</v-subheader>
                         </v-col>
-                        <v-col cols="4" md=4 lg=4>
+                        <v-col cols="4" md=6 lg=6>
                           <v-combobox
-                            v-model="select"
+                            v-model="question.sortTagList"
                             :items="tagItems"
                             label="I use chips"
                             multiple
                             chips
                           ></v-combobox>
                         </v-col>
-                        <v-col cols="4" md=1 lg=1>
-                          <v-subheader>画像</v-subheader>
+                      </v-row>
+                      <v-row align="center">
+                        <v-col cols="10" md=9 lg=9>
+                          <v-textarea
+                            v-model="question.sentence.text"
+                            label="問い"
+                            required
+                          ></v-textarea>
                         </v-col>
-                        <v-col clos="4" md=4>
-                          <v-file-input chips label="添付したい画像を洗濯してください"></v-file-input>
+                        <v-col clos="2" md=3 lg=3>
+                          <v-file-input chips label="問い画像"></v-file-input>
                         </v-col>
                       </v-row>
-                      <v-textarea
-                        :value="question"
-                        label="問い"
-						required
-                      ></v-textarea>
-                      <v-textarea
-                        label="模範解答"
-                      ></v-textarea>
-                      <v-textarea
-                        label="解説"
-                      ></v-textarea>
+                      <v-row align="center">
+                        <v-col cols="10" md=9 lg=9>
+                          <v-textarea
+                            v-model="question.answer.text"
+                            label="模範回答"
+                            required
+                          ></v-textarea>
+                        </v-col>
+                        <v-col clos="2" md=3 lg=3>
+                          <v-file-input chips label="模範回答画像"></v-file-input>
+                        </v-col>
+                      </v-row>
+                      <v-row align="center">
+                        <v-col cols="10" md=9 lg=9>
+                          <v-textarea
+                            v-model="question.commentary.text"
+                            label="解説"
+                            required
+                          ></v-textarea>
+                        </v-col>
+                        <v-col clos="2" md=3 lg=3>
+                          <v-file-input chips label="解説画像"></v-file-input>
+                        </v-col>
+                      </v-row>
                     </v-container>
                   </v-card-text>
                 </v-card>
@@ -95,7 +114,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="green darken-1" text @click="dialog = false">閉じる</v-btn>
-              <v-btn color="green darken-1" @click="postApi">送信</v-btn>
+              <v-btn color="green darken-1" @click="createQuestion">送信</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -105,7 +124,6 @@
 </template>
 
 <script>
-  import schoolApiClient from '../../api/common.js';
   export default {
     name: 'CreateQuestionDialog',
     data: () => ({
@@ -113,30 +131,19 @@
       subjectList: ["数学", "英語", "国語", "社会"],
       tagItems: ["因数分解", "初級"],
       timeList: [1, 3, 5, 15, 30, 60],
-      question: "以下の問いに答えなさい\n {image}",
-      e1: [],
+      question: {
+        subjectName: '',
+        estimatedTime: '',
+        sentence: {text: ''},
+        answer: {text: ''},
+        commentary: {text: ''},
+        sortTagList: [],
+      },
       select: [],
     }),
     methods: {
-      postApi() {
-        const cognitoConfig = {
-          region: process.env.VUE_APP_REGION,
-          userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
-          appClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
-          adminIdentifyPoolId: process.env.VUE_APP_ADMIN_IDENTITY_POOL_ID,
-          adminLoginsKey: process.env.VUE_APP_ADMIN_LOGINS_KEY
-        }
-        const cognitoUser = schoolApiClient.loginUser(cognitoConfig, {
-          Username: "",
-          Password: ""
-        });
-        const pathTemplate = '/devmiyoshi/admin/question/{QuestionId}'
-        const pathParams = {
-          QuestionId: '1',
-        };
-        schoolApiClient.fetchRestAPI(
-          cognitoConfig, cognitoUser, "GET", pathTemplate, pathParams, {}, {}
-		).then((result) => {this.question = JSON.stringify(result.data)});
+      createQuestion() {
+        this.$store.dispatch('createQuestion', {questionInput: this.question})
       },
     },
   }

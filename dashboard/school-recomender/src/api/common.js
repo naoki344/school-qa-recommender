@@ -28,6 +28,7 @@ export default {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
         cognitoUser.Session = result;
+        alert("ログイン成功");
       },
       onFailure: (err) => {
         alert("APIログインエラーが発生しました", err);

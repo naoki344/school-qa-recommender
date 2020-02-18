@@ -1,6 +1,28 @@
 <template>
   <v-container>
-    <v-btn color="green darken-1" @click="fetchQuestionList">送信</v-btn>
+    <v-layout row wrap>
+      <v-flex xs12 sm6 style="margin: 10px;">
+        <v-text-field
+          v-model="username"
+          counter="25"
+          hint="ユーザー作成時のメールアドレスを入力"
+          label="メールアドレス"
+        ></v-text-field>
+      </v-flex>
+      <v-flex xs12 sm6 style="margin: 10px;">
+        <v-text-field
+          v-model="password"
+          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          :type="showPassword ? 'text' : 'password'"
+          name="input-10-1"
+          label="パスワードを入力"
+          counter
+          @click:append="showPassword = !showPassword"
+        ></v-text-field>
+      </v-flex>
+    </v-layout>
+    <v-btn color="green darken-1" @click="userLogin">ログイン</v-btn>
+    <v-btn color="green darken-1" @click="fetchQuestionList">問い一覧の取得</v-btn>
     <v-item-group
       :mandatory="mandatory"
       :multiple="multiple"
@@ -11,7 +33,7 @@
             <create-question-dialog></create-question-dialog>
           </v-col>
           <v-col
-            v-for="question in questionList"
+            v-for="question in questionCardList"
             :key="question.question_id"
             cols=12 sm=12 md=6 lg=4 xl=3
           >
@@ -26,15 +48,16 @@
               >
                 <v-card-text>
                   <div class="mb-2" style="display: flex; justify-content: space-between">
-                  <div>{{question.register_date}} ({{question.register_user}})</div>
+                  <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_id}})</div>
                   <v-chip class="" small color="green" text-color="white" style="padding-left: 6px;">
                     <v-avatar left class="green darken-4">{{question.estimated_time}}</v-avatar>
                     Min
                   </v-chip>
                   </div>
-                  <h2 class="mb-1" style="size: 20px;">【{{question.subject_type}}】</h2>
-                  <p>{{question.question_type}}</p>
-                  <div class="text--primary">{{question.sentence_summary}}</div>
+                  <h2 class="mb-1" style="size: 20px;">
+                    【{{question.subject_type | subjectTypeFilter}}】{{question.sort_tag_list | sortTagListFilter}}</h2>
+                  <p>{{question.question_type | questionTypeFilter}}</p>
+                  <div class="text--primary">{{question.question_sentence.text}}</div>
                 </v-card-text>
                 <v-scroll-y-transition>
                   <div
@@ -55,7 +78,8 @@
 </template>
 
 <script>
-  import schoolApiClient from '../api/common.js';
+  import { mapState } from 'vuex';
+  import moment from "moment";
   import '@mdi/font/css/materialdesignicons.css'
   import CreateQuestionDialog from './question/CreateQuestionDialog'
   export default {
@@ -69,35 +93,50 @@
         'images',
       ],
       type: 'cards',
+      username: '',
+      password: '',
+      showPassword: false,
       mandatory: false,
       multiple: true,
       dialog: false,
-      questionList: [
-        {question_id: 1, subject_type: "数学", sort_tag_list: "因数分解", sentence_summary: "[I] a3−b3=(a−b)(a2+ab+b2)<br>", register_user_id: "三好 直紀", register_date: "2020年 12月10日", question_type: "記述式", estimated_time: "10"},
-      ]
+      questionList: []
     }),
+    computed: {
+      ...mapState({
+        questionCardList: state => state.questionCardList
+      }),
+    },
     methods: {
       fetchQuestionList() {
-        const cognitoConfig = {
-          region: process.env.VUE_APP_REGION,
-          userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
-          appClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
-          adminIdentifyPoolId: process.env.VUE_APP_ADMIN_IDENTITY_POOL_ID,
-          adminLoginsKey: process.env.VUE_APP_ADMIN_LOGINS_KEY
-        }
-        const cognitoUser = schoolApiClient.loginUser(cognitoConfig, {
-          Username: "trombone344@gmail.com",
-          Password: "q?J5kF"
+        this.$store.dispatch('fetchQuestionList')
+      },
+      userLogin() {
+        this.$store.dispatch('userLogin', {
+          "username": this.username,
+          "password": this.password
         });
-        const pathTemplate = '/devmiyoshi/admin/question'
-        const pathParams = {};
-        schoolApiClient.fetchRestAPI(
-          cognitoConfig, cognitoUser, "GET", pathTemplate, pathParams, {}, {}
-         ).then((result) => {
-           this.questionList = result.data["question_card_list"];
-           console.log(result.data["question_card_list"]);
-           });
       },
     },
+    filters: {
+      subjectTypeFilter: function (value) {
+        if (!value) return '';
+        if (value === 'math') return '数学';
+        return '';
+      },
+      questionTypeFilter: function (value) {
+        if (!value) return '';
+        if (value === 'describing') return '記述式';
+        if (value === 'selectable') return '選択式';
+        return '';
+      },
+      dateTimeFilter: function (value) {
+        if (!value) return '';
+        return moment(value).format('MM月DD日 hh:mm');
+      },
+      sortTagListFilter: function (value) {
+        if (!value) return '';
+        return value.join(',');
+      },
+    }
   }
 </script>
