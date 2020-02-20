@@ -49,8 +49,8 @@
                 <v-card-text>
                   <div class="mb-2" style="display: flex; justify-content: space-between">
                   <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_id}})</div>
-                  <v-chip class="" small color="green" text-color="white" style="padding-left: 6px;">
-                    <v-avatar left class="green darken-4">{{question.estimated_time}}</v-avatar>
+                  <v-chip class="" small :color="question.estimated_time | estimatedColorFilter" text-color="white" style="padding-left: 6px;">
+                    <v-avatar left :class="question.estimated_time | estimatedColorFilter" class="darken-4">{{question.estimated_time}}</v-avatar>
                     Min
                   </v-chip>
                   </div>
@@ -82,6 +82,7 @@
   import moment from "moment";
   import '@mdi/font/css/materialdesignicons.css'
   import CreateQuestionDialog from './question/CreateQuestionDialog'
+  import schoolApiQuesionTransfer from '../api/transfer/question.js';
   export default {
     name: 'QuestionIndex',
 	components: {
@@ -114,14 +115,15 @@
         this.$store.dispatch('userLogin', {
           "username": this.username,
           "password": this.password
-        });
+        }).then(() => {
+          this.fetchQuestionList();
+        }).catch((err) => {console.log(err)});
       },
     },
     filters: {
       subjectTypeFilter: function (value) {
         if (!value) return '';
-        if (value === 'math') return '数学';
-        return '';
+		return schoolApiQuesionTransfer.getSubjectNameFromType(value);
       },
       questionTypeFilter: function (value) {
         if (!value) return '';
@@ -136,6 +138,13 @@
       sortTagListFilter: function (value) {
         if (!value) return '';
         return value.join(',');
+      },
+      estimatedColorFilter: function (value) {
+        if (!value) return 'green';
+        if (value <= 1) return 'blue';
+        if (value <= 5) return 'green';
+        if (value <= 15) return 'orange';
+        if (value > 15) return 'red';
       },
     }
   }
