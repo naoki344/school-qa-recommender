@@ -1,4 +1,5 @@
 import schoolApiClient from '../api/common.js';
+import schoolApiQuesionTransfer from '../api/transfer/question.js';
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -26,11 +27,17 @@ export default new Vuex.Store({
   },
   actions: {
     userLogin({commit, state}, {username, password}) {
-      const cognitoUser = schoolApiClient.loginUser(state.cognitoConfig, {
-        Username: username,
-        Password: password
+      return new Promise((resolve, reject) => {
+        schoolApiClient.loginUser(state.cognitoConfig, {
+          Username: username,
+          Password: password
+        }).then((cognitoUser) => {
+          commit('setLoginUser', cognitoUser);
+          resolve()
+        }).catch(() => {
+          reject()
+        });
       });
-      commit('setLoginUser', cognitoUser);
     },
     fetchQuestionList({commit, state}) {
       const pathTemplate = '/devmiyoshi/admin/question'
@@ -42,12 +49,20 @@ export default new Vuex.Store({
       });
     },
     createQuestion({state}, {questionInput}) {
-      console.log(questionInput);
-      const pathTemplate = '/devmiyoshi/admin/question'
-      schoolApiClient.fetchRestAPI(
-        state.cognitoConfig, state.cognitoUser, "GET", pathTemplate, {}, {}, {}
-      ).then((result) => {
-        console.log(result);
+      return new Promise((resolve, reject) => {
+        const data = schoolApiQuesionTransfer.toRequest(questionInput)
+        console.log(data);
+        const pathTemplate = '/devmiyoshi/admin/question'
+        schoolApiClient.fetchRestAPI(
+          state.cognitoConfig, state.cognitoUser, "POST", pathTemplate, {}, {}, data
+        ).then(() => {
+          alert("登録に成功しました");
+          resolve()
+        }).catch((err) => {
+          alert("API連携エラー", err);
+          console.log(err);
+          reject()
+        });
       });
     }
   },

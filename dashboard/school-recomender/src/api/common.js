@@ -13,28 +13,32 @@ const apigClientFactory = require('aws-api-gateway-client').default;
 
 export default {
   loginUser(cognitoConfig, userInfo){
-    const userPoolData = {
-      UserPoolId: cognitoConfig.userPoolId,
-      ClientId: cognitoConfig.appClientId,
-    }
-    const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(userPoolData);
-    const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(userInfo);
-    const userData = {
-      Username: userInfo.Username,
-      Pool: gCognitoUserPool
-    };
+    return new Promise((resolve, reject) => {
+      const userPoolData = {
+        UserPoolId: cognitoConfig.userPoolId,
+        ClientId: cognitoConfig.appClientId,
+      }
+      const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(userPoolData);
+      const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(userInfo);
+      const userData = {
+        Username: userInfo.Username,
+        Pool: gCognitoUserPool
+      };
   
-    const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-    cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: (result) => {
-        cognitoUser.Session = result;
-        alert("ログイン成功");
-      },
-      onFailure: (err) => {
-        alert("APIログインエラーが発生しました", err);
-      },
+      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: (result) => {
+          cognitoUser.Session = result;
+          alert("ログイン成功");
+          resolve();
+        },
+        onFailure: (err) => {
+          alert("APIログインエラーが発生しました", err);
+          reject();
+        },
+      });
+      return cognitoUser;
     });
-    return cognitoUser;
   },
   getApiData(cognitoConfig, apiUrl, method, pathTemplate, pathParams, queryParams, body){
     const userPoolData = {
@@ -83,14 +87,14 @@ export default {
                 return resolve(result);
             }).catch( function(result){
                 console.log(result);
-                reject();
+                reject(result);
             });
           });
         }).then((result) => {
           return resolve(result);
         }).catch( function(result){
             console.log(result);
-            reject();
+            reject(result);
         });
       });
     });
