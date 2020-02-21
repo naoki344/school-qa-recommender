@@ -1,18 +1,25 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <!--QuestionIndex /-->
-  </div>
+  <v-app>
+    <v-content>
+      <v-container fluid fill-height>
+        <v-layout align-center justify-center>
+          <v-flex xs12 sm8 md4>
+            <Login />
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
 // @ is an alias to /src
-//import QuestionIndex from "@/components/QuestionIndex.vue";
+import Login from "@/components/user/Login.vue";
 
 export default {
-  name: "Home",
+  name: "UserLogin",
   components: {
-    //   QuestionIndex
+    Login
   }
 };
 </script>
