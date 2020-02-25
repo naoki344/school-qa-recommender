@@ -39,6 +39,18 @@ export default new Vuex.Store({
         });
       });
     },
+    userConfirm({state}, {email, verificationCode}) {
+      return new Promise((resolve, reject) => {
+        schoolApiClient.userConfirm(state.cognitoConfig, {
+          email: email,
+          verificationCode: verificationCode
+        }).then(() => {
+          resolve()
+        }).catch(() => {
+          reject()
+        });
+      });
+    },
     userSignUp({commit, state}, inputData) {
       return new Promise((resolve, reject) => {
         schoolApiClient.userSignUp(state.cognitoConfig, inputData)

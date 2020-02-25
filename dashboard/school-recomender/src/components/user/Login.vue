@@ -52,7 +52,7 @@ export default {
           password: this.password
         })
         .then(() => {
-          this.$router.push({ path: "/#/home" });
+          this.$router.push({ path: "/" });
         })
         .catch(err => {
           console.log(err);

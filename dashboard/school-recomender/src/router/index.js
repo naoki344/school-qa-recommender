@@ -1,8 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import UserLogin from "../views/UserLogin.vue";
-import UserSignUp from "../views/UserSignUp.vue";
+import userLoginPage from "../views/userLoginPage.vue";
+import userSignUpPage from "../views/userSignUpPage.vue";
+import userConfirmPage from "../views/userConfirmPage.vue";
 
 Vue.use(VueRouter);
 
@@ -22,14 +23,19 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
-    path: "/login",
-    name: "UserLogin",
-    component: UserLogin
+    path: "/userLogin",
+    name: "userLoginPage",
+    component: userLoginPage
   },
   {
-    path: "/signup",
-    name: "UserSignUp",
-    component: UserSignUp
+    path: "/userSignUp",
+    name: "userSignUpPage",
+    component: userSignUpPage
+  },
+  {
+    path: "/userConfirm",
+    name: "userConfirmPage",
+    component: userConfirmPage
   }
 ];
 

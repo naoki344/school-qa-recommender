@@ -30,14 +30,13 @@ export default {
         onSuccess: (result) => {
           cognitoUser.Session = result;
           alert("ログイン成功");
-          resolve();
+          resolve(cognitoUser);
         },
         onFailure: (err) => {
           alert("APIログインエラーが発生しました", err);
           reject();
         },
       });
-      return cognitoUser;
     });
   },
   userSignUp(cognitoConfig, inputData){
@@ -73,7 +72,7 @@ export default {
       });
     });
   },
-  userVerifyCode(cognitoConfig, verifyData){
+  userConfirm(cognitoConfig, verifyData){
     return new Promise((resolve, reject) => {
       const userPoolData = {
         UserPoolId: cognitoConfig.userPoolId,
@@ -81,7 +80,7 @@ export default {
       }
       const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(userPoolData);
       const userData = {
-        Username: verifyData.username,
+        Username: verifyData.email,
         Pool: gCognitoUserPool
       };
 
