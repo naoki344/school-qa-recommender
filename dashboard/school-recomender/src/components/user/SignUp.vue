@@ -74,7 +74,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="yellow darken-1">登録</v-btn>
+      <v-btn color="yellow darken-1" @click="userSignUp">登録</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -96,6 +96,27 @@ export default {
     checkbox: false,
     showPassword: false,
     showPasswordConfirm: false
-  })
+  }),
+  methods: {
+    userSignUp() {
+      this.$store
+        .dispatch("userSignUp", {
+		email: this.email,
+		nickname: this.nickname,
+		firstName: this.firstName,
+		lastName: this.lastName,
+		firstNameKana: this.firstNameKana,
+		lastNameKana: this.lastNameKana,
+		username: this.username,
+		password: this.password,
+        })
+        .then(() => {
+          this.$router.push({ path: "/#/home" });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
 };
 </script>

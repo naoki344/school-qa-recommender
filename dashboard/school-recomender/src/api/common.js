@@ -12,7 +12,7 @@ const apigClientFactory = require('aws-api-gateway-client').default;
 // ------------------------------------------------------------
 
 export default {
-  loginUser(cognitoConfig, userInfo){
+  userLogin(cognitoConfig, userInfo){
     return new Promise((resolve, reject) => {
       const userPoolData = {
         UserPoolId: cognitoConfig.userPoolId,
@@ -38,6 +38,62 @@ export default {
         },
       });
       return cognitoUser;
+    });
+  },
+  userSignUp(cognitoConfig, inputData){
+    return new Promise((resolve, reject) => {
+      const userPoolData = {
+        UserPoolId: cognitoConfig.userPoolId,
+        ClientId: cognitoConfig.appClientId,
+      }
+      const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(userPoolData);
+      const attributeList = [
+          { key: 'email', name: 'email'},
+          { key: 'nickname', name: 'nickname'},
+          { key: 'lastName', name: 'custom:last_name'},
+          { key: 'firstName', name: 'custom:first_name'},
+          { key: 'firstNameKana', name: 'custom:first_name_kana'},
+          { key: 'lastNameKana', name: 'custom:last_name_kana'}];
+      const userAttributeList = attributeList.map(attribute => {
+        return new AmazonCognitoIdentity.CognitoUserAttribute({
+          Name: attribute.name,
+          Value: inputData[attribute.key],
+        });
+      })
+      console.log(userAttributeList);
+
+      gCognitoUserPool.signUp(inputData.email, inputData.password, userAttributeList, null, function(err, result) {
+        console.log("err: ", err);
+        console.log("result: ", result);
+        if(err){
+          alert("sorry, your try to sign up has failed.");
+          reject(err);
+        }
+        resolve(result.user);
+      });
+    });
+  },
+  userVerifyCode(cognitoConfig, verifyData){
+    return new Promise((resolve, reject) => {
+      const userPoolData = {
+        UserPoolId: cognitoConfig.userPoolId,
+        ClientId: cognitoConfig.appClientId,
+      }
+      const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(userPoolData);
+      const userData = {
+        Username: verifyData.username,
+        Pool: gCognitoUserPool
+      };
+
+      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+      cognitoUser.confirmRegistration(verifyData.verificationCode, true, function(err, result) {
+        if (err) {
+          alert("sorry, verification has failed.");
+          reject(err);
+        }
+        resolve(result);
+      });
     });
   },
   getApiData(cognitoConfig, apiUrl, method, pathTemplate, pathParams, queryParams, body){
