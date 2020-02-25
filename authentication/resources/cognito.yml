@@ -1,5 +1,5 @@
 Resources:
-  AdminUserPool:
+  ToiToyUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
       AutoVerifiedAttributes:
@@ -8,9 +8,7 @@ Resources:
 #         EmailSendingAccount: ${self:custom.cognitoEmailSendingAccount}
 #         SourceArn: "arn:aws:ses:[ここにArn]:identity/[ここにemailAddress]"
       EmailVerificationMessage: "アカウントが作成されました。認証を行ってください{####}."
-      EmailVerificationSubject: "[サービス名] アカウント認証"
-      # EmailVerificationMessage: "Your account created Prease click link and verify your account. \n Your ActivationCode is {####}."
-      # EmailVerificationSubject: "Email Title"
+      EmailVerificationSubject: "[ToiToy] アカウント認証"
       MfaConfiguration: "OFF"
       Policies:
         PasswordPolicy:
@@ -18,13 +16,56 @@ Resources:
           RequireLowercase: true
           RequireSymbols: true
           RequireUppercase: true
-      UserPoolName: ${self:custom.resourcePrefix}-AdminUserPool
+      UserPoolName: ${self:custom.resourcePrefix}-ToiToyUserPool
       UsernameAttributes:
         - email
-  AdminUserPoolClient:
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: nickname
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: first_name
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: last_name
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: first_name_kana
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: last_name_kana
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+  ToiToyUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: ${self:custom.resourcePrefix}-AdminUserPoolClient
+      ClientName: ${self:custom.resourcePrefix}-ToiToyUserPoolClient
       ExplicitAuthFlows:
         - ALLOW_USER_PASSWORD_AUTH
         - ALLOW_ADMIN_USER_PASSWORD_AUTH
@@ -32,28 +73,28 @@ Resources:
         - ALLOW_USER_SRP_AUTH
       GenerateSecret: false
       UserPoolId:
-        Ref: AdminUserPool
-  AdminUserIdentityPool:
+        Ref: ToiToyUserPool
+  ToiToyUserIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
-      IdentityPoolName: ${self:custom.resourcePrefix}-AdminUserIdentityPool
+      IdentityPoolName: ${self:custom.resourcePrefix}-ToiToyUserIdentityPool
       AllowUnauthenticatedIdentities: false
       CognitoIdentityProviders:
         - ClientId:
-            Ref: AdminUserPoolClient
+            Ref: ToiToyUserPoolClient
           ProviderName:
-            Fn::GetAtt: [ "AdminUserPool", "ProviderName" ]
+            Fn::GetAtt: [ "ToiToyUserPool", "ProviderName" ]
 
   CognitoUserIdentityPoolRoleAttachment:
     Type: AWS::Cognito::IdentityPoolRoleAttachment
     Properties:
       IdentityPoolId:
-        Ref: AdminUserIdentityPool
+        Ref: ToiToyUserIdentityPool
       Roles:
         authenticated:
-          Fn::GetAtt: [AdminUserAuthRole, Arn]
+          Fn::GetAtt: [ToiToyUserAuthRole, Arn]
 
-  AdminUserAuthRole:
+  ToiToyUserAuthRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
@@ -68,11 +109,11 @@ Resources:
             Condition:
               StringEquals:
                 "cognito-identity.amazonaws.com:aud":
-                  Ref: AdminUserIdentityPool
+                  Ref: ToiToyUserIdentityPool
               "ForAnyValue:StringLike":
                 "cognito-identity.amazonaws.com:amr": authenticated
       Policies:
-        - PolicyName: ${self:custom.resourcePrefix}-AdminUserAuthorizedPolicy
+        - PolicyName: ${self:custom.resourcePrefix}-ToiToyUserAuthorizedPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -96,23 +137,23 @@ Resources:
                         - ":"
                         - "Fn::ImportValue": ${self:custom.stageName}-QARecommenderApiId
                         # /stageName/method/path....
-                        - "/*/*/admin/*"
+                        - "/*/*/*"
 
 Outputs:
-  AdminUserPoolId:
+  ToiToyUserPoolId:
     Value:
-      Ref: AdminUserPool
+      Ref: ToiToyUserPool
     Export:
-      Name: ${self:custom.resourcePrefix}-AdminUserPoolId
+      Name: ${self:custom.resourcePrefix}-ToiToyUserPoolId
 
-  AdminUserPoolClientId:
+  ToiToyUserPoolClientId:
     Value:
-      Ref: AdminUserPoolClient
+      Ref: ToiToyUserPoolClient
     Export:
-      Name: ${self:custom.resourcePrefix}-AdminUserPoolClientId
+      Name: ${self:custom.resourcePrefix}-ToiToyUserPoolClientId
 
-  AdminCognitoUserIdentityPool:
+  ToiToyCognitoUserIdentityPool:
     Value:
-      Ref: AdminUserIdentityPool
+      Ref: ToiToyUserIdentityPool
     Export:
-      Name: ${self:custom.stageName}-AdminUserIdentityPoolId
+      Name: ${self:custom.stageName}-ToiToyUserIdentityPoolId

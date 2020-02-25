@@ -1,4 +1,4 @@
-service: school-authentication
+service: toi-toy-authentication
 
 provider:
   name: aws
@@ -27,5 +27,4 @@ custom:
   # cognitoEmailSendingAccount: ${env:COGNITO_EMAIL_SENDING_ACCOUNT, "DEVELOPER"}
 
 resources:
-  - ${file(resources/cognito_admin.yml)}
-
+  - ${file(resources/cognito.yml)}
