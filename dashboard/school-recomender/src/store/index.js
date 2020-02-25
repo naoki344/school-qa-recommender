@@ -28,10 +28,21 @@ export default new Vuex.Store({
   actions: {
     userLogin({commit, state}, {username, password}) {
       return new Promise((resolve, reject) => {
-        schoolApiClient.loginUser(state.cognitoConfig, {
+        schoolApiClient.userLogin(state.cognitoConfig, {
           Username: username,
           Password: password
         }).then((cognitoUser) => {
+          commit('setLoginUser', cognitoUser);
+          resolve()
+        }).catch(() => {
+          reject()
+        });
+      });
+    },
+    userSignUp({commit, state}, inputData) {
+      return new Promise((resolve, reject) => {
+        schoolApiClient.userSignUp(state.cognitoConfig, inputData)
+        .then((cognitoUser) => {
           commit('setLoginUser', cognitoUser);
           resolve()
         }).catch(() => {
