@@ -20,21 +20,21 @@ Resources:
         -
           AttributeName: "question_id"
           KeyType: "HASH"
-      ProvisionedThroughput: 
+      ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
-      GlobalSecondaryIndexes: 
-        - 
+      GlobalSecondaryIndexes:
+        -
           IndexName: "RegisterUser-Index"
-          KeySchema: 
-            - 
+          KeySchema:
+            -
               AttributeName: "register_user_id"
               KeyType: "HASH"
-            - 
+            -
               AttributeName: "register_date"
               KeyType: "RANGE"
-          Projection: 
-            NonKeyAttributes: 
+          Projection:
+            NonKeyAttributes:
               - "question_id"
               - "estimated_time"
               - "register_user_name"
@@ -44,20 +44,20 @@ Resources:
               - "question_sentence"
               - "question_type"
             ProjectionType: "INCLUDE"
-          ProvisionedThroughput: 
+          ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
-        - 
+        -
           IndexName: "SubjectType-Index"
-          KeySchema: 
-            - 
+          KeySchema:
+            -
               AttributeName: "subject_type"
               KeyType: "HASH"
-            - 
+            -
               AttributeName: "register_date"
               KeyType: "RANGE"
-          Projection: 
-            NonKeyAttributes: 
+          Projection:
+            NonKeyAttributes:
               - "question_id"
               - "register_user_id"
               - "register_user_name"
@@ -66,7 +66,7 @@ Resources:
               - "question_sentence"
               - "question_type"
             ProjectionType: "INCLUDE"
-          ProvisionedThroughput: 
+          ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
   QASequensesTable:
@@ -81,7 +81,21 @@ Resources:
         -
           AttributeName: "name"
           KeyType: "HASH"
-      ProvisionedThroughput: 
+      ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
-
+  QAClassRoomTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-ClassRoom"
+      AttributeDefinitions:
+        -
+          AttributeName: "class_room_id"
+          AttributeType: "N"
+      KeySchema:
+        -
+          AttributeName: "class_room_id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
