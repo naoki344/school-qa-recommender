@@ -99,6 +99,19 @@ functions:
       TYPE: API
       SERVICE: ClassRoom
 
+  LambdaApiFindClassRoom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.find_class_room_handler
+    name: ${self:custom.resourcePrefix}-find-class-room
+    events:
+      - http:
+          path: admin/class_room/{class_room_id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: ClassRoom
+
 resources:
   - ${file(serverless/resources/outputs.yml)}
   - ${file(serverless/resources/dynamodb.yml)}
