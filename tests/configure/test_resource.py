@@ -6,10 +6,12 @@ from app.configure.resoruce.cognito import user_datasource
 from app.configure.resoruce.dynamodb import create_dynamodb_client
 from app.configure.resoruce.dynamodb import question_datasource
 from app.configure.resoruce.dynamodb import sequences_datasource
+from app.configure.resoruce.dynamodb import class_room_datasource
 from app.dataaccess.aws.cognito import CognitoClient
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
+from app.dataaccess.dynamodb.class_room import ClassRoomDatasource
 from app.dataaccess.user import UserDatasource
 
 
@@ -34,3 +36,7 @@ class ResourceConfigureTest(TestCase):
         self.assertEqual(
             isinstance(question_datasource(logger=MagicMock()),
                        QuestionDatasource), True)
+
+        self.assertEqual(
+            isinstance(class_room_datasource(logger=MagicMock()),
+                       ClassRoomDatasource), True)
