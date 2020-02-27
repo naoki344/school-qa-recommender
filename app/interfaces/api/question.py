@@ -11,9 +11,9 @@ from app.configure.usecase.question import find_question
 from app.configure.usecase.question import get_question_list
 from app.configure.usecase.question import update_question
 from app.interfaces.api.response import APIGatewayResponse
+from app.model.question.question import QuestionId
 from app.model.question.question import RegisterUserId
 from app.model.user.user import UserId
-from app.model.question.question import QuestionId
 
 
 def create_question_handler(event, context):

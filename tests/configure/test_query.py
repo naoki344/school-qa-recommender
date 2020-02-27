@@ -1,7 +1,8 @@
 from unittest import TestCase
-from app.configure.query.user import user_query_service
-from app.application.query.user import UserQueryService
 from unittest.mock import MagicMock
+
+from app.application.query.user import UserQueryService
+from app.configure.query.user import user_query_service
 
 
 class QueryConfigureTest(TestCase):

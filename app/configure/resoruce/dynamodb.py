@@ -13,15 +13,14 @@ def create_dynamodb_client(table_name: str, logger: Logger) -> DynamoDBClient:
     return DynamoDBClient(TableResource.create(table_name), logger)
 
 
-def sequences_datasource(
-                         logger: Logger) -> SequensesDatasource:
+def sequences_datasource(logger: Logger) -> SequensesDatasource:
     return SequensesDatasource(client=create_dynamodb_client(
         f'{stage_name}-qa-Sequenses', logger),
                                logger=logger)
 
 
 def question_datasource(logger: Logger) -> QuestionDatasource:
-    return QuestionDatasource(
-        client=create_dynamodb_client(f'{stage_name}-qa-Question', logger),
-        sequenses_table=sequences_datasource(logger),
-        logger=logger)
+    return QuestionDatasource(client=create_dynamodb_client(
+        f'{stage_name}-qa-Question', logger),
+                              sequenses_table=sequences_datasource(logger),
+                              logger=logger)
