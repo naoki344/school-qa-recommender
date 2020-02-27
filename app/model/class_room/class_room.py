@@ -5,6 +5,8 @@ from enum import auto
 from typing import List
 from typing import Optional
 
+from app.model.user.user import User
+
 
 @dataclass(frozen=True)
 class ClassRoomId:
@@ -81,6 +83,11 @@ class ClassRoomOwner:
             'owner_name': self.owner_name.value
         }
 
+    def create_by_user(user: User) -> 'ClassRoomOwner':
+        return ClassRoomOwner(owner_id=ClassRoomOwnerId(user.user_id.value),
+                              owner_name=ClassRoomOwnerName(
+                                  user.nickname.value))
+
 
 @dataclass(frozen=True)
 class ClassRoomOwnerList:
@@ -92,6 +99,9 @@ class ClassRoomOwnerList:
 
     def to_list(self) -> List[str]:
         return [s.to_dict() for s in self.values]
+
+    def create_by_user(user: User) -> 'ClassRoomOwnerList':
+        return ClassRoomOwnerList([ClassRoomOwner.create_by_user(user)])
 
 
 @dataclass(frozen=True)
@@ -117,7 +127,7 @@ class ClassRoom:
             capacity=ClassRoomCapacity(int(data['capacity']))
             if data.get('capacity') else None,
             caption=ClassRoomCaption(str(data['caption']))
-            if data.get('capacity') else None)
+            if data.get('caption') else None)
 
     def to_dict(self) -> dict:
         return {
@@ -130,3 +140,17 @@ class ClassRoom:
             'capacity': self.capacity.value if self.capacity else None,
             'caption': self.caption.value if self.caption else None
         }
+
+    @staticmethod
+    def create(class_room_id: int, user: User, data: dict) -> 'ClassRoom':
+        return ClassRoom(class_id=ClassRoomId(int(class_room_id)),
+                         name=ClassRoomName(str(data['name'])),
+                         owner_list=ClassRoomOwnerList.create_by_user(user),
+                         image_url=ClassRoomImageUrl(str(data['image_url'])),
+                         tag_list=ClassRoomTagList.from_list(data['tag_list']),
+                         publish_type=ClassRoomPublishType[str(
+                             data['publish_type'])],
+                         capacity=ClassRoomCapacity(int(data['capacity']))
+                         if data.get('capacity') else None,
+                         caption=ClassRoomCaption(str(data['caption']))
+                         if data.get('caption') else None)

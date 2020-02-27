@@ -3,9 +3,9 @@ from logging import Logger
 
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.aws.dynamodb import TableResource
+from app.dataaccess.dynamodb.class_room import ClassRoomDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
-from app.dataaccess.dynamodb.class_room import ClassRoomDatasource
 
 stage_name = os.environ['STAGE_NAME']
 
@@ -30,5 +30,5 @@ def question_datasource(logger: Logger) -> QuestionDatasource:
 def class_room_datasource(logger: Logger) -> ClassRoomDatasource:
     return ClassRoomDatasource(client=create_dynamodb_client(
         f'{stage_name}-qa-ClassRoom', logger),
-                              sequenses_table=sequences_datasource(logger),
-                              logger=logger)
+                               sequenses_table=sequences_datasource(logger),
+                               logger=logger)

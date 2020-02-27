@@ -2,10 +2,12 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from app.application.query.user import UserQueryService
+from app.application.usecase.class_room import CreateClassRoom
 from app.application.usecase.question import CreateQuestion
 from app.application.usecase.question import FindQuestion
 from app.application.usecase.question import GetQuestionList
 from app.application.usecase.question import UpdateQuestion
+from app.configure.usecase.class_room import create_class_room
 from app.configure.usecase.question import create_question
 from app.configure.usecase.question import find_question
 from app.configure.usecase.question import get_question_list
@@ -27,4 +29,8 @@ class QuestionUsecaseTest(TestCase):
 
         self.assertEqual(
             isinstance(get_question_list(logger=MagicMock()), GetQuestionList),
+            True)
+
+        self.assertEqual(
+            isinstance(create_class_room(logger=MagicMock()), CreateClassRoom),
             True)
