@@ -1,10 +1,10 @@
 import json
-from app.utils.encoder import CustomJSONEncoder
-
-from typing import Union
+from typing import Any
 from typing import Dict
 from typing import List
-from typing import Any
+from typing import Union
+
+from app.utils.encoder import CustomJSONEncoder
 
 
 class APIGatewayResponse:

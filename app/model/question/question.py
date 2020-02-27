@@ -1,12 +1,13 @@
+from dataclasses import dataclass
+from datetime import datetime as DateTime
 from enum import Enum
 from enum import auto
-from typing import Optional
-from typing import List
 from typing import Dict
-from datetime import datetime as DateTime
-from dataclasses import dataclass
+from typing import List
+from typing import Optional
 
 from app.model.subject import SubjectType
+from app.model.user.user import User
 from app.utils.datetime import datetime_jst_now
 from app.utils.datetime import parse_datetime_as_jst
 
@@ -44,11 +45,10 @@ class QuestionSentence:
 
     @staticmethod
     def from_dict(data):
-        return QuestionSentence(
-            text=Text(data['text']),
-            summary=SentenceSummary(data['summary']),
-            image_url=ImageUrl(
-                data['image_url']) if data.get('image_url') else None)
+        return QuestionSentence(text=Text(data['text']),
+                                summary=SentenceSummary(data['summary']),
+                                image_url=ImageUrl(data['image_url'])
+                                if data.get('image_url') else None)
 
     def to_dict(self) -> Dict[str, any]:
         return {
@@ -59,11 +59,10 @@ class QuestionSentence:
 
     @staticmethod
     def create(data):
-        return QuestionSentence(
-            text=Text(data['text']),
-            summary=SentenceSummary(data['text'][:50]),
-            image_url=ImageUrl(
-                data['image_url']) if data.get('image_url') else None)
+        return QuestionSentence(text=Text(data['text']),
+                                summary=SentenceSummary(data['text'][:50]),
+                                image_url=ImageUrl(data['image_url'])
+                                if data.get('image_url') else None)
 
 
 @dataclass(frozen=True)
@@ -92,10 +91,9 @@ class QuestionCommentary:
 
     @staticmethod
     def from_dict(data):
-        return QuestionCommentary(
-            text=Text(data['text']),
-            image_url=ImageUrl(
-                data['image_url']) if data.get('image_url') else None)
+        return QuestionCommentary(text=Text(data['text']),
+                                  image_url=ImageUrl(data['image_url'])
+                                  if data.get('image_url') else None)
 
     def to_dict(self) -> Dict[str, any]:
         return {
@@ -120,8 +118,7 @@ class SortTagList:
 
     @staticmethod
     def from_list(data) -> 'SortTagList':
-        return SortTagList(
-            [SortTag(d) for d in data])
+        return SortTagList([SortTag(d) for d in data])
 
     def to_list(self) -> List[str]:
         return [s.value for s in self.values]
@@ -172,7 +169,8 @@ class Question:
         return Question(
             question_id=QuestionId(int(data['question_id'])),
             register_user_id=RegisterUserId(str(data['register_user_id'])),
-            register_user_name=RegisterUserName(str(data['register_user_name'])),
+            register_user_name=RegisterUserName(str(
+                data['register_user_name'])),
             estimated_time=EstimatedTime(int(data['estimated_time'])),
             question_sentence=QuestionSentence.from_dict(
                 data['question_sentence']),
@@ -200,11 +198,12 @@ class Question:
         }
 
     @staticmethod
-    def create(question_id: int, data: Dict[str, any]) -> 'Question':
+    def create(question_id: int, user: User, data: Dict[str,
+                                                        any]) -> 'Question':
         return Question(
             question_id=QuestionId(int(question_id)),
-            register_user_id=RegisterUserId(str(data['register_user_id'])),
-            register_user_name=RegisterUserName(str(data['register_user_name'])),
+            register_user_id=RegisterUserId(user.user_id.value),
+            register_user_name=RegisterUserName(user.nickname.value),
             estimated_time=EstimatedTime(int(data['estimated_time'])),
             question_sentence=QuestionSentence.create(
                 data['question_sentence']),
@@ -234,7 +233,8 @@ class QuestionCard:
         return QuestionCard(
             question_id=QuestionId(int(data['question_id'])),
             register_user_id=RegisterUserId(str(data['register_user_id'])),
-            register_user_name=RegisterUserName(str(data['register_user_name'])),
+            register_user_name=RegisterUserName(str(
+                data['register_user_name'])),
             question_sentence=QuestionSentence.create(
                 data['question_sentence']),
             estimated_time=EstimatedTime(int(data['estimated_time'])),

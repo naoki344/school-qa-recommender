@@ -1,20 +1,19 @@
 from logging import Logger
-from typing import Union
 from typing import List
 from typing import Optional
+from typing import Union
 
+from app.dataaccess.aws.dynamodb import DynamoDBClient
+from app.dataaccess.dynamodb.sequences import SequensesDatasource
 from app.model.question.question import Question
 from app.model.question.question import QuestionCard
 from app.model.question.question import QuestionId
 from app.model.question.question import RegisterUserId
-from app.dataaccess.aws.dynamodb import DynamoDBClient
-from app.dataaccess.dynamodb.sequences import SequensesDatasource
 
 
 class QuestionDatasource:
     def __init__(self, client: DynamoDBClient,
-                 sequenses_table: SequensesDatasource,
-                 logger: Logger) -> None:
+                 sequenses_table: SequensesDatasource, logger: Logger) -> None:
         self.client = client
         self.sequenses_table = sequenses_table
         self.logger = logger
@@ -31,19 +30,18 @@ class QuestionDatasource:
         return _id
 
     def find_by_id(self, question_id: QuestionId) -> Question:
-        data = self.client.get_item(
-            {'question_id': question_id.value})
+        data = self.client.get_item({'question_id': question_id.value})
         return Question.from_dict(data)
 
     def get_register_user_index(
-            self, register_user_id: RegisterUserId
+        self, register_user_id: RegisterUserId
     ) -> Union[List[QuestionCard], Optional[str]]:
         names = {'#user_id': 'register_user_id'}
         values = {':value': register_user_id.value}
         expression = '#user_id = :value'
-        data, paging_key = self.client.query(
-            index_name='RegisterUser-Index',
-            names=names, values=values,
-            expression=expression)
+        data, paging_key = self.client.query(index_name='RegisterUser-Index',
+                                             names=names,
+                                             values=values,
+                                             expression=expression)
         _list = [QuestionCard.from_db(d) for d in data]
         return _list, paging_key

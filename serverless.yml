@@ -9,9 +9,11 @@ provider:
     ${file(serverless/iam_role.yml):iamRoleStatements}
   environment:
     STAGE_NAME: "${self:custom.stageName}"
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
 
 plugins:
   - serverless-plugin-split-stacks
+  - serverless-python-requirements
 
 package:
   execute:
