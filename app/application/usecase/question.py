@@ -1,24 +1,29 @@
-from typing import List
+from logging import Logger
 from typing import Any
 from typing import Dict
-from typing import Union
+from typing import List
 from typing import Optional
-from logging import Logger
+from typing import Union
+
+from app.application.query.user import UserQueryService
+from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.model.question.question import Question
 from app.model.question.question import QuestionCard
 from app.model.question.question import QuestionId
 from app.model.question.question import RegisterUserId
-from app.dataaccess.dynamodb.question import QuestionDatasource
+from app.model.user.user import UserId
 
 
 class CreateQuestion:
     def __init__(self, question_datasource: QuestionDatasource,
-                 logger: Logger) -> None:
+                 user_service: UserQueryService, logger: Logger) -> None:
         self.datasource = question_datasource
+        self.user_service = user_service
 
-    def run(self, item: dict) -> Question:
+    def run(self, user_id: UserId, item: dict) -> Question:
         question_id = self.datasource.fetch_sequesnse_id()
-        question = Question.create(question_id, item)
+        user = self.user_service.find(user_id)
+        question = Question.create(question_id, user, item)
         # TODO: validation
         self.datasource.insert_item(question)
         return question
@@ -51,8 +56,8 @@ class GetQuestionList:
                  logger: Logger) -> List[Question]:
         self.datasource = question_datasource
 
-    def run(self,
-            register_user_id: Optional[RegisterUserId] = None
-            ) -> Union[List[QuestionCard], Optional[str]]:
-        return self.datasource.get_register_user_index(
-            register_user_id)
+    def run(
+        self,
+        register_user_id: Optional[RegisterUserId] = None
+    ) -> Union[List[QuestionCard], Optional[str]]:
+        return self.datasource.get_register_user_index(register_user_id)

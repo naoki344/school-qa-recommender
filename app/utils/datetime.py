@@ -7,8 +7,8 @@ from typing import Generator
 from typing import Hashable
 from typing import Iterator
 from typing import TypeVar
-from dateutil.parser import parse
 
+from dateutil.parser import parse
 
 tenant_id_regex = '[a-z0-9_]+'
 timezone_jst = timezone(timedelta(hours=9))
@@ -21,15 +21,14 @@ def datetime_jst_now() -> datetime:
 
 def datetime_jst(year, month, day, hour=0, minute=0, second=0, microsecond=0):
     """JSTタイムゾーンのdatetimeオブジェクトを生成する"""
-    return datetime(
-        year,
-        month,
-        day,
-        hour,
-        minute,
-        second,
-        microsecond,
-        tzinfo=timezone_jst)
+    return datetime(year,
+                    month,
+                    day,
+                    hour,
+                    minute,
+                    second,
+                    microsecond,
+                    tzinfo=timezone_jst)
 
 
 def timestamp_full(dt=None):

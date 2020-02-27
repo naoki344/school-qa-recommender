@@ -48,7 +48,7 @@
               >
                 <v-card-text>
                   <div class="mb-2" style="display: flex; justify-content: space-between">
-                  <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_id}})</div>
+                  <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
                   <v-chip class="" small :color="question.estimated_time | estimatedColorFilter" text-color="white" style="padding-left: 6px;">
                     <v-avatar left :class="question.estimated_time | estimatedColorFilter" class="darken-4">{{question.estimated_time}}</v-avatar>
                     Min

@@ -1,8 +1,11 @@
-import freezegun
+from datetime import datetime
 from unittest import TestCase
+
+import freezegun
+
 from app.model.question.question import Question
 from app.model.question.question import QuestionCard
-from datetime import datetime
+from app.model.user.user import User
 
 
 class QuestionTest(TestCase):
@@ -31,9 +34,8 @@ class QuestionTest(TestCase):
             'sort_tag_list': ['数学I', '初級']
         }
 
-        self.assertEqual(
-            question_dict,
-            Question.from_dict(question_dict).to_dict())
+        self.assertEqual(question_dict,
+                         Question.from_dict(question_dict).to_dict())
 
     @freezegun.freeze_time('2020-02-11T20:20:18.033712+09:00')
     def test_create(self):
@@ -42,30 +44,51 @@ class QuestionTest(TestCase):
             'register_user_name': '三好直紀',
             'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'},
+                'text':
+                'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。',
+                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+            },
             'question_answer': {
                 'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'},
+                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+            },
             'question_commentary': {
                 'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'},
+                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+            },
             'subject_type': 'math',
             'question_type': 'describing',
-            'sort_tag_list': [
-                '数学I',
-                '初級']}
+            'sort_tag_list': ['数学I', '初級']
+        }
+        user_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'user_name': {
+                'first_name': '直紀',
+                'last_name': '三好'
+            },
+            'user_name_kana': {
+                'first_name_kana': 'ナオキ',
+                'last_name_kana': 'ミヨシ'
+            },
+            'email': 'trombone344@gmail.com',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
+        }
+        user = User.from_dict(user_dict)
         expect = {
             **question_dict,
             'question_id': 2,
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'question_sentence': {
-                **question_dict['question_sentence'],
-                'summary': 'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'}}
-        print(Question.create(2, question_dict).to_dict())
-        self.assertEqual(
-            expect,
-            Question.create(2, question_dict).to_dict())
+                **question_dict['question_sentence'], 'summary':
+                'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'
+            },
+            'register_user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'register_user_name': 'Naoki',
+        }
+        self.assertEqual(expect,
+                         Question.create(2, user, question_dict).to_dict())
 
     def test_dict_min(self):
         question_dict = {
@@ -92,9 +115,8 @@ class QuestionTest(TestCase):
             'sort_tag_list': ['数学I', '初級']
         }
 
-        self.assertEqual(
-            question_dict,
-            Question.from_dict(question_dict).to_dict())
+        self.assertEqual(question_dict,
+                         Question.from_dict(question_dict).to_dict())
 
 
 class QuestionCardTest(TestCase):
@@ -114,6 +136,5 @@ class QuestionCardTest(TestCase):
             'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
-        self.assertEqual(
-            question_dict,
-            QuestionCard.from_db(question_dict).to_dict())
+        self.assertEqual(question_dict,
+                         QuestionCard.from_db(question_dict).to_dict())
