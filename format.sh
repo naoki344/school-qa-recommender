@@ -1,2 +1,4 @@
-find ./app -name '*.py' -exec autopep8 --in-place --aggressive --aggressive '{}' \;
-find ./tests -name '*.py' -exec autopep8 --in-place --aggressive --aggressive '{}' \;
+yapf -i -r app/
+isort -rc -sl app/
+yapf -i -r tests/
+isort -rc -sl tests/

@@ -1,15 +1,15 @@
 import json
-from enum import Enum
-from enum import auto
 from datetime import date as Date
 from datetime import datetime as DateTime
+from enum import Enum
+from enum import auto
 from logging import Logger
-from typing import Generator
-from typing import Optional
-from typing import Union
-from typing import List
 from typing import Any
 from typing import Dict
+from typing import Generator
+from typing import List
+from typing import Optional
+from typing import Union
 
 import boto3
 
@@ -31,9 +31,7 @@ class ReturnType(Enum):
 
 
 class DynamoDBClient:
-    def __init__(
-            self, table: TableResource,
-            logger: Logger) -> None:
+    def __init__(self, table: TableResource, logger: Logger) -> None:
         self.table = table
         self.logger = logger
 
@@ -57,20 +55,20 @@ class DynamoDBClient:
         else:
             return None
 
-    def query(
-            self, index_name: str,
-            names: Dict[str, Any], values: Dict[str, Any],
-            expression: str, limit: Optional[int] = 100
-    ) -> Union[List[dict], str]:
+    def query(self,
+              index_name: str,
+              names: Dict[str, Any],
+              values: Dict[str, Any],
+              expression: str,
+              limit: Optional[int] = 100) -> Union[List[dict], str]:
         self.logger.debug(
             'Get an item_list from {} table.[IndexName={}]'.format(
                 self.table.table_name, index_name))
-        result = self.table.query(
-            IndexName=index_name,
-            ExpressionAttributeNames=names,
-            ExpressionAttributeValues=values,
-            KeyConditionExpression=expression,
-            Limit=limit)
+        result = self.table.query(IndexName=index_name,
+                                  ExpressionAttributeNames=names,
+                                  ExpressionAttributeValues=values,
+                                  KeyConditionExpression=expression,
+                                  Limit=limit)
         if 'Items' in result:
             return result['Items'], result.get('LastEvaluatedKey')
         else:
@@ -83,24 +81,23 @@ class DynamoDBClient:
             json.dumps(encoded_data, cls=CustomJSONEncoder)))
         self.table.put_item(Item=encoded_data)
 
-    def insert_item(
-            self, data: dict, hash_key: str,
-            sort_key: Optional[str] = None) -> None:
+    def insert_item(self,
+                    data: dict,
+                    hash_key: str,
+                    sort_key: Optional[str] = None) -> None:
         condition = f"attribute_not_exists({hash_key})"
         if sort_key:
             condition += f" AND attribute_not_exists({sort_key})"
         encoded_data = DynamoDBClient.dynamo_type_encode(data)
-        self.table.put_item(
-            Item=encoded_data, ConditionExpression=condition)
+        self.table.put_item(Item=encoded_data, ConditionExpression=condition)
 
-    def put_item_condition(
-            self, data: dict, condition: str,
-            attribute_values: dict, attribute_names: dict):
+    def put_item_condition(self, data: dict, condition: str,
+                           attribute_values: dict, attribute_names: dict):
         encoded_data = DynamoDBClient.dynamo_type_encode(data)
-        self.table.put_item(
-            Item=encoded_data, ConditionExpression=condition,
-            ExpressionAttributeNames=attribute_names,
-            ExpressionAttributeValues=attribute_values)
+        self.table.put_item(Item=encoded_data,
+                            ConditionExpression=condition,
+                            ExpressionAttributeNames=attribute_names,
+                            ExpressionAttributeValues=attribute_values)
 
     def delete_item(self, key: dict) -> None:
         self.logger.debug('Delete an item from {} table.[Key={}]'.format(
@@ -126,13 +123,15 @@ class DynamoDBClient:
         else:
             return obj
 
-    def update_item(self, keys: dict, updates: dict,
-                    return_type: Optional[ReturnType] = ReturnType.ALL_NEW,
-                    ) -> dict:
+    def update_item(
+            self,
+            keys: dict,
+            updates: dict,
+            return_type: Optional[ReturnType] = ReturnType.ALL_NEW,
+    ) -> dict:
         self.logger.debug('Update an item to {} table.[Key={}]'.format(
-            self.table.table_name,
-            json.dumps(keys, cls=CustomJSONEncoder)))
-        data = self.table.update_item(
-            Key=keys, AttributeUpdates=updates,
-            ReturnValues=return_type.name)
+            self.table.table_name, json.dumps(keys, cls=CustomJSONEncoder)))
+        data = self.table.update_item(Key=keys,
+                                      AttributeUpdates=updates,
+                                      ReturnValues=return_type.name)
         return data["Attributes"]
