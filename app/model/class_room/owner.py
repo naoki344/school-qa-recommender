@@ -45,3 +45,11 @@ class ClassRoomOwnerList:
 
     def create(user: User) -> 'ClassRoomOwnerList':
         return ClassRoomOwnerList([ClassRoomOwner.create(user)])
+
+    def is_owner(self, user_id: UserId) -> bool:
+        res = next(
+            filter(lambda student: student.user_id == user_id, self.values),
+            None)
+        if res:
+            return True
+        return False

@@ -69,6 +69,7 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
+
   QASequensesTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -84,6 +85,7 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
+
   QAClassRoomTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -96,6 +98,28 @@ Resources:
         -
           AttributeName: "class_room_id"
           KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+
+  QAClassRoomStudentTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-ClassRoomStudent"
+      AttributeDefinitions:
+        -
+          AttributeName: "class_room_id"
+          AttributeType: "N"
+        -
+          AttributeName: "user_id"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "class_room_id"
+          KeyType: "HASH"
+        -
+          AttributeName: "user_id"
+          KeyType: "RANGE"
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"

@@ -7,6 +7,7 @@ from typing import Optional
 
 from app.model.class_room.owner import ClassRoomOwnerList
 from app.model.user.user import User
+from app.model.user.user import UserId
 
 
 @dataclass(frozen=True)
@@ -59,7 +60,7 @@ class ClassRoomCapacity:
 
 @dataclass(frozen=True)
 class ClassRoom:
-    class_id: ClassRoomId
+    class_room_id: ClassRoomId
     name: ClassRoomName
     owner_list: ClassRoomOwnerList
     image_url: ClassRoomImageUrl
@@ -71,7 +72,7 @@ class ClassRoom:
     @staticmethod
     def from_dict(data) -> 'ClassRoom':
         return ClassRoom(
-            class_id=ClassRoomId(int(data['class_room_id'])),
+            class_room_id=ClassRoomId(int(data['class_room_id'])),
             name=ClassRoomName(str(data['name'])),
             owner_list=ClassRoomOwnerList.from_list(data['owner_list']),
             image_url=ClassRoomImageUrl(str(data['image_url'])),
@@ -84,7 +85,7 @@ class ClassRoom:
 
     def to_dict(self) -> dict:
         return {
-            'class_room_id': self.class_id.value,
+            'class_room_id': self.class_room_id.value,
             'name': self.name.value,
             'owner_list': self.owner_list.to_list(),
             'image_url': self.image_url.value,
@@ -96,7 +97,7 @@ class ClassRoom:
 
     @staticmethod
     def create(class_room_id: int, user: User, data: dict) -> 'ClassRoom':
-        return ClassRoom(class_id=ClassRoomId(int(class_room_id)),
+        return ClassRoom(class_room_id=ClassRoomId(int(class_room_id)),
                          name=ClassRoomName(str(data['name'])),
                          owner_list=ClassRoomOwnerList.create(user),
                          image_url=ClassRoomImageUrl(str(data['image_url'])),
@@ -107,3 +108,11 @@ class ClassRoom:
                          if data.get('capacity') else None,
                          caption=ClassRoomCaption(str(data['caption']))
                          if data.get('caption') else None)
+
+    def can_join_request(self) -> bool:
+        if self.publish_type is ClassRoomPublishType.public:
+            return True
+        return False
+
+    def is_owner(self, user_id: UserId) -> bool:
+        return self.owner_list.is_owner(user_id)

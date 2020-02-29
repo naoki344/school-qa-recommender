@@ -4,6 +4,8 @@ from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.dynamodb.sequences import SequensesDatasource
 from app.model.class_room.class_room import ClassRoom
 from app.model.class_room.class_room import ClassRoomId
+from app.model.class_room.student import Student
+from app.model.user.user import UserId
 
 
 class ClassRoomDatasource:
@@ -27,3 +29,29 @@ class ClassRoomDatasource:
     def find_by_id(self, class_room_id: ClassRoomId) -> ClassRoom:
         data = self.client.get_item({'class_room_id': class_room_id.value})
         return ClassRoom.from_dict(data)
+
+
+class ClassRoomStudentDatasource:
+    def __init__(self, client: DynamoDBClient, logger: Logger) -> None:
+        self.client = client
+        self.logger = logger
+
+    def insert_item(self, class_room_id: ClassRoomId,
+                    student: Student) -> None:
+        self.client.insert_item(
+            {
+                **student.to_dict(), "class_room_id": class_room_id.value
+            }, "class_room_id", "user_id")
+
+    def put_item(self, class_room_id: ClassRoomId, student: Student) -> None:
+        self.client.put_item({
+            **student.to_dict(), "class_room_id":
+            class_room_id.value
+        })
+
+    def find(self, class_room_id: ClassRoomId, student_id: UserId) -> Student:
+        item = self.client.get_item({
+            'class_room_id': class_room_id.value,
+            'user_id': student_id.value
+        })
+        return Student.from_dict(item)
