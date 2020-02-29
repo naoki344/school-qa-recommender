@@ -5,6 +5,7 @@ from app.dataaccess.dynamodb.sequences import SequensesDatasource
 from app.model.class_room.class_room import ClassRoom
 from app.model.class_room.class_room import ClassRoomId
 from app.model.class_room.student import Student
+from app.model.class_room.student import StudentList
 from app.model.user.user import UserId
 
 
@@ -28,7 +29,9 @@ class ClassRoomDatasource:
 
     def find_by_id(self, class_room_id: ClassRoomId) -> ClassRoom:
         data = self.client.get_item({'class_room_id': class_room_id.value})
-        return ClassRoom.from_dict(data)
+        if data:
+            return ClassRoom.from_dict(data)
+        raise Exception('ClassRoom not found.')
 
 
 class ClassRoomStudentDatasource:
@@ -55,3 +58,8 @@ class ClassRoomStudentDatasource:
             'user_id': student_id.value
         })
         return Student.from_dict(item)
+
+    def get_student_list(self, class_room_id: ClassRoomId) -> Student:
+        item_list = self.client.get_items(name='class_room_id',
+                                          value=class_room_id.value)
+        return StudentList.from_list(item_list)

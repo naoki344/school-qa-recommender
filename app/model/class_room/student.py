@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from dataclasses import replace
 from enum import Enum
 from enum import auto
+from typing import List
 
 from app.model.user.user import Email
 from app.model.user.user import Nickname
@@ -47,3 +48,15 @@ class Student:
         if self.join_status is JoinStatus.approved:
             raise Exception('This student already approved.')
         return replace(self, join_status=JoinStatus.approved)
+
+
+@dataclass(frozen=True)
+class StudentList:
+    values: List[Student]
+
+    @staticmethod
+    def from_list(data) -> 'StudentList':
+        return StudentList([Student.from_dict(d) for d in data])
+
+    def to_list(self) -> List[dict]:
+        return [s.to_dict() for s in self.values]

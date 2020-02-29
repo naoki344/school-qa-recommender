@@ -1,5 +1,6 @@
 from logging import Logger
 from typing import List
+from typing import Tuple
 
 from app.application.query.user import UserQueryService
 from app.dataaccess.dynamodb.class_room import ClassRoomDatasource
@@ -7,6 +8,7 @@ from app.dataaccess.dynamodb.class_room import ClassRoomStudentDatasource
 from app.model.class_room.class_room import ClassRoom
 from app.model.class_room.class_room import ClassRoomId
 from app.model.class_room.student import Student
+from app.model.class_room.student import StudentList
 from app.model.user.user import UserId
 
 
@@ -27,11 +29,15 @@ class CreateClassRoom:
 
 class FindClassRoom:
     def __init__(self, datasource: ClassRoomDatasource,
+                 student_datasource: ClassRoomStudentDatasource,
                  logger: Logger) -> ClassRoom:
         self.datasource = datasource
+        self.student_datasource = student_datasource
 
-    def run(self, class_room_id: ClassRoomId) -> ClassRoom:
-        return self.datasource.find_by_id(class_room_id)
+    def run(self, class_room_id: ClassRoomId) -> Tuple[ClassRoom, StudentList]:
+        class_room = self.datasource.find_by_id(class_room_id)
+        student_list = self.student_datasource.get_student_list(class_room_id)
+        return class_room, student_list
 
 
 class RequestJoinClassRoom:

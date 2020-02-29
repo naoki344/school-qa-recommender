@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from app.model.class_room.student import Student
+from app.model.class_room.student import StudentList
 from app.model.user.user import User
 
 
@@ -54,3 +55,23 @@ class StudentTest(TestCase):
             Student.from_dict(student_dict).approve().to_dict(), {
                 **student_dict, 'join_status': 'approved'
             })
+
+
+class StudentListTest(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
+    def test_dict(self):
+        student_list = [{
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'requested'
+        }, {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af392',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'requested'
+        }]
+        self.assertEqual(
+            StudentList.from_list(student_list).to_list(), student_list)

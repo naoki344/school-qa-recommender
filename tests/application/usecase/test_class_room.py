@@ -10,6 +10,7 @@ from app.application.usecase.class_room import RequestJoinClassRoom
 from app.model.class_room.class_room import ClassRoom
 from app.model.class_room.class_room import ClassRoomId
 from app.model.class_room.student import Student
+from app.model.class_room.student import StudentList
 from app.model.user.user import User
 from app.model.user.user import UserId
 
@@ -99,16 +100,28 @@ class FindClassRoomTest(TestCase):
             'caption':
             'test caption'
         }
+        self.student_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'requested'
+        }
 
     def test_run_ok(self):
         datasource = MagicMock()
         datasource.find_by_id = MagicMock(
             return_value=ClassRoom.from_dict(self.class_room_dict))
-        usecase = FindClassRoom(datasource=datasource, logger=MagicMock())
-        result = usecase.run(ClassRoomId(1))
+        student_datasource = MagicMock()
+        student_datasource.get_student_list = MagicMock(
+            return_value=StudentList.from_list([self.student_dict]))
+        usecase = FindClassRoom(datasource=datasource,
+                                student_datasource=student_datasource,
+                                logger=MagicMock())
+        class_room, student_list = usecase.run(ClassRoomId(1))
 
         datasource.find_by_id.assert_called_once_with(ClassRoomId(1))
-        self.assertEqual(result.to_dict(), self.class_room_dict)
+        self.assertEqual(class_room.to_dict(), self.class_room_dict)
+        self.assertEqual(student_list.to_list(), [self.student_dict])
 
 
 class RequestJoinClassRoomTest(TestCase):

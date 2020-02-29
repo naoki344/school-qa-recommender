@@ -40,16 +40,15 @@ class ClassRoomOwnerList:
     def from_list(data) -> 'ClassRoomOwnerList':
         return ClassRoomOwnerList([ClassRoomOwner.from_dict(d) for d in data])
 
-    def to_list(self) -> List[str]:
+    def to_list(self) -> List[dict]:
         return [s.to_dict() for s in self.values]
 
     def create(user: User) -> 'ClassRoomOwnerList':
         return ClassRoomOwnerList([ClassRoomOwner.create(user)])
 
     def is_owner(self, user_id: UserId) -> bool:
-        res = next(
-            filter(lambda student: student.user_id == user_id, self.values),
-            None)
+        res = next(filter(lambda owner: owner.user_id == user_id, self.values),
+                   None)
         if res:
             return True
         return False
