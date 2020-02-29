@@ -5,16 +5,21 @@ from app.model.user.user import User
 
 
 class ClassRoomTest(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
     def test_dict_max(self):
         class_dict = {
             'class_room_id':
             1,
             'owner_list': [{
-                'owner_id': '2wa',
-                'owner_name': 'owner1'
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
             }, {
-                'owner_id': '2wa',
-                'owner_name': 'owner2'
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39-1',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
             }],
             'name':
             'test name',
@@ -35,11 +40,13 @@ class ClassRoomTest(TestCase):
             'class_room_id':
             1,
             'owner_list': [{
-                'owner_id': '2wa',
-                'owner_name': 'owner1'
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
             }, {
-                'owner_id': '2wa',
-                'owner_name': 'owner2'
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
             }],
             'name':
             'test name',
@@ -84,8 +91,9 @@ class ClassRoomTest(TestCase):
             **class_dict, 'class_room_id':
             2,
             'owner_list': [{
-                'owner_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
-                'owner_name': 'Naoki'
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
             }]
         }
         self.assertEqual(expect,

@@ -5,6 +5,7 @@ from enum import auto
 from typing import List
 from typing import Optional
 
+from app.model.user.class_room_owner import ClassRoomOwner
 from app.model.user.user import User
 
 
@@ -57,39 +58,6 @@ class ClassRoomCapacity:
 
 
 @dataclass(frozen=True)
-class ClassRoomOwnerName:
-    value: str
-
-
-@dataclass(frozen=True)
-class ClassRoomOwnerId:
-    value: str
-
-
-@dataclass(frozen=True)
-class ClassRoomOwner:
-    owner_id: ClassRoomOwnerId
-    owner_name: ClassRoomOwnerName
-
-    @staticmethod
-    def from_dict(data):
-        return ClassRoomOwner(owner_id=ClassRoomOwnerId(data['owner_id']),
-                              owner_name=ClassRoomOwnerName(
-                                  data['owner_name']))
-
-    def to_dict(self):
-        return {
-            'owner_id': self.owner_id.value,
-            'owner_name': self.owner_name.value
-        }
-
-    def create_by_user(user: User) -> 'ClassRoomOwner':
-        return ClassRoomOwner(owner_id=ClassRoomOwnerId(user.user_id.value),
-                              owner_name=ClassRoomOwnerName(
-                                  user.nickname.value))
-
-
-@dataclass(frozen=True)
 class ClassRoomOwnerList:
     values: List[ClassRoomTag]
 
@@ -100,8 +68,8 @@ class ClassRoomOwnerList:
     def to_list(self) -> List[str]:
         return [s.to_dict() for s in self.values]
 
-    def create_by_user(user: User) -> 'ClassRoomOwnerList':
-        return ClassRoomOwnerList([ClassRoomOwner.create_by_user(user)])
+    def create(user: User) -> 'ClassRoomOwnerList':
+        return ClassRoomOwnerList([ClassRoomOwner.create(user)])
 
 
 @dataclass(frozen=True)
@@ -145,7 +113,7 @@ class ClassRoom:
     def create(class_room_id: int, user: User, data: dict) -> 'ClassRoom':
         return ClassRoom(class_id=ClassRoomId(int(class_room_id)),
                          name=ClassRoomName(str(data['name'])),
-                         owner_list=ClassRoomOwnerList.create_by_user(user),
+                         owner_list=ClassRoomOwnerList.create(user),
                          image_url=ClassRoomImageUrl(str(data['image_url'])),
                          tag_list=ClassRoomTagList.from_list(data['tag_list']),
                          publish_type=ClassRoomPublishType[str(

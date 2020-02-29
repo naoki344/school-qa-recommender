@@ -16,5 +16,4 @@ def create_class_room(logger: Logger) -> CreateClassRoom:
 
 def find_class_room(logger: Logger) -> FindClassRoom:
     datasource = class_room_datasource(logger=logger)
-    return FindClassRoom(datasource=datasource,
-                         logger=logger)
+    return FindClassRoom(datasource=datasource, logger=logger)
