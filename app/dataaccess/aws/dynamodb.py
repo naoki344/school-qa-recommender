@@ -71,8 +71,7 @@ class DynamoDBClient:
                                   Limit=limit)
         if 'Items' in result:
             return result['Items'], result.get('LastEvaluatedKey')
-        else:
-            _list = [], None
+        return [], None
 
     def put_item(self, data: dict) -> None:
         encoded_data = DynamoDBClient.dynamo_type_encode(data)

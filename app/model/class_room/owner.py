@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from typing import List
 from app.model.user.user import Email
 from app.model.user.user import Nickname
 from app.model.user.user import User
@@ -29,3 +30,18 @@ class ClassRoomOwner:
         return ClassRoomOwner(user_id=user.user_id,
                               nickname=user.nickname,
                               email=user.email)
+
+
+@dataclass(frozen=True)
+class ClassRoomOwnerList:
+    values: List[ClassRoomOwner]
+
+    @staticmethod
+    def from_list(data) -> 'ClassRoomOwnerList':
+        return ClassRoomOwnerList([ClassRoomOwner.from_dict(d) for d in data])
+
+    def to_list(self) -> List[str]:
+        return [s.to_dict() for s in self.values]
+
+    def create(user: User) -> 'ClassRoomOwnerList':
+        return ClassRoomOwnerList([ClassRoomOwner.create(user)])

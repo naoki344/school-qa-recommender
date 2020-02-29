@@ -5,7 +5,7 @@ from enum import auto
 from typing import List
 from typing import Optional
 
-from app.model.user.class_room_owner import ClassRoomOwner
+from app.model.class_room.owner import ClassRoomOwnerList
 from app.model.user.user import User
 
 
@@ -55,21 +55,6 @@ class ClassRoomTagList:
 @dataclass(frozen=True)
 class ClassRoomCapacity:
     value: int
-
-
-@dataclass(frozen=True)
-class ClassRoomOwnerList:
-    values: List[ClassRoomTag]
-
-    @staticmethod
-    def from_list(data) -> 'ClassRoomOwnerList':
-        return ClassRoomOwnerList([ClassRoomOwner.from_dict(d) for d in data])
-
-    def to_list(self) -> List[str]:
-        return [s.to_dict() for s in self.values]
-
-    def create(user: User) -> 'ClassRoomOwnerList':
-        return ClassRoomOwnerList([ClassRoomOwner.create(user)])
 
 
 @dataclass(frozen=True)
