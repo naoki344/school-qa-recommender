@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-
 from typing import List
+
 from app.model.user.user import Email
 from app.model.user.user import Nickname
 from app.model.user.user import User
