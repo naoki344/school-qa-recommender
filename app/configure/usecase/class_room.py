@@ -20,8 +20,10 @@ def create_class_room(logger: Logger) -> CreateClassRoom:
 def find_class_room(logger: Logger) -> FindClassRoom:
     datasource = class_room_datasource(logger=logger)
     student_datasource = class_room_student_datasource(logger=logger)
+    user_service = user_query_service(logger)
     return FindClassRoom(datasource=datasource,
                          student_datasource=student_datasource,
+                         user_service=user_service,
                          logger=logger)
 
 

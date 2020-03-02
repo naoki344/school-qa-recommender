@@ -60,3 +60,9 @@ class StudentList:
 
     def to_list(self) -> List[dict]:
         return [s.to_dict() for s in self.values]
+
+    def approved_only(self) -> 'StudentList':
+        return StudentList([
+            item for item in self.values
+            if item.join_status == JoinStatus.approved
+        ])

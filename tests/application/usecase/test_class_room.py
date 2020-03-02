@@ -106,8 +106,46 @@ class FindClassRoomTest(TestCase):
             'email': 'trombone344@gmail.com',
             'join_status': 'requested'
         }
+        self.user_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'user_name': {
+                'first_name': '直紀',
+                'last_name': '三好'
+            },
+            'user_name_kana': {
+                'first_name_kana': 'ナオキ',
+                'last_name_kana': 'ミヨシ'
+            },
+            'email': 'trombone344@gmail.com',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
+        }
+        self.user = User.from_dict(self.user_dict)
 
-    def test_run_ok(self):
+    def test_run_is_owner(self):
+        datasource = MagicMock()
+        datasource.find_by_id = MagicMock(
+            return_value=ClassRoom.from_dict(self.class_room_dict))
+        student_datasource = MagicMock()
+        student_datasource.get_student_list = MagicMock(
+            return_value=StudentList.from_list([self.student_dict]))
+        user_service = MagicMock(spec=UserQueryService)
+        user_service.find = MagicMock(return_value=self.user)
+        usecase = FindClassRoom(datasource=datasource,
+                                student_datasource=student_datasource,
+                                user_service=user_service,
+                                logger=MagicMock())
+        class_room, student_list = usecase.run(
+            UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39-1'), ClassRoomId(1))
+
+        datasource.find_by_id.assert_called_once_with(ClassRoomId(1))
+        usecase.user_service.find.assert_called_once_with(
+            UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39-1'))
+        self.assertEqual(class_room.to_dict(), self.class_room_dict)
+        self.assertEqual(student_list.to_list(), [self.student_dict])
+
+    def test_run_is_not_owner(self):
         datasource = MagicMock()
         datasource.find_by_id = MagicMock(
             return_value=ClassRoom.from_dict(self.class_room_dict))
@@ -116,12 +154,14 @@ class FindClassRoomTest(TestCase):
             return_value=StudentList.from_list([self.student_dict]))
         usecase = FindClassRoom(datasource=datasource,
                                 student_datasource=student_datasource,
+                                user_service=MagicMock(spec=UserQueryService),
                                 logger=MagicMock())
-        class_room, student_list = usecase.run(ClassRoomId(1))
+        class_room, student_list = usecase.run(UserId(1), ClassRoomId(1))
 
         datasource.find_by_id.assert_called_once_with(ClassRoomId(1))
+        usecase.user_service.find.assert_called_once_with(UserId(1))
         self.assertEqual(class_room.to_dict(), self.class_room_dict)
-        self.assertEqual(student_list.to_list(), [self.student_dict])
+        self.assertEqual(student_list.to_list(), [])
 
 
 class RequestJoinClassRoomTest(TestCase):

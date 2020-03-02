@@ -75,3 +75,19 @@ class StudentListTest(TestCase):
         }]
         self.assertEqual(
             StudentList.from_list(student_list).to_list(), student_list)
+
+    def test_approved_only(self):
+        student_list = [{
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'requested'
+        }, {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af392',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'approved'
+        }]
+        self.assertEqual(
+            StudentList.from_list(student_list).approved_only().to_list(),
+            [student_list[1]])

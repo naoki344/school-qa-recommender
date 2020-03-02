@@ -30,13 +30,18 @@ class CreateClassRoom:
 class FindClassRoom:
     def __init__(self, datasource: ClassRoomDatasource,
                  student_datasource: ClassRoomStudentDatasource,
-                 logger: Logger) -> ClassRoom:
+                 user_service: UserQueryService, logger: Logger) -> ClassRoom:
         self.datasource = datasource
         self.student_datasource = student_datasource
+        self.user_service = user_service
 
-    def run(self, class_room_id: ClassRoomId) -> Tuple[ClassRoom, StudentList]:
+    def run(self, user_id: UserId,
+            class_room_id: ClassRoomId) -> Tuple[ClassRoom, StudentList]:
+        owner = self.user_service.find(user_id)
         class_room = self.datasource.find_by_id(class_room_id)
         student_list = self.student_datasource.get_student_list(class_room_id)
+        if not class_room.is_owner(owner.user_id):
+            student_list = student_list.approved_only()
         return class_room, student_list
 
 
