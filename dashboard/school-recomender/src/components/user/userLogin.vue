@@ -1,9 +1,9 @@
 <template>
-  <v-card class="elevation-6" height="300">
+  <v-card class="elevation-6">
     <v-toolbar color="yellow darken-1" flat>
       <v-spacer></v-spacer>
       <v-toolbar-title>
-        <strong>Toi-Toy</strong>
+        <strong>Toi-Toyにログイン</strong>
       </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
@@ -30,10 +30,12 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="yellow darken-1" @click="userLogin">ログイン</v-btn>
+      <v-btn color="yellow darken-1" @click="userLogin" x-large block>ログイン</v-btn>
     </v-card-actions>
   </v-card>
 </template>
+
+
 
 <script>
 import "@mdi/font/css/materialdesignicons.css";
@@ -61,3 +63,4 @@ export default {
   }
 };
 </script>
+

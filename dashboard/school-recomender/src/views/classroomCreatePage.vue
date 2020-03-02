@@ -4,7 +4,7 @@
       <v-container fluid fill-height>
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
-            <userConfirm />
+            <classroomCreate />
           </v-flex>
         </v-layout>
       </v-container>
@@ -14,13 +14,12 @@
 
 <script>
 // @ is an alias to /src
-import userConfirm from "@/components/user/userConfirm.vue";
+import classroomCreate from "@/components/classroom/classroomCreate.vue";
 
 export default {
-  name: "userConfirmPage",
+  name: "classroomCreatePage",
   components: {
-    userConfirm
+    classroomCreate
   }
 };
 </script>
-
