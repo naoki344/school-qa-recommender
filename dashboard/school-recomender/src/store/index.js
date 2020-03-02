@@ -12,8 +12,8 @@ export default new Vuex.Store({
       region: process.env.VUE_APP_REGION,
       userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
       appClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
-      adminIdentifyPoolId: process.env.VUE_APP_ADMIN_IDENTITY_POOL_ID,
-      adminLoginsKey: process.env.VUE_APP_ADMIN_LOGINS_KEY
+      identifyPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
+      loginsKey: process.env.VUE_APP_LOGINS_KEY
     },
     questionCardList: []
   },
@@ -63,7 +63,7 @@ export default new Vuex.Store({
       });
     },
     fetchQuestionList({commit, state}) {
-      const pathTemplate = '/devmiyoshi/admin/question'
+      const pathTemplate = '/question'
       const pathParams = {};
       schoolApiClient.fetchRestAPI(
         state.cognitoConfig, state.cognitoUser, "GET", pathTemplate, pathParams, {}, {}
@@ -75,7 +75,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         const data = schoolApiQuesionTransfer.toRequest(questionInput)
         console.log(data);
-        const pathTemplate = '/devmiyoshi/admin/question'
+        const pathTemplate = '/question'
         schoolApiClient.fetchRestAPI(
           state.cognitoConfig, state.cognitoUser, "POST", pathTemplate, {}, {}, data
         ).then(() => {

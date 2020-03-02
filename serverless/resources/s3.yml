@@ -1,0 +1,5 @@
+Resources:
+  StaticSite:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.stageName}-toi-toy-private-image-strage

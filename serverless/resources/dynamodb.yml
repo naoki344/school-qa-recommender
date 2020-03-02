@@ -1,5 +1,5 @@
 Resources:
-  QAQuestionTable:
+  ToiToyQuestionTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: "${self:custom.resourcePrefix}-Question"
@@ -70,7 +70,7 @@ Resources:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
 
-  QASequensesTable:
+  ToiToySequensesTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: "${self:custom.resourcePrefix}-Sequenses"
@@ -86,7 +86,7 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
 
-  QAClassRoomTable:
+  ToiToyClassRoomTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: "${self:custom.resourcePrefix}-ClassRoom"
@@ -102,7 +102,7 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
 
-  QAClassRoomStudentTable:
+  ToiToyClassRoomStudentTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: "${self:custom.resourcePrefix}-ClassRoomStudent"

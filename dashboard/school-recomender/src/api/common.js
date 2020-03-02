@@ -109,9 +109,9 @@ export default {
           return;
         }
         const cognitoIdentityParams = {
-          IdentityPoolId: cognitoConfig.adminIdentifyPoolId,
+          IdentityPoolId: cognitoConfig.identifyPoolId,
           Logins: {
-            [cognitoConfig.adminLoginsKey]: session.getIdToken().getJwtToken()
+            [cognitoConfig.loginsKey]: session.getIdToken().getJwtToken()
           }
         };
   
@@ -155,7 +155,7 @@ export default {
     });
   },
   fetchRestAPI(cognitoConfig, cognitoUser, method, pathTemplate, pathParams, queryParams, body){
-    const apiUrl = 'https://2mzeoft4ve.execute-api.ap-northeast-1.amazonaws.com'
+    const apiUrl = process.env.VUE_APP_TOITOY_API_URL;
     return this.getApiData(cognitoConfig, apiUrl, method, pathTemplate, pathParams, queryParams, body);
   }
 }
