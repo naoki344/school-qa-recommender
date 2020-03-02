@@ -1,4 +1,4 @@
-service: toi-toi-dashboard
+service: toi-toy-dashboard
 
 provider:
   name: aws
