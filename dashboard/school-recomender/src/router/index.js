@@ -3,7 +3,8 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import userLoginPage from "../views/userLoginPage.vue";
 import userSignUpPage from "../views/userSignUpPage.vue";
-import userConfirmPage from "../views/userConfirmPage.vue";
+import userVerifyPage from "../views/userVerifyPage.vue";
+import classroomCreatePage from "../views/classroomCreatePage.vue";
 
 Vue.use(VueRouter);
 
@@ -33,9 +34,14 @@ const routes = [
     component: userSignUpPage
   },
   {
-    path: "/userConfirm",
-    name: "userConfirmPage",
-    component: userConfirmPage
+    path: "/userVerify",
+    name: "userVerifyPage",
+    component: userVerifyPage
+  },
+  {
+    path: "/classroomCreate",
+    name: "classroomCreatePage",
+    component: classroomCreatePage
   }
 ];
 

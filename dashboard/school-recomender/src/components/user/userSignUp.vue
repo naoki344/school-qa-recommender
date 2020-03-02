@@ -3,7 +3,7 @@
     <v-toolbar color="yellow darken-1" flat>
       <v-spacer></v-spacer>
       <v-toolbar-title>
-        <strong>新規ユーザー登録</strong>
+        <strong>アカウント作成</strong>
       </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
@@ -74,7 +74,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="yellow darken-1" @click="userSignUp">登録</v-btn>
+      <v-btn color="yellow darken-1" @click="userSignUp" block>登録</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -82,7 +82,7 @@
 <script>
 import "@mdi/font/css/materialdesignicons.css";
 export default {
-  name: "SignUp",
+  name: "userSignUp",
   data: () => ({
     email: "",
     emailConfirm: "",
@@ -101,14 +101,14 @@ export default {
     userSignUp() {
       this.$store
         .dispatch("userSignUp", {
-		email: this.email,
-		nickname: this.nickname,
-		firstName: this.firstName,
-		lastName: this.lastName,
-		firstNameKana: this.firstNameKana,
-		lastNameKana: this.lastNameKana,
-		username: this.username,
-		password: this.password,
+          email: this.email,
+          nickname: this.nickname,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          firstNameKana: this.firstNameKana,
+          lastNameKana: this.lastNameKana,
+          username: this.username,
+          password: this.password
         })
         .then(() => {
           this.$router.push({ path: "/userConfirm" });
@@ -120,3 +120,4 @@ export default {
   }
 };
 </script>
+
