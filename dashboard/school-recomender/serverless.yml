@@ -1,4 +1,4 @@
-service: school-recommender-dashboard
+service: toi-toi-dashboard
 
 provider:
   name: aws
@@ -34,7 +34,7 @@ package:
 custom:
   stageName: "${opt:stage, self:provider.stage}"
   resourcePrefix: "${self:custom.stageName}-qa" 
-  webSiteName: ${self:custom.stageName}-school-question-recommender
+  webSiteName: ${self:custom.stageName}-toi-toy-dashboard
   s3Sync:
     - bucketName: ${self:custom.webSiteName}
       localDir: dist

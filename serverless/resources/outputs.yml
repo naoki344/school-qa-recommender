@@ -1,14 +1,14 @@
 Outputs:
-  QARecommenderApiId:
+  ToiToyRecommenderApiId:
     Value:
       Ref: ApiGatewayRestApi
     Export:
-      Name: ${self:custom.stageName}-QARecommenderApiId
+      Name: ${self:custom.stageName}-ToiToyRecommenderApiId
 
-  QARecommenderApiRootResourceId:
+  ToiToyRecommenderApiRootResourceId:
     Value:
       Fn::GetAtt:
         - ApiGatewayRestApi
         - RootResourceId
     Export:
-      Name: ${self:custom.stageName}-QARecommenderApiRootResourceId
+      Name: ${self:custom.stageName}-ToiToyRecommenderApiRootResourceId

@@ -135,7 +135,7 @@ Resources:
                         - ":"
                         - Ref: AWS::AccountId
                         - ":"
-                        - "Fn::ImportValue": ${self:custom.stageName}-QARecommenderApiId
+                        - "Fn::ImportValue": ${self:custom.stageName}-ToiToyRecommenderApiId
                         # /stageName/method/path....
                         - "/*/*/*"
 
