@@ -4,7 +4,7 @@
       <v-container fluid fill-height>
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
-            <Login />
+            <userLogin />
           </v-flex>
         </v-layout>
       </v-container>
@@ -14,12 +14,12 @@
 
 <script>
 // @ is an alias to /src
-import Login from "@/components/user/Login.vue";
+import userLogin from "@/components/user/userLogin.vue";
 
 export default {
-  name: "UserLogin",
+  name: "userLoginPage",
   components: {
-    Login
+    userLogin
   }
 };
 </script>
