@@ -3,6 +3,7 @@ from unittest import TestCase
 from app.anticorruption.model.user.parser import AuthenticationEventPerser
 from app.anticorruption.model.user.parser import CognitoUserParser
 from app.model.user.user import User
+from app.model.user.user import UserId
 
 from .data.cognito import create_cognito_user
 from .data.lambda_event import create_lambda_event_dict
@@ -13,7 +14,7 @@ class AuthenticationEventPerserTest(TestCase):
         cognito_user_id = AuthenticationEventPerser.parse(
             create_lambda_event_dict())
         self.assertEqual(cognito_user_id,
-                         "79434f7e-b53f-4d3a-8c79-aedc7b73af39")
+                         UserId("79434f7e-b53f-4d3a-8c79-aedc7b73af39"))
 
 
 class CognitoUserParserTest(TestCase):

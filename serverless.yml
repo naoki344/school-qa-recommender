@@ -86,6 +86,58 @@ functions:
       TYPE: API
       SERVICE: Question
 
+  LambdaApiCreateClassRoom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.create_class_room_handler
+    name: ${self:custom.resourcePrefix}-create-class-room
+    events:
+      - http:
+          path: admin/class_room
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: ClassRoom
+
+  LambdaApiFindClassRoom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.find_class_room_handler
+    name: ${self:custom.resourcePrefix}-find-class-room
+    events:
+      - http:
+          path: admin/class_room/{class_room_id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: ClassRoom
+
+  LambdaApiRequestJoinClassRoom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.request_join_class_room_handler
+    name: ${self:custom.resourcePrefix}-request-join-class-room
+    events:
+      - http:
+          path: admin/class_room/{class_room_id}/student/join_request
+          method: POST
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: ClassRoom
+
+  LambdaApiApproveJoinClassRoomRequest:
+    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.approve_join_class_room_request_handler
+    name: ${self:custom.resourcePrefix}-approve-join-class-room-request
+    events:
+      - http:
+          path: admin/class_room/{class_room_id}/owner/approve_request
+          method: PUT
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: ClassRoom
+
 resources:
   - ${file(serverless/resources/outputs.yml)}
   - ${file(serverless/resources/dynamodb.yml)}

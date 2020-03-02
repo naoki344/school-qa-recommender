@@ -55,6 +55,17 @@ class DynamoDBClient:
         else:
             return None
 
+    def get_items(self, name: str, value: str) -> List[dict]:
+        result = self.table.query(ExpressionAttributeNames={'#id': name},
+                                  ExpressionAttributeValues={':value': value},
+                                  KeyConditionExpression='#id = :value')
+        yield from result['Items']
+
+        while 'LastEvaluatedKey' in result:
+            result = self.table.scan(
+                ExclusiveStartKey=result['LastEvaluatedKey'])
+            yield from result['Items']
+
     def query(self,
               index_name: str,
               names: Dict[str, Any],
@@ -71,8 +82,7 @@ class DynamoDBClient:
                                   Limit=limit)
         if 'Items' in result:
             return result['Items'], result.get('LastEvaluatedKey')
-        else:
-            _list = [], None
+        return [], None
 
     def put_item(self, data: dict) -> None:
         encoded_data = DynamoDBClient.dynamo_type_encode(data)
