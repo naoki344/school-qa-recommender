@@ -5,6 +5,7 @@ import userLoginPage from "../views/userLoginPage.vue";
 import userSignUpPage from "../views/userSignUpPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
 import classroomCreatePage from "../views/classroomCreatePage.vue";
+import topPage from "../views/topPage.vue";
 
 Vue.use(VueRouter);
 
@@ -42,6 +43,11 @@ const routes = [
     path: "/classroomCreate",
     name: "classroomCreatePage",
     component: classroomCreatePage
+  },
+  {
+    path: "/top",
+    name: "topPage",
+    component: topPage
   }
 ];
 
