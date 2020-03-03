@@ -6,40 +6,40 @@
 const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
 const AWS = require("aws-sdk");
 const apigClientFactory = require("aws-api-gateway-client").default;
+import Amplify,{ Auth,Storage } from 'aws-amplify';
 
-// ------------------------------------------------------------
-// Global variables
-// ------------------------------------------------------------
+// TODO: 全てamplifyに統一する
+Amplify.configure({
+  Auth: {
+      identityPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
+      region: process.env.VUE_APP_REGION, // REQUIRED - Amazon Cognito Region
+      userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
+      userPoolWebClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
+  },
+  API: {
+    endpoints: [
+      {
+          name: "ToiToyApi",
+          endpoint: process.env.VUE_APP_TOITOY_API_URL
+      }
+    ]
+  },
+  Storage: {
+    bucket: process.env.VUE_APP_TOITOY_PRIVATE_IMAGE_STORAGE,
+    region: process.env.VUE_APP_REGION
+  }
+});
 
 export default {
-  userLogin(cognitoConfig, userInfo) {
+  userLogin(username, password) {
     return new Promise((resolve, reject) => {
-      const userPoolData = {
-        UserPoolId: cognitoConfig.userPoolId,
-        ClientId: cognitoConfig.appClientId
-      };
-      const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(
-        userPoolData
-      );
-      const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-        userInfo
-      );
-      const userData = {
-        Username: userInfo.Username,
-        Pool: gCognitoUserPool
-      };
-
-      const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: result => {
-          cognitoUser.Session = result;
-          alert("ログイン成功");
-          resolve(cognitoUser);
-        },
-        onFailure: err => {
-          alert("APIログインエラーが発生しました", err);
-          reject();
-        }
+      Auth.signIn(username, password)
+      .then((data) => {
+        console.log(data);
+        resolve(data);
+      })
+      .catch((err) => {
+        reject(err);
       });
     });
   },
@@ -214,5 +214,17 @@ export default {
       queryParams,
       body
     );
+  },
+  getS3PublicFile(filePath) {
+    return new Promise((resolve, reject) => {
+      Storage.configure({ level: 'public' });
+      Storage.get(filePath, {expires: 3600})
+        .then((result) => {
+          resolve(result);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 };

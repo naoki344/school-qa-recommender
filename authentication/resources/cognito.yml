@@ -138,6 +138,19 @@ Resources:
                         - "Fn::ImportValue": ${self:custom.stageName}-ToiToyRecommenderApiId
                         # /stageName/method/path....
                         - "/*/*/*"
+              - Effect: "Allow"
+                Action:
+                  - "s3:ListBucket"
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "s3:DeleteObject"
+                Resource:
+                  # Allow users to invoke hello GET API
+                  - "Fn::ImportValue": ${self:custom.stageName}-ToiToyPrivateImageStorageArn
+                  - Fn::Join:
+                      - ""
+                      - - "Fn::ImportValue": ${self:custom.stageName}-ToiToyPrivateImageStorageArn
+                        - "/*"
 
 Outputs:
   ToiToyUserPoolId:
