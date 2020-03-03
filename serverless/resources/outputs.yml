@@ -12,3 +12,9 @@ Outputs:
         - RootResourceId
     Export:
       Name: ${self:custom.stageName}-ToiToyRecommenderApiRootResourceId
+
+  ToiToyPrivateImageStorageArn:
+    Value:
+      'Fn::GetAtt': [ToiToyPrivateImageStorage, Arn]
+    Export:
+      Name: ${self:custom.stageName}-ToiToyPrivateImageStorageArn

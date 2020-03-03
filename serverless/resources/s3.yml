@@ -1,5 +1,5 @@
 Resources:
-  StaticSite:
+  ToiToyPrivateImageStorage:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: ${self:custom.stageName}-toi-toy-private-image-strage
+      BucketName: ${self:custom.stageName}-toi-toy-private-image-storage

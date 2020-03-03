@@ -26,13 +26,10 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    userLogin({ commit, state }, { username, password }) {
+    userLogin({ commit }, { username, password }) {
       return new Promise((resolve, reject) => {
         schoolApiClient
-          .userLogin(state.cognitoConfig, {
-            Username: username,
-            Password: password
-          })
+          .userLogin(username, password)
           .then(cognitoUser => {
             commit("setLoginUser", cognitoUser);
             resolve();
@@ -109,6 +106,20 @@ export default new Vuex.Store({
           .catch(err => {
             alert("API連携エラー", err);
             console.log(err);
+            reject();
+          });
+      });
+    },
+    getS3PublicFile({ state }, filePath) {
+      return new Promise((resolve, reject) => {
+        console.log(state);
+        schoolApiClient
+          .getS3PublicFile(filePath)
+          .then((url) => {
+            resolve(url);
+          })
+          .catch(err => {
+            alert("画像取得エラー", err);
             reject();
           });
       });
