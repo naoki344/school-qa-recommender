@@ -1,7 +1,7 @@
 import schoolApiClient from "@/api/common.js";
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 
-const store = {
+export default {
   namespaced: true,
   state: {
     questionCardList: []
@@ -55,5 +55,3 @@ const store = {
     }
   },
 }
-
-export default store

@@ -1,6 +1,6 @@
 import schoolApiClient from "@/api/common.js";
 
-const store = {
+export default {
   namespaced: true,
   state: {
       loginUser: {},
@@ -54,5 +54,3 @@ const store = {
     },
   }
 }
-
-export default store
