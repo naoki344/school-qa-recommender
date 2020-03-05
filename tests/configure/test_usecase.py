@@ -2,18 +2,18 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from app.application.query.user import UserQueryService
-from app.application.usecase.class_room import ApproveJoinClassRoomRequest
-from app.application.usecase.class_room import CreateClassRoom
-from app.application.usecase.class_room import FindClassRoom
-from app.application.usecase.class_room import RequestJoinClassRoom
+from app.application.usecase.classroom import ApproveJoinClassroomRequest
+from app.application.usecase.classroom import CreateClassroom
+from app.application.usecase.classroom import FindClassroom
+from app.application.usecase.classroom import RequestJoinClassroom
 from app.application.usecase.question import CreateQuestion
 from app.application.usecase.question import FindQuestion
 from app.application.usecase.question import GetQuestionList
 from app.application.usecase.question import UpdateQuestion
-from app.configure.usecase.class_room import approve_join_class_room_request
-from app.configure.usecase.class_room import create_class_room
-from app.configure.usecase.class_room import find_class_room
-from app.configure.usecase.class_room import request_join_class_room
+from app.configure.usecase.classroom import approve_join_classroom_request
+from app.configure.usecase.classroom import create_classroom
+from app.configure.usecase.classroom import find_classroom
+from app.configure.usecase.classroom import request_join_classroom
 from app.configure.usecase.question import create_question
 from app.configure.usecase.question import find_question
 from app.configure.usecase.question import get_question_list
@@ -38,17 +38,17 @@ class QuestionUsecaseTest(TestCase):
             True)
 
         self.assertEqual(
-            isinstance(create_class_room(logger=MagicMock()), CreateClassRoom),
+            isinstance(create_classroom(logger=MagicMock()), CreateClassroom),
             True)
 
         self.assertEqual(
-            isinstance(find_class_room(logger=MagicMock()), FindClassRoom),
+            isinstance(find_classroom(logger=MagicMock()), FindClassroom),
             True)
 
         self.assertEqual(
-            isinstance(request_join_class_room(logger=MagicMock()),
-                       RequestJoinClassRoom), True)
+            isinstance(request_join_classroom(logger=MagicMock()),
+                       RequestJoinClassroom), True)
 
         self.assertEqual(
-            isinstance(approve_join_class_room_request(logger=MagicMock()),
-                       ApproveJoinClassRoomRequest), True)
+            isinstance(approve_join_classroom_request(logger=MagicMock()),
+                       ApproveJoinClassroomRequest), True)

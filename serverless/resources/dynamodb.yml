@@ -86,36 +86,36 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
 
-  ToiToyClassRoomTable:
+  ToiToyClassroomTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: "${self:custom.resourcePrefix}-ClassRoom"
+      TableName: "${self:custom.resourcePrefix}-Classroom"
       AttributeDefinitions:
         -
-          AttributeName: "class_room_id"
+          AttributeName: "classroom_id"
           AttributeType: "N"
       KeySchema:
         -
-          AttributeName: "class_room_id"
+          AttributeName: "classroom_id"
           KeyType: "HASH"
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
 
-  ToiToyClassRoomStudentTable:
+  ToiToyClassroomStudentTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: "${self:custom.resourcePrefix}-ClassRoomStudent"
+      TableName: "${self:custom.resourcePrefix}-ClassroomStudent"
       AttributeDefinitions:
         -
-          AttributeName: "class_room_id"
+          AttributeName: "classroom_id"
           AttributeType: "N"
         -
           AttributeName: "user_id"
           AttributeType: "S"
       KeySchema:
         -
-          AttributeName: "class_room_id"
+          AttributeName: "classroom_id"
           KeyType: "HASH"
         -
           AttributeName: "user_id"

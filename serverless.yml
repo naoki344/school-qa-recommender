@@ -16,11 +16,11 @@ plugins:
   - serverless-python-requirements
 
 package:
-  execute:
-    - node_modules/*
-    - authentication/**
-    - dashboard/**
-    - tests/**
+  individually: false
+  include:
+    - './app/**'
+  exclude:
+    - '**'
 
 custom:
   stageName: "${opt:stage, self:provider.stage}"
@@ -86,57 +86,57 @@ functions:
       TYPE: API
       SERVICE: Question
 
-  LambdaApiCreateClassRoom:
-    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.create_class_room_handler
+  LambdaApiCreateClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.create_classroom_handler
     name: ${self:custom.resourcePrefix}-create-class-room
     events:
       - http:
-          path: class_room
+          path: classroom
           method: post
           cors: true
           authorizer: aws_iam
     tags:
       TYPE: API
-      SERVICE: ClassRoom
+      SERVICE: Classroom
 
-  LambdaApiFindClassRoom:
-    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.find_class_room_handler
+  LambdaApiFindClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_handler
     name: ${self:custom.resourcePrefix}-find-class-room
     events:
       - http:
-          path: class_room/{class_room_id}
+          path: classroom/{classroom_id}
           method: get
           cors: true
           authorizer: aws_iam
     tags:
       TYPE: API
-      SERVICE: ClassRoom
+      SERVICE: Classroom
 
-  LambdaApiRequestJoinClassRoom:
-    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.request_join_class_room_handler
+  LambdaApiRequestJoinClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.request_join_classroom_handler
     name: ${self:custom.resourcePrefix}-request-join-class-room
     events:
       - http:
-          path: class_room/{class_room_id}/student/join_request
+          path: classroom/{classroom_id}/student/join_request
           method: POST
           cors: true
           authorizer: aws_iam
     tags:
       TYPE: API
-      SERVICE: ClassRoom
+      SERVICE: Classroom
 
-  LambdaApiApproveJoinClassRoomRequest:
-    handler: ${self:custom.lambdaHandlerPrefix}api/class_room.approve_join_class_room_request_handler
+  LambdaApiApproveJoinClassroomRequest:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.approve_join_classroom_request_handler
     name: ${self:custom.resourcePrefix}-approve-join-class-room-request
     events:
       - http:
-          path: class_room/{class_room_id}/owner/approve_request
+          path: classroom/{classroom_id}/owner/approve_request
           method: PUT
           cors: true
           authorizer: aws_iam
     tags:
       TYPE: API
-      SERVICE: ClassRoom
+      SERVICE: Classroom
 
 resources:
   - ${file(serverless/resources/outputs.yml)}

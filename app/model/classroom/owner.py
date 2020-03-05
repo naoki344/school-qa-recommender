@@ -8,14 +8,14 @@ from app.model.user.user import UserId
 
 
 @dataclass(frozen=True)
-class ClassRoomOwner:
+class ClassroomOwner:
     user_id: UserId
     nickname: Nickname
     email: Email
 
     @staticmethod
     def from_dict(data):
-        return ClassRoomOwner(user_id=UserId(data['user_id']),
+        return ClassroomOwner(user_id=UserId(data['user_id']),
                               nickname=Nickname(data['nickname']),
                               email=Email(data['email']))
 
@@ -26,25 +26,25 @@ class ClassRoomOwner:
             'email': self.email.value
         }
 
-    def create(user: User) -> 'ClassRoomOwner':
-        return ClassRoomOwner(user_id=user.user_id,
+    def create(user: User) -> 'ClassroomOwner':
+        return ClassroomOwner(user_id=user.user_id,
                               nickname=user.nickname,
                               email=user.email)
 
 
 @dataclass(frozen=True)
-class ClassRoomOwnerList:
-    values: List[ClassRoomOwner]
+class ClassroomOwnerList:
+    values: List[ClassroomOwner]
 
     @staticmethod
-    def from_list(data) -> 'ClassRoomOwnerList':
-        return ClassRoomOwnerList([ClassRoomOwner.from_dict(d) for d in data])
+    def from_list(data) -> 'ClassroomOwnerList':
+        return ClassroomOwnerList([ClassroomOwner.from_dict(d) for d in data])
 
     def to_list(self) -> List[dict]:
         return [s.to_dict() for s in self.values]
 
-    def create(user: User) -> 'ClassRoomOwnerList':
-        return ClassRoomOwnerList([ClassRoomOwner.create(user)])
+    def create(user: User) -> 'ClassroomOwnerList':
+        return ClassroomOwnerList([ClassroomOwner.create(user)])
 
     def is_owner(self, user_id: UserId) -> bool:
         res = next(filter(lambda owner: owner.user_id == user_id, self.values),
