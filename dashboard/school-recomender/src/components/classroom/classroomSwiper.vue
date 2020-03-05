@@ -2,11 +2,11 @@
 <template>
   <v-container>
     <swiper class="classroom-swiper-thumbs" :options="swiperOptionThumbs" ref="swiperThumbs">
-      <swiper-slide>クラス1</swiper-slide>
+      <swiper-slide v-for="(classroom, index) in classroomList" :key="index" >{{classroom.name}}</swiper-slide>
     </swiper>
     <swiper :options="swiperOptionTop" ref="swiperTop">
-      <swiper-slide>
-        <QuestionIndex />
+      <swiper-slide v-for="(classroom, index) in classroomList" :key="index" >
+        <h1>{{classroom.name}}</h1>
       </swiper-slide>
       <!-- Optional controls -->
       <div class="swiper-pagination"  slot="pagination"></div>
@@ -18,16 +18,15 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
-import QuestionIndex from "@/components/question/QuestionIndex.vue";
 
 export default {
   name: "classroomSwiper",
   components: {
     swiper,
     swiperSlide,
-    QuestionIndex
   },
   data() {
     return {
@@ -50,6 +49,14 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      classroomList: state => state.classroom.classroomList
+    })
+  },
+  methods: {
+    fetchClassroomList() {
+      this.$store.dispatch("classroom/fetchClassroomList");
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -57,7 +64,8 @@ export default {
       const swiperThumbs = this.$refs.swiperThumbs.swiper
       swiperTop.controller.control = swiperThumbs
       swiperThumbs.controller.control = swiperTop
-    })
+    });
+    this.fetchClassroomList();
   }
 }
 </script>
