@@ -1,16 +1,16 @@
 from unittest import TestCase
 
-from app.model.class_room.class_room import ClassRoom
+from app.model.classroom.classroom import Classroom
 from app.model.user.user import User
 
 
-class ClassRoomTest(TestCase):
+class ClassroomTest(TestCase):
     def setUp(self):
         self.maxDiff = None
 
     def test_dict_max(self):
         class_dict = {
-            'class_room_id':
+            'classroom_id':
             1,
             'owner_list': [{
                 'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
@@ -33,11 +33,11 @@ class ClassRoomTest(TestCase):
             'caption':
             'test caption'
         }
-        self.assertEqual(ClassRoom.from_dict(class_dict).to_dict(), class_dict)
+        self.assertEqual(Classroom.from_dict(class_dict).to_dict(), class_dict)
 
     def test_dict_min(self):
         class_dict = {
-            'class_room_id':
+            'classroom_id':
             1,
             'owner_list': [{
                 'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
@@ -57,7 +57,7 @@ class ClassRoomTest(TestCase):
             'tag_list': ['tag1', 'tag2']
         }
         self.assertEqual(
-            ClassRoom.from_dict(class_dict).to_dict(), {
+            Classroom.from_dict(class_dict).to_dict(), {
                 **class_dict, 'capacity': None,
                 'caption': None
             })
@@ -88,7 +88,7 @@ class ClassRoomTest(TestCase):
         }
         user = User.from_dict(user_dict)
         expect = {
-            **class_dict, 'class_room_id':
+            **class_dict, 'classroom_id':
             2,
             'owner_list': [{
                 'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
@@ -97,4 +97,4 @@ class ClassRoomTest(TestCase):
             }]
         }
         self.assertEqual(expect,
-                         ClassRoom.create(2, user, class_dict).to_dict())
+                         Classroom.create(2, user, class_dict).to_dict())

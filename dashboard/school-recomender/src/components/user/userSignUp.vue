@@ -100,7 +100,7 @@ export default {
   methods: {
     userSignUp() {
       this.$store
-        .dispatch("userSignUp", {
+        .dispatch("user/userSignUp", {
           email: this.email,
           nickname: this.nickname,
           firstName: this.firstName,

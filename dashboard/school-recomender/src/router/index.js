@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
 import userLoginPage from "../views/userLoginPage.vue";
 import userSignUpPage from "../views/userSignUpPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
@@ -12,8 +11,8 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home
+    name: "topPage",
+    component: topPage
   },
   {
     path: "/about",
@@ -43,11 +42,6 @@ const routes = [
     path: "/classroomCreate",
     name: "classroomCreatePage",
     component: classroomCreatePage
-  },
-  {
-    path: "/top",
-    name: "topPage",
-    component: topPage
   }
 ];
 

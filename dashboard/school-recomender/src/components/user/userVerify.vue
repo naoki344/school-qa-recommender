@@ -35,7 +35,7 @@ export default {
   methods: {
     userVerify() {
       this.$store
-        .dispatch("userVerify", {
+        .dispatch("user/userVerify", {
           email: this.email,
           verificationCode: this.verificationCode
         })

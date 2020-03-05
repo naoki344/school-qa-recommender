@@ -7,14 +7,20 @@ const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
 const AWS = require("aws-sdk");
 const apigClientFactory = require("aws-api-gateway-client").default;
 import Amplify,{ Auth,Storage } from 'aws-amplify';
-
+var cognitoConfig = {
+  region: process.env.VUE_APP_REGION,
+  userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
+  appClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
+  identifyPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
+  loginsKey: process.env.VUE_APP_LOGINS_KEY
+}
 // TODO: 全てamplifyに統一する
 Amplify.configure({
   Auth: {
-      identityPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
-      region: process.env.VUE_APP_REGION, // REQUIRED - Amazon Cognito Region
-      userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
-      userPoolWebClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
+      identityPoolId: cognitoConfig.identifyPoolId,
+      region: cognitoConfig.region,
+      userPoolId: cognitoConfig.userPoolId,
+      userPoolWebClientId: cognitoConfig.appClientId
   },
   API: {
     endpoints: [
@@ -43,7 +49,7 @@ export default {
       });
     });
   },
-  userSignUp(cognitoConfig, inputData) {
+  userSignUp(inputData) {
     return new Promise((resolve, reject) => {
       const userPoolData = {
         UserPoolId: cognitoConfig.userPoolId,
@@ -85,7 +91,7 @@ export default {
       );
     });
   },
-  userVerify(cognitoConfig, verifyData) {
+  userVerify(verifyData) {
     return new Promise((resolve, reject) => {
       const userPoolData = {
         UserPoolId: cognitoConfig.userPoolId,
@@ -114,7 +120,6 @@ export default {
     });
   },
   getApiData(
-    cognitoConfig,
     apiUrl,
     method,
     pathTemplate,
@@ -195,7 +200,6 @@ export default {
     });
   },
   fetchRestAPI(
-    cognitoConfig,
     cognitoUser,
     method,
     pathTemplate,
@@ -206,7 +210,6 @@ export default {
     const apiUrl =
       process.env.VUE_APP_TOITOY_API_URL;
     return this.getApiData(
-      cognitoConfig,
       apiUrl,
       method,
       pathTemplate,
