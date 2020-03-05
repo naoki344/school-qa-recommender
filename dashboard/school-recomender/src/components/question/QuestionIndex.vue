@@ -88,8 +88,8 @@
 import { mapState } from "vuex";
 import moment from "moment";
 import "@mdi/font/css/materialdesignicons.css";
-import CreateQuestionDialog from "./question/CreateQuestionDialog";
-import schoolApiQuesionTransfer from "../api/transfer/question.js";
+import CreateQuestionDialog from "@/components/question/CreateQuestionDialog";
+import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 export default {
   name: "QuestionIndex",
   components: {
@@ -109,15 +109,15 @@ export default {
   }),
   computed: {
     ...mapState({
-      questionCardList: state => state.questionCardList
+      questionCardList: state => state.question.questionCardList
     })
   },
   methods: {
     fetchQuestionList() {
-      this.$store.dispatch("fetchQuestionList");
+      this.$store.dispatch("question/fetchQuestionList");
     },
     fetchS3Object() {
-      this.$store.dispatch("fetchS3Object", 'fireworks001.jpg')
+      this.$store.dispatch("getS3PublicFile", 'fireworks001.jpg')
         .then((url) => {
           this.url = url;
         })

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from app.model.class_room.student import Student
-from app.model.class_room.student import StudentList
+from app.model.classroom.student import Student
+from app.model.classroom.student import StudentList
 from app.model.user.user import User
 
 

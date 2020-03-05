@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import schoolApiQuesionTransfer from "../../api/transfer/question.js";
+import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 export default {
   name: "CreateQuestionDialog",
   data: () => ({
@@ -163,9 +163,9 @@ export default {
         return;
       }
       this.$store
-        .dispatch("createQuestion", { questionInput: this.question })
+        .dispatch("question/createQuestion", { questionInput: this.question })
         .then(() => {
-          this.$store.dispatch("fetchQuestionList");
+          this.$store.dispatch("question/fetchQuestionList");
           this.dialog = false;
         });
     }

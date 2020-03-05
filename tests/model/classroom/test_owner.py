@@ -1,15 +1,15 @@
 from unittest import TestCase
 
-from app.model.class_room.owner import ClassRoomOwnerList
+from app.model.classroom.owner import ClassroomOwnerList
 from app.model.user.user import UserId
 
 
-class ClassRoomOwnerListTest(TestCase):
+class ClassroomOwnerListTest(TestCase):
     def setUp(self):
         self.maxDiff = None
 
     def test_is_owner(self):
-        owner_list = ClassRoomOwnerList.from_list([{
+        owner_list = ClassroomOwnerList.from_list([{
             'user_id':
             '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'nickname':

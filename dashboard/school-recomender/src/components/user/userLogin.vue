@@ -49,7 +49,7 @@ export default {
   methods: {
     userLogin() {
       this.$store
-        .dispatch("userLogin", {
+        .dispatch("user/userLogin", {
           username: this.username,
           password: this.password
         })
