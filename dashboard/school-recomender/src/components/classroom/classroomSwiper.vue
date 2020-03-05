@@ -20,7 +20,7 @@
 <script>
 import 'swiper/dist/css/swiper.css'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
-import QuestionIndex from "@/components/QuestionIndex.vue";
+import QuestionIndex from "@/components/question/QuestionIndex.vue";
 
 export default {
   name: "classroomSwiper",
