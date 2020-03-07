@@ -117,7 +117,7 @@ functions:
     name: ${self:custom.resourcePrefix}-request-join-class-room
     events:
       - http:
-          path: classroom/{classroom_id}/student/join_request
+          path: classroom/{classroom_id}/join_request
           method: POST
           cors: true
           authorizer: aws_iam
@@ -130,8 +130,21 @@ functions:
     name: ${self:custom.resourcePrefix}-approve-join-class-room-request
     events:
       - http:
-          path: classroom/{classroom_id}/owner/approve_request
+          path: classroom/{classroom_id}/approve_request
           method: PUT
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiGetMyClassroomList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.get_my_classroom_list_handler
+    name: ${self:custom.resourcePrefix}-get-my-classroom-list
+    events:
+      - http:
+          path: classroom/my_classroom
+          method: GET
           cors: true
           authorizer: aws_iam
     tags:

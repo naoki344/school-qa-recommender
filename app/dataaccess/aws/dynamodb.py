@@ -55,31 +55,45 @@ class DynamoDBClient:
         else:
             return None
 
-    def get_items(self, name: str, value: str) -> List[dict]:
-        result = self.table.query(ExpressionAttributeNames={'#id': name},
-                                  ExpressionAttributeValues={':value': value},
-                                  KeyConditionExpression='#id = :value')
+    def get_items(self,
+                  name: str,
+                  value: str,
+                  index_name: Optional[str] = None) -> List[dict]:
+        names = {'#id': name}
+        values = {':value': value}
+        expression = '#id = :value'
+        result = self.__query(index_name=index_name,
+                              names=names,
+                              values=values,
+                              expression=expression)
         yield from result['Items']
 
         while 'LastEvaluatedKey' in result:
-            result = self.table.scan(
-                ExclusiveStartKey=result['LastEvaluatedKey'])
+            result = self.__query(
+                index_name=index_name,
+                names=names,
+                values=values,
+                expression=expression,
+                exclusive_start_key=result['LastEvaluatedKey'])
             yield from result['Items']
 
-    def query(self,
-              index_name: str,
-              names: Dict[str, Any],
-              values: Dict[str, Any],
-              expression: str,
-              limit: Optional[int] = 100) -> Union[List[dict], str]:
+    def query(
+        self,
+        index_name: str,
+        names: Dict[str, Any],
+        values: Dict[str, Any],
+        expression: str,
+        limit: Optional[int] = 100,
+        exclusive_start_key: Optional[str] = None
+    ) -> Union[List[dict], str]:
         self.logger.debug(
             'Get an item_list from {} table.[IndexName={}]'.format(
                 self.table.table_name, index_name))
-        result = self.table.query(IndexName=index_name,
-                                  ExpressionAttributeNames=names,
-                                  ExpressionAttributeValues=values,
-                                  KeyConditionExpression=expression,
-                                  Limit=limit)
+        result = self.__query(index_name=index_name,
+                              names=names,
+                              values=values,
+                              expression=expression,
+                              exclusive_start_key=exclusive_start_key)
         if 'Items' in result:
             return result['Items'], result.get('LastEvaluatedKey')
         return [], None
@@ -145,3 +159,22 @@ class DynamoDBClient:
                                       AttributeUpdates=updates,
                                       ReturnValues=return_type.name)
         return data["Attributes"]
+
+    def __query(self,
+                names: Dict[str, Any],
+                values: Dict[str, Any],
+                expression: str,
+                limit: Optional[int] = 100,
+                index_name: Optional[str] = None,
+                exclusive_start_key: Optional[str] = None) -> dict:
+        args = {
+            "ExpressionAttributeNames": names,
+            "ExpressionAttributeValues": values,
+            "KeyConditionExpression": expression,
+            "Limit": limit
+        }
+        if index_name is not None:
+            args = {**args, "IndexName": index_name}
+        if exclusive_start_key is not None:
+            args = {**args, "ExclusiveStartKey": exclusive_start_key}
+        return self.table.query(**args)

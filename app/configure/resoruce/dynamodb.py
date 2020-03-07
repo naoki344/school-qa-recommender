@@ -3,8 +3,8 @@ from logging import Logger
 
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.aws.dynamodb import TableResource
+from app.dataaccess.dynamodb.classroom import ClassmateDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
-from app.dataaccess.dynamodb.classroom import ClassroomStudentDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
 
@@ -35,8 +35,7 @@ def classroom_datasource(logger: Logger) -> ClassroomDatasource:
                                logger=logger)
 
 
-def classroom_student_datasource(
-        logger: Logger) -> ClassroomStudentDatasource:
-    return ClassroomStudentDatasource(client=create_dynamodb_client(
-        f'{stage_name}-tt-ClassroomStudent', logger),
-                                      logger=logger)
+def classmate_datasource(logger: Logger) -> ClassmateDatasource:
+    return ClassmateDatasource(client=create_dynamodb_client(
+        f'{stage_name}-tt-Classmate', logger),
+                               logger=logger)

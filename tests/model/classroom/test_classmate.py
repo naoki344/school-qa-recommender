@@ -1,23 +1,23 @@
 from unittest import TestCase
 
-from app.model.classroom.student import Student
-from app.model.classroom.student import StudentList
+from app.model.classroom.classmate import Classmate
+from app.model.classroom.classmate import ClassmateList
 from app.model.user.user import User
 
 
-class StudentTest(TestCase):
+class ClassmateTest(TestCase):
     def setUp(self):
         self.maxDiff = None
 
     def test_dict(self):
-        student_dict = {
+        classmate_dict = {
             'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'nickname': 'Naoki',
             'email': 'trombone344@gmail.com',
             'join_status': 'requested'
         }
         self.assertEqual(
-            Student.from_dict(student_dict).to_dict(), student_dict)
+            Classmate.from_dict(classmate_dict).to_dict(), classmate_dict)
 
     def test_create(self):
         user_dict = {
@@ -35,34 +35,34 @@ class StudentTest(TestCase):
             'register_date': '2020-02-26T00:18:16.874000+09:00',
             'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
         }
-        student = Student.create(User.from_dict(user_dict))
+        classmate = Classmate.create(User.from_dict(user_dict))
         expect = {
             'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'nickname': 'Naoki',
             'email': 'trombone344@gmail.com',
             'join_status': 'requested'
         }
-        self.assertEqual(student.to_dict(), expect)
+        self.assertEqual(classmate.to_dict(), expect)
 
     def test_approve(self):
-        student_dict = {
+        classmate_dict = {
             'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'nickname': 'Naoki',
             'email': 'trombone344@gmail.com',
             'join_status': 'requested'
         }
         self.assertEqual(
-            Student.from_dict(student_dict).approve().to_dict(), {
-                **student_dict, 'join_status': 'approved'
+            Classmate.from_dict(classmate_dict).approve().to_dict(), {
+                **classmate_dict, 'join_status': 'approved'
             })
 
 
-class StudentListTest(TestCase):
+class ClassmateListTest(TestCase):
     def setUp(self):
         self.maxDiff = None
 
     def test_dict(self):
-        student_list = [{
+        classmate_list = [{
             'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'nickname': 'Naoki',
             'email': 'trombone344@gmail.com',
@@ -74,10 +74,10 @@ class StudentListTest(TestCase):
             'join_status': 'requested'
         }]
         self.assertEqual(
-            StudentList.from_list(student_list).to_list(), student_list)
+            ClassmateList.from_list(classmate_list).to_list(), classmate_list)
 
     def test_approved_only(self):
-        student_list = [{
+        classmate_list = [{
             'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'nickname': 'Naoki',
             'email': 'trombone344@gmail.com',
@@ -89,5 +89,5 @@ class StudentListTest(TestCase):
             'join_status': 'approved'
         }]
         self.assertEqual(
-            StudentList.from_list(student_list).approved_only().to_list(),
-            [student_list[1]])
+            ClassmateList.from_list(classmate_list).approved_only().to_list(),
+            [classmate_list[1]])
