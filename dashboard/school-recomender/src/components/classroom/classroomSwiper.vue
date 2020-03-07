@@ -18,7 +18,51 @@
         :key="myClass.classroom.classroom_id"
       >
         <h1>{{ myClass.classroom.name }}</h1>
-        <h1>{{ myClass.classmate.join_status }}</h1>
+        <h2>{{ myClass.classmate.join_status }}</h2>
+
+        <v-list two-line subheader>
+          <v-subheader>新着</v-subheader>
+
+          <v-list-item v-for="item in items" :key="item.title" link>
+            <v-list-item-avatar>
+              <v-icon :class="[item.iconClass]">{{ item.icon }}</v-icon>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+
+              <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
+            </v-list-item-content>
+
+            <v-list-item-action>
+              <v-btn icon>
+                <v-icon color="grey lighten-1">mdi-information</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-divider></v-divider>
+
+          <v-subheader>履歴</v-subheader>
+
+          <v-list-item v-for="item in items2" :key="item.title" link>
+            <v-list-item-avatar>
+              <v-icon :class="[item.iconClass]">{{ item.icon }}</v-icon>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+
+              <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
+            </v-list-item-content>
+
+            <v-list-item-action>
+              <v-btn icon ripple>
+                <v-icon color="grey lighten-1">mdi-information</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
       </swiper-slide>
       <!-- Optional controls -->
       <div class="swiper-pagination" slot="pagination"></div>
@@ -57,7 +101,41 @@ export default {
         slideToClickedSlide: true,
         watchSlidesVisibility: true,
         watchSlidesProgress: true
-      }
+      },
+      items: [
+        {
+          icon: "folder",
+          iconClass: "grey lighten-1 white--text",
+          title: "Photos",
+          subtitle: "Jan 9, 2014"
+        },
+        {
+          icon: "folder",
+          iconClass: "blue white--text",
+          title: "Recipes",
+          subtitle: "Jan 17, 2014"
+        },
+        {
+          icon: "folder",
+          iconClass: "grey lighten-1 white--text",
+          title: "Work",
+          subtitle: "Jan 28, 2014"
+        }
+      ],
+      items2: [
+        {
+          icon: "assignment",
+          iconClass: "blue white--text",
+          title: "Vacation itinerary",
+          subtitle: "Jan 20, 2014"
+        },
+        {
+          icon: "call_to_action",
+          iconClass: "amber white--text",
+          title: "Kitchen remodel",
+          subtitle: "Jan 10, 2014"
+        }
+      ]
     };
   },
   computed: {
