@@ -2,11 +2,12 @@
 <template>
   <v-container>
     <swiper class="classroom-swiper-thumbs" :options="swiperOptionThumbs" ref="swiperThumbs">
-      <swiper-slide v-for="(classroom, index) in classroomList" :key="index" >{{classroom.name}}</swiper-slide>
+      <swiper-slide v-for="myClass in classroomList" :key="myClass.classroom.classroom_id" >{{myClass.classroom.name}}</swiper-slide>
     </swiper>
     <swiper :options="swiperOptionTop" ref="swiperTop">
-      <swiper-slide v-for="(classroom, index) in classroomList" :key="index" >
-        <h1>{{classroom.name}}</h1>
+      <swiper-slide v-for="myClass in classroomList" :key="myClass.classroom.classroom_id" >
+        <h1>{{myClass.classroom.name}}</h1>
+        <h1>{{myClass.classmate.join_status}}</h1>
       </swiper-slide>
       <!-- Optional controls -->
       <div class="swiper-pagination"  slot="pagination"></div>
@@ -50,12 +51,12 @@ export default {
   },
   computed: {
     ...mapState({
-      classroomList: state => state.classroom.classroomList
+      classroomList: state => state.classroom.myClassroomList
     })
   },
   methods: {
     fetchClassroomList() {
-      this.$store.dispatch("classroom/fetchClassroomList");
+      this.$store.dispatch("classroom/fetchMyClassroomList");
     },
   },
   mounted() {
