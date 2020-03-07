@@ -9,9 +9,11 @@ from app.application.usecase.classroom import RequestJoinClassroom
 from app.configure.usecase.classroom import approve_join_classroom_request
 from app.configure.usecase.classroom import create_classroom
 from app.configure.usecase.classroom import find_classroom
+from app.configure.usecase.classroom import get_my_classroom_list
 from app.configure.usecase.classroom import request_join_classroom
 from app.interfaces.api.response import APIGatewayResponse
 from app.model.classroom.classroom import ClassroomId
+from app.model.classroom.my_classroom import MyClassroomList
 from app.model.user.user import UserId
 
 
@@ -29,12 +31,12 @@ def find_classroom_handler(event, context):
     classroom_id = ClassroomId(int(path["classroom_id"]))
     logger = getLogger()
     service: FindClassroom = find_classroom(logger=logger)
-    classroom, student_list = service.run(user_id, classroom_id)
+    classroom, classmate_list = service.run(user_id, classroom_id)
     return APIGatewayResponse.to_response({
         "classroom":
         classroom.to_dict(),
-        "student_list":
-        student_list.to_list()
+        "classmate_list":
+        classmate_list.to_list()
     })
 
 
@@ -44,8 +46,8 @@ def request_join_classroom_handler(event, context):
     user_id = AuthenticationEventPerser.parse(event)
     logger = getLogger()
     service: RequestJoinClassroom = request_join_classroom(logger=logger)
-    student = service.run(user_id, classroom_id)
-    return APIGatewayResponse.to_response({"student": student.to_dict()})
+    classmate = service.run(user_id, classroom_id)
+    return APIGatewayResponse.to_response({"classmate": classmate.to_dict()})
 
 
 def approve_join_classroom_request_handler(event, context):
@@ -62,3 +64,12 @@ def approve_join_classroom_request_handler(event, context):
         logger=logger)
     service.run(user_id, classroom_id, [UserId(d) for d in approve_user_list])
     return APIGatewayResponse.to_response({})
+
+
+def get_my_classroom_list_handler(event, context):
+    user_id = AuthenticationEventPerser.parse(event)
+    logger = getLogger()
+    service: MyClassroomList = get_my_classroom_list(logger=logger)
+    classroom_list = service.run(user_id)
+    return APIGatewayResponse.to_response(
+        {"my_classroom_list": classroom_list.to_list()})

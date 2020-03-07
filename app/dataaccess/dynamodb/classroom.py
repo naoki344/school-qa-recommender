@@ -1,11 +1,12 @@
 from logging import Logger
+from typing import List
 
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.dynamodb.sequences import SequensesDatasource
+from app.model.classroom.classmate import Classmate
+from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
-from app.model.classroom.student import Student
-from app.model.classroom.student import StudentList
 from app.model.user.user import UserId
 
 
@@ -34,32 +35,41 @@ class ClassroomDatasource:
         raise Exception('Classroom not found.')
 
 
-class ClassroomStudentDatasource:
+class ClassmateDatasource:
     def __init__(self, client: DynamoDBClient, logger: Logger) -> None:
         self.client = client
         self.logger = logger
 
     def insert_item(self, classroom_id: ClassroomId,
-                    student: Student) -> None:
+                    classmate: Classmate) -> None:
         self.client.insert_item(
             {
-                **student.to_dict(), "classroom_id": classroom_id.value
+                **classmate.to_dict(), "classroom_id": classroom_id.value
             }, "classroom_id", "user_id")
 
-    def put_item(self, classroom_id: ClassroomId, student: Student) -> None:
+    def put_item(self, classroom_id: ClassroomId,
+                 classmate: Classmate) -> None:
         self.client.put_item({
-            **student.to_dict(), "classroom_id":
+            **classmate.to_dict(), "classroom_id":
             classroom_id.value
         })
 
-    def find(self, classroom_id: ClassroomId, student_id: UserId) -> Student:
+    def find(self, classroom_id: ClassroomId,
+             classmate_id: UserId) -> Classmate:
         item = self.client.get_item({
             'classroom_id': classroom_id.value,
-            'user_id': student_id.value
+            'user_id': classmate_id.value
         })
-        return Student.from_dict(item)
+        return Classmate.from_dict(item)
 
-    def get_student_list(self, classroom_id: ClassroomId) -> Student:
+    def get_classmate_list(self, classroom_id: ClassroomId) -> Classmate:
         item_list = self.client.get_items(name='classroom_id',
                                           value=classroom_id.value)
-        return StudentList.from_list(item_list)
+        return ClassmateList.from_list(item_list)
+
+    def find_by_user_id(self, user_id: UserId) -> List[list]:
+        item_list = self.client.get_items(name='user_id',
+                                          value=user_id.value,
+                                          index_name='UserId-Index')
+        return [[ClassroomId(item['classroom_id']),
+                 Classmate.from_dict(item)] for item in item_list]
