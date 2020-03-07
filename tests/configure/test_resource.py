@@ -3,15 +3,15 @@ from unittest.mock import MagicMock
 
 from app.configure.resoruce.cognito import create_cognito_client
 from app.configure.resoruce.cognito import user_datasource
+from app.configure.resoruce.dynamodb import classmate_datasource
 from app.configure.resoruce.dynamodb import classroom_datasource
-from app.configure.resoruce.dynamodb import classroom_student_datasource
 from app.configure.resoruce.dynamodb import create_dynamodb_client
 from app.configure.resoruce.dynamodb import question_datasource
 from app.configure.resoruce.dynamodb import sequences_datasource
 from app.dataaccess.aws.cognito import CognitoClient
 from app.dataaccess.aws.dynamodb import DynamoDBClient
+from app.dataaccess.dynamodb.classroom import ClassmateDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
-from app.dataaccess.dynamodb.classroom import ClassroomStudentDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
 from app.dataaccess.user import UserDatasource
@@ -44,5 +44,5 @@ class ResourceConfigureTest(TestCase):
                        ClassroomDatasource), True)
 
         self.assertEqual(
-            isinstance(classroom_student_datasource(logger=MagicMock()),
-                       ClassroomStudentDatasource), True)
+            isinstance(classmate_datasource(logger=MagicMock()),
+                       ClassmateDatasource), True)

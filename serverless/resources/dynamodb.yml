@@ -102,16 +102,19 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
 
-  ToiToyClassroomStudentTable:
+  ToiToyClassmateTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: "${self:custom.resourcePrefix}-ClassroomStudent"
+      TableName: "${self:custom.resourcePrefix}-Classmate"
       AttributeDefinitions:
         -
           AttributeName: "classroom_id"
           AttributeType: "N"
         -
           AttributeName: "user_id"
+          AttributeType: "S"
+        -
+          AttributeName: "join_status"
           AttributeType: "S"
       KeySchema:
         -
@@ -123,3 +126,18 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "UserId-Index"
+          KeySchema:
+            -
+              AttributeName: "user_id"
+              KeyType: "HASH"
+            -
+              AttributeName: "join_status"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
