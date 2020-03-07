@@ -18,8 +18,6 @@
     </v-layout>
     <v-btn color="green darken-1" @click="userLogin">ログイン</v-btn>
     <v-btn color="green darken-1" @click="fetchQuestionList">問い一覧の取得</v-btn>
-    <v-btn color="green darken-1" @click="fetchS3Object">画像取得</v-btn>
-	<img :src="url">
     <v-item-group :mandatory="mandatory" :multiple="multiple">
       <v-container class="pa-0">
         <v-row>
@@ -115,15 +113,6 @@ export default {
   methods: {
     fetchQuestionList() {
       this.$store.dispatch("question/fetchQuestionList");
-    },
-    fetchS3Object() {
-      this.$store.dispatch("getS3PublicFile", 'fireworks001.jpg')
-        .then((url) => {
-          this.url = url;
-        })
-        .catch(err => {
-          console.log(err);
-        });
     },
     userLogin() {
       this.$store

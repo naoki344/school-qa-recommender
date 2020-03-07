@@ -63,6 +63,7 @@
             </v-list-item-action>
           </v-list-item>
         </v-list>
+        <amplify-s3-image :imagePath="myClass.classroom.image_url"></amplify-s3-image>
       </swiper-slide>
       <!-- Optional controls -->
       <div class="swiper-pagination" slot="pagination"></div>
@@ -70,6 +71,12 @@
       <div class="swiper-button-next" slot="button-next"></div>
       <div class="swiper-scrollbar" slot="scrollbar"></div>
     </swiper>
+    <v-btn color="green darken-1" @click="fetchS3Object">画像取得</v-btn>
+    <v-col clos="2" md="3" lg="3">
+      <v-file-input chips label="画像アップロード" accept="image/*" show-size v-model="file"></v-file-input>
+      <v-btn color="green darken-1" @click="putS3PublicFile">アップロード</v-btn>
+      <img :src="url">
+    </v-col>
   </v-container>
 </template>
 
@@ -77,15 +84,20 @@
 import { mapState } from "vuex";
 import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
+import { components } from 'aws-amplify-vue';
 
 export default {
   name: "classroomSwiper",
   components: {
     swiper,
-    swiperSlide
+    swiperSlide,
+    ...components
   },
   data() {
     return {
+      file: null,
+      url: "",
+      imagePath: 'fireworks001.jpg',
       swiperOptionTop: {
         spaceBetween: 10,
         navigation: {
@@ -146,6 +158,29 @@ export default {
   methods: {
     fetchClassroomList() {
       this.$store.dispatch("classroom/fetchMyClassroomList");
+    },
+    fetchS3Object(path) {
+      this.$store.dispatch("getS3PublicFile", path)
+        .then((url) => {
+          this.url = url;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    putS3PublicFile() {
+      console.log(this.file);
+      let filePath = this.file.name;
+      this.$store.dispatch("putS3PublicFile", {
+        filePath: filePath,
+        data: this.file,
+        })
+        .then((data) => {
+          this.fetchS3Object(data.key);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   mounted() {

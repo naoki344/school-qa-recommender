@@ -27,6 +27,19 @@ export default new Vuex.Store({
             reject();
           });
       });
+    },
+    putS3PublicFile(_, {filePath, data}) {
+      return new Promise((resolve, reject) => {
+        schoolApiClient
+          .putS3PublicFile(filePath, data)
+          .then((url) => {
+            resolve(url);
+          })
+          .catch(err => {
+            alert("画像アップロードに失敗しました", err);
+            reject();
+          });
+      });
     }
   }
 });

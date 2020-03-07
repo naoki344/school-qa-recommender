@@ -2,11 +2,11 @@
 // https://github.com/aws-amplify/amplify-js/tree/master/packages/amazon-cognito-identity-js#usage
 // import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from 'amazon-cognito-identity-js';
 // require('amazon-cognito-js');
+import { Auth,Storage } from 'aws-amplify';
 
 const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
 const AWS = require("aws-sdk");
 const apigClientFactory = require("aws-api-gateway-client").default;
-import Amplify,{ Auth,Storage } from 'aws-amplify';
 var cognitoConfig = {
   region: process.env.VUE_APP_REGION,
   userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
@@ -14,27 +14,6 @@ var cognitoConfig = {
   identifyPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
   loginsKey: process.env.VUE_APP_LOGINS_KEY
 }
-// TODO: 全てamplifyに統一する
-Amplify.configure({
-  Auth: {
-      identityPoolId: cognitoConfig.identifyPoolId,
-      region: cognitoConfig.region,
-      userPoolId: cognitoConfig.userPoolId,
-      userPoolWebClientId: cognitoConfig.appClientId
-  },
-  API: {
-    endpoints: [
-      {
-          name: "ToiToyApi",
-          endpoint: process.env.VUE_APP_TOITOY_API_URL
-      }
-    ]
-  },
-  Storage: {
-    bucket: process.env.VUE_APP_TOITOY_PRIVATE_IMAGE_STORAGE,
-    region: process.env.VUE_APP_REGION
-  }
-});
 
 export default {
   userLogin(username, password) {
@@ -222,6 +201,18 @@ export default {
     return new Promise((resolve, reject) => {
       Storage.configure({ level: 'public' });
       Storage.get(filePath, {expires: 3600})
+        .then((result) => {
+          resolve(result);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
+  putS3PublicFile(fileName, data) {
+    return new Promise((resolve, reject) => {
+      Storage.configure({ level: 'public' });
+      Storage.put('' + fileName, data)
         .then((result) => {
           resolve(result);
         })
