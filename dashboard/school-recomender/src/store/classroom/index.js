@@ -3,30 +3,29 @@ import schoolApiClient from "@/api/common.js";
 export default {
   namespaced: true,
   state: {
-      classroomList: [],
+      myClassroomList: [],
   },
   mutations: {
-    setClassroomList(state, data) {
-      state.classroomList = data;
+    setMyClassroomList(state, data) {
+      state.myClassroomList = data;
     }
   },
   actions: {
-    fetchClassroomList({ commit, rootState }) {
+    fetchMyClassroomList({ commit, rootState }) {
       return new Promise((resolve, reject) => {
-        const pathTemplate = '/classroom/{classroomId}'
-        const pathParams = {"classroomId": "3"};
+        const pathTemplate = '/classroom/my_classroom'
         schoolApiClient
           .fetchRestAPI(
             rootState.cognitoUser,
             "GET",
             pathTemplate,
-            pathParams,
+            {},
             {},
             {}
           )
           .then(result => {
             console.log(result);
-            commit("setClassroomList", [result.data["classroom"], result.data["classroom"]]);
+            commit("setMyClassroomList", result.data["my_classroom_list"]);
           })
           .catch(() => {
             reject();
