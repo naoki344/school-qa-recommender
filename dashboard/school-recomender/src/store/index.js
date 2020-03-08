@@ -28,12 +28,12 @@ export default new Vuex.Store({
           });
       });
     },
-    putS3PublicFile(_, {filePath, data}) {
+    putS3PublicFile(_, {file}) {
       return new Promise((resolve, reject) => {
         schoolApiClient
-          .putS3PublicFile(filePath, data)
-          .then((url) => {
-            resolve(url);
+          .putS3PublicFile(file)
+          .then((result) => {
+            resolve(result);
           })
           .catch(err => {
             alert("画像アップロードに失敗しました", err);

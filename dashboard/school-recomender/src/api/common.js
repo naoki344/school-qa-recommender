@@ -209,10 +209,12 @@ export default {
         });
     });
   },
-  putS3PublicFile(fileName, data) {
+  putS3PublicFile(file) {
     return new Promise((resolve, reject) => {
+      const dt = new Date();
+      const filePath = dt.getTime() + '-' + file.name;
       Storage.configure({ level: 'public' });
-      Storage.put('' + fileName, data)
+      Storage.put('' + filePath, file)
         .then((result) => {
           resolve(result);
         })
@@ -220,5 +222,5 @@ export default {
           reject(err);
         });
     });
-  }
+  },
 };

@@ -25,6 +25,7 @@
                 @click="toggle"
               >
                 <v-card-text>
+                  <amplify-s3-image v-if="exists(question.question_sentence, 'image_url')" :imagePath="question.question_sentence.image_url" />
                   <div class="mb-2" style="display: flex; justify-content: space-between">
                     <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
                     <v-chip
@@ -95,6 +96,11 @@ export default {
   methods: {
     fetchQuestionList() {
       this.$store.dispatch("question/fetchQuestionList");
+    },
+    exists(obj, name) {
+      console.log(obj);
+      if (obj[name] == null) { return false }
+      return true;
     }
   },
   created() {
