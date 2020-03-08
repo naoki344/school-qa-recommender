@@ -1,9 +1,18 @@
 <template>
   <v-app>
+    <headerNav />
     <router-view />
   </v-app>
 </template>
 
+<script>
+import headerNav from "@/components/common/headerNav.vue";
+export default {
+  components: {
+    headerNav
+  }
+};
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
