@@ -1,23 +1,5 @@
 <template>
   <v-container>
-    <v-layout row wrap>
-      <v-flex xs12 sm6 style="margin: 10px;">
-        <v-text-field v-model="username" counter="25" hint="ユーザー作成時のメールアドレスを入力" label="メールアドレス"></v-text-field>
-      </v-flex>
-      <v-flex xs12 sm6 style="margin: 10px;">
-        <v-text-field
-          v-model="password"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          name="input-10-1"
-          label="パスワードを入力"
-          counter
-          @click:append="showPassword = !showPassword"
-        ></v-text-field>
-      </v-flex>
-    </v-layout>
-    <v-btn color="green darken-1" @click="userLogin">ログイン</v-btn>
-    <v-btn color="green darken-1" @click="fetchQuestionList">問い一覧の取得</v-btn>
     <v-item-group :mandatory="mandatory" :multiple="multiple">
       <v-container class="pa-0">
         <v-row>
@@ -86,12 +68,12 @@
 import { mapState } from "vuex";
 import moment from "moment";
 import "@mdi/font/css/materialdesignicons.css";
-import CreateQuestionDialog from "@/components/question/CreateQuestionDialog";
+import createQuestionDialog from "@/components/question/createQuestionDialog.vue";
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 export default {
   name: "QuestionIndex",
   components: {
-    CreateQuestionDialog
+    createQuestionDialog
   },
   data: () => ({
     types: ["cards", "images"],
@@ -113,20 +95,10 @@ export default {
   methods: {
     fetchQuestionList() {
       this.$store.dispatch("question/fetchQuestionList");
-    },
-    userLogin() {
-      this.$store
-        .dispatch("userLogin", {
-          username: this.username,
-          password: this.password
-        })
-        .then(() => {
-          this.fetchQuestionList();
-        })
-        .catch(err => {
-          console.log(err);
-        });
     }
+  },
+  created() {
+    this.fetchQuestionList();
   },
   filters: {
     subjectTypeFilter: function(value) {

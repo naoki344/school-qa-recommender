@@ -77,8 +77,7 @@
 export default {
   name: "headerNav",
   data: () => ({
-    dialog: false,
-    drawer: true,
+    drawer: null,
     items: [
       { link: '/', icon: "mdi-desktop-mac", text: "マイページ" },
       { link: '/questionTop', icon: "mdi-account-question", text: "トイ（TOI）" },
