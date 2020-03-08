@@ -27,13 +27,13 @@ export default {
     "estimated_time": questionInput.estimatedTime,
     "question_sentence": {
         "text": sentenceText,
-        "image_url": ""},
+        "image_url": questionInput.sentence.imageUrl},
     "question_answer": {
         "text": answerText,
-        "image_url": ""},
+        "image_url": questionInput.answer.imageUrl},
     "question_commentary": {
         "text": commentaryText,
-        "image_url": ""},
+        "image_url": questionInput.commentary.imageUrl},
     "register_date": moment().utc().format(),
     "subject_type": this.getSubjectTypeFromName(questionInput.subjectName),
     "question_type": questionInput.questionType,

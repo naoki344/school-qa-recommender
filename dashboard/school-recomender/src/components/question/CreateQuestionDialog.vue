@@ -153,9 +153,9 @@ export default {
       subjectName: "",
       questionType: "describing",
       estimatedTime: "",
-      sentence: { text: "" },
-      answer: { text: "" },
-      commentary: { text: "" },
+      sentence: { text: "", imageUrl: '' },
+      answer: { text: "", imageUrl: '' },
+      commentary: { text: "", imageUrl: '' },
       sortTagList: []
     },
     dialog: false,
@@ -171,9 +171,9 @@ export default {
       subjectName: "",
       questionType: "describing",
       estimatedTime: "",
-      sentence: { text: "" },
-      answer: { text: "" },
-      commentary: { text: "" },
+      sentence: { text: "", imageUrl: null },
+      answer: { text: "", imageUrl: null },
+      commentary: { text: "", imageUrl: null },
       sortTagList: []
     },
     select: [],
@@ -181,57 +181,74 @@ export default {
   }),
   methods: {
     createQuestion() {
-      if (this.$refs.form.validate()) {
-        this.snackbar = true;
-      } else {
-        this.valid = false;
-        return;
-      }
-      if (this.sentenceImage != null) {
-        this.$store.dispatch("putS3PublicFile", {
-          filePath: '',
-          data: this.sentenceImage,
-          })
-          .then((data) => {
-            this.question.sentence.imageUrl = data.key;
-          })
-          .catch(err => {
-            console.log(err);
-            return;
-          });
-      }
-      if (this.answerImage != null) {
-        this.$store.dispatch("putS3PublicFile", {
-          filePath: '',
-          data: this.answerImage,
-          })
-          .then((data) => {
-            this.question.answer.imageUrl = data.key;
-          })
-          .catch(err => {
-            console.log(err);
-            return;
-          });
-      }
-      if (this.commentaryImage != null) {
-        this.$store.dispatch("putS3PublicFile", {
-          filePath: '',
-          data: this.commentaryImage,
-          })
-          .then((data) => {
-            this.question.commentary.imageUrl = data.key;
-          })
-          .catch(err => {
-            console.log(err);
-            return;
-          });
-      }
-      this.$store
-        .dispatch("question/createQuestion", { questionInput: this.question })
-        .then(() => {
-          this.$store.dispatch("question/fetchQuestionList");
-          this.dialog = false;
+      const uploadQuestionImage = () => {
+        return new Promise((resolve, reject) => {
+          if (this.$refs.form.validate()) {
+            this.snackbar = true;
+          } else {
+            this.valid = false;
+            reject();
+          }
+          if (this.sentenceImage != null) {
+            this.$store.dispatch("putS3PublicFile", {
+              file: this.sentenceImage,
+              })
+              .then((data) => {
+                this.question.sentence.imageUrl = data.key;
+                if (this.answerImage != null) {
+                  this.$store.dispatch("putS3PublicFile", {
+                    file: this.answerImage,
+                    })
+                    .then((data) => {
+                      this.question.answer.imageUrl = data.key;
+                      if (this.commentaryImage != null) {
+                        this.$store.dispatch("putS3PublicFile", {
+                          file: this.commentaryImage,
+                          })
+                          .then((data) => {
+                            this.question.commentary.imageUrl = data.key;
+                            resolve();
+                          })
+                          .catch(err => {
+                            console.log(err);
+                            reject();
+                          });
+                      } else {
+                        resolve();
+                      }
+                    })
+                    .catch(err => {
+                      console.log(err);
+                      reject();
+                    });
+                } else {
+                  resolve();
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                reject();
+              });
+          } else {
+            resolve();
+          }
         });
+      }
+      const main = async ()=> {
+        await uploadQuestionImage()
+          .then(() => {
+            this.$store
+              .dispatch("question/createQuestion", { questionInput: this.question })
+              .then(() => {
+                this.$store.dispatch("question/fetchQuestionList");
+                this.dialog = false;
+              });
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
+      main();
     },
     onSentenceImageChange() {
       if (this.sentenceImage != null) {
