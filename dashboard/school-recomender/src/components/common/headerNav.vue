@@ -61,8 +61,8 @@
       color="yellow darken-1"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-        <span class="hidden-sm-and-down">Toi-Toy（トイトイ）</span>
+      <v-toolbar-title style="width: 100%; display: flex; padding: 0; justify-content: center;">
+        <img src="@/assets/toi-toy-logo-wide-s--no-border-small.png"/>
       </v-toolbar-title>
       <v-spacer />
       <v-btn icon>

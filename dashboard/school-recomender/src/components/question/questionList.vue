@@ -4,7 +4,7 @@
       <v-container class="pa-0">
         <v-row>
           <v-col cols="12" sm="12" md="6" lg="4" xl="3">
-            <create-question-dialog></create-question-dialog>
+            <create-question-dialog style="height: 100%;"></create-question-dialog>
           </v-col>
           <v-col
             v-for="question in questionCardList"
@@ -19,13 +19,12 @@
               <v-card
                 v-if="type === 'cards'"
                 :color="active ? 'grey darken' : ''"
-                class="d-flex align-center"
+                class=""
+                style="height: 100%;"
                 white
-                height="200"
                 @click="toggle"
               >
                 <v-card-text>
-                  <amplify-s3-image v-if="exists(question.question_sentence, 'image_url')" :imagePath="question.question_sentence.image_url" />
                   <div class="mb-2" style="display: flex; justify-content: space-between">
                     <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
                     <v-chip
@@ -42,10 +41,17 @@
                       >{{question.estimated_time}}</v-avatar>Min
                     </v-chip>
                   </div>
-                  <h2
-                    class="mb-1"
-                    style="size: 20px;"
-                  >【{{question.subject_type | subjectTypeFilter}}】{{question.sort_tag_list | sortTagListFilter}}</h2>
+                  <div class="d-flex">
+                    <v-col cols="4">
+                      <!--amplify-s3-image name="amplify-s3-image" v-if="exists(question.question_sentence, 'image_url')" :imagePath="question.question_sentence.image_url" style="width: 100%"/-->
+                      <img v-if="getImageUrl(question.question_sentence)" :src="imageList[question.question_sentence.image_url]" style="width: 100%"/>
+                    </v-col>
+                    <v-col cols="8">
+                      <h2
+                        class=""
+                      >【{{question.subject_type | subjectTypeFilter}}】{{question.sort_tag_list | sortTagListFilter}}</h2>
+                    </v-col>
+                  </div>
                   <p>{{question.question_type | questionTypeFilter}}</p>
                   <div class="text--primary">{{question.question_sentence.text}}</div>
                 </v-card-text>
@@ -71,6 +77,7 @@ import moment from "moment";
 import "@mdi/font/css/materialdesignicons.css";
 import createQuestionDialog from "@/components/question/createQuestionDialog.vue";
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
+
 export default {
   name: "QuestionIndex",
   components: {
@@ -86,7 +93,8 @@ export default {
     multiple: true,
     dialog: false,
     questionList: [],
-    url: ""
+    url: "",
+    imageList: [],
   }),
   computed: {
     ...mapState({
@@ -97,14 +105,26 @@ export default {
     fetchQuestionList() {
       this.$store.dispatch("question/fetchQuestionList");
     },
-    exists(obj, name) {
-      console.log(obj);
-      if (obj[name] == null) { return false }
+    getImageUrl(obj) {
+      if (obj["image_url"] == null) { return false }
+      const path = obj["image_url"];
+      if (this.imageList[path] != null) { return true }
+      this.$store.dispatch("getS3PublicFile", path)
+        .then((url) => {
+          this.$set(this.imageList, path, url);
+        })
+        .catch(() => {
+          return false;
+        });
       return true;
+    },
+    imageUrlFilter(value){
+      return value;
     }
   },
   created() {
     this.fetchQuestionList();
+    document.getElementById("dv1");
   },
   filters: {
     subjectTypeFilter: function(value) {
@@ -131,7 +151,15 @@ export default {
       if (value <= 5) return "green";
       if (value <= 15) return "orange";
       if (value > 15) return "red";
-    }
+    },
   }
 };
 </script>
+<style lang="scss">
+div[name="amplify-s3-image"] > img {
+  width: 100% !important;
+  margin: unset;
+  border-radius: unset !important;
+  border: unset !important;
+}
+</style>
