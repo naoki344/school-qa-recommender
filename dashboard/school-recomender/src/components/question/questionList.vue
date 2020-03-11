@@ -1,10 +1,10 @@
 <template>
-  <v-container>
+  <v-content>
     <v-item-group :mandatory="mandatory" :multiple="multiple">
       <v-container class="pa-0">
         <v-row>
           <v-col cols="12" sm="12" md="6" lg="4" xl="3">
-            <create-question-dialog style="height: 100%;"></create-question-dialog>
+            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;"></create-question-dialog>
           </v-col>
           <v-col
             v-for="question in questionCardList"
@@ -18,13 +18,13 @@
             <v-item v-slot:default="{ active, toggle }">
               <v-card
                 v-if="type === 'cards'"
-                :color="active ? 'grey darken' : ''"
                 class=""
-                style="height: 100%;"
+                style="height: 100%; position:relative;"
                 white
-                @click="toggle"
+                @click="openQuestionDetailWindow()"
               >
-                <v-card-text>
+                <v-img v-if="getImageUrl(question.question_sentence)" :src="imageList[question.question_sentence.image_url]" style="width: 100%; height: 200px;"/>
+                <v-card-text style="padding-bottom: 50px;">
                   <div class="mb-2" style="display: flex; justify-content: space-between">
                     <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
                     <v-chip
@@ -41,34 +41,41 @@
                       >{{question.estimated_time}}</v-avatar>Min
                     </v-chip>
                   </div>
-                  <div class="d-flex">
-                    <v-col cols="4">
-                      <!--amplify-s3-image name="amplify-s3-image" v-if="exists(question.question_sentence, 'image_url')" :imagePath="question.question_sentence.image_url" style="width: 100%"/-->
-                      <img v-if="getImageUrl(question.question_sentence)" :src="imageList[question.question_sentence.image_url]" style="width: 100%"/>
-                    </v-col>
-                    <v-col cols="8">
-                      <h2
-                        class=""
-                      >【{{question.subject_type | subjectTypeFilter}}】{{question.sort_tag_list | sortTagListFilter}}</h2>
-                    </v-col>
+                  <div class="">
+                    <h2>{{question.subject_type | subjectTypeFilter}}</h2>
+                    <p style="margin: 0;">{{question.question_type | questionTypeFilter}}</p>
                   </div>
-                  <p>{{question.question_type | questionTypeFilter}}</p>
+                  <v-chip v-for="tag in question.sort_tag_list" :key="tag" style="margin:0 5px;">{{tag}}</v-chip>
                   <div class="text--primary">{{question.question_sentence.text}}</div>
                 </v-card-text>
-                <v-scroll-y-transition>
-                  <div
-                    v-if="active"
-                    class="display-1 font-weight-bold"
-                    style="position: absolute; right:5px; bottom:0;"
-                  >Add</div>
-                </v-scroll-y-transition>
+                <div style="margin: 5px; 0;">
+                  <v-card-actions style="position: absolute; bottom: 0; right: 0;">
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      v-if="active"
+                      color="brown"
+                      text
+                      @click="toggle"
+                    >
+                      解除
+                    </v-btn>
+                    <v-btn
+                      v-else
+                      color="brown"
+                      text
+                      @click="toggle"
+                    >
+                      選択
+                    </v-btn>
+                  </v-card-actions>
+                </div>
               </v-card>
             </v-item>
           </v-col>
         </v-row>
       </v-container>
     </v-item-group>
-  </v-container>
+  </v-content>
 </template>
 
 <script>
@@ -105,6 +112,9 @@ export default {
     fetchQuestionList() {
       this.$store.dispatch("question/fetchQuestionList");
     },
+    openQuestionDetailWindow() {
+      return false;
+    },
     getImageUrl(obj) {
       if (obj["image_url"] == null) { return false }
       const path = obj["image_url"];
@@ -140,10 +150,6 @@ export default {
     dateTimeFilter: function(value) {
       if (!value) return "";
       return moment(value).format("MM月DD日 hh:mm");
-    },
-    sortTagListFilter: function(value) {
-      if (!value) return "";
-      return value.join(",");
     },
     estimatedColorFilter: function(value) {
       if (!value) return "green";

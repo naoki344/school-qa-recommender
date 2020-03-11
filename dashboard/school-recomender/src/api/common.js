@@ -28,6 +28,18 @@ export default {
       });
     });
   },
+  isUserLogin() {
+    const userPoolData = {
+      UserPoolId: cognitoConfig.userPoolId,
+      ClientId: cognitoConfig.appClientId
+    };
+    const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(
+      userPoolData
+    );
+    const cognitoUser = gCognitoUserPool.getCurrentUser();
+    if (cognitoUser == null) {return false}
+    return true
+  },
   userSignUp(inputData) {
     return new Promise((resolve, reject) => {
       const userPoolData = {

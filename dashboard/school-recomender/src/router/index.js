@@ -5,6 +5,7 @@ import userSignUpPage from "../views/userSignUpPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
 import classroomCreatePage from "../views/classroomCreatePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
+import schoolApiClient from "@/api/common.js";
 import topPage from "../views/topPage.vue";
 
 Vue.use(VueRouter);
@@ -53,6 +54,20 @@ const routes = [
 
 const router = new VueRouter({
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.name === "userLoginPage") {
+    if (schoolApiClient.isUserLogin()) {
+      next('/');
+    } else {
+      next();
+    }
+  } else if (!schoolApiClient.isUserLogin()) {
+    next('/userLogin');
+  }else{
+    next();
+  }
 });
 
 export default router;

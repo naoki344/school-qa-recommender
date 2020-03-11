@@ -1,6 +1,6 @@
 <!-- The ref attr used to find the swiper instance -->
 <template>
-  <v-container>
+  <v-content>
     <swiper
       class="classroom-swiper-thumbs"
       :options="swiperOptionThumbs"
@@ -77,7 +77,7 @@
       <v-btn color="green darken-1" @click="putS3PublicFile">アップロード</v-btn>
       <img :src="url">
     </v-col>
-  </v-container>
+  </v-content>
 </template>
 
 <script>
