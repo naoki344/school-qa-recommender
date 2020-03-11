@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-content>
     <v-navigation-drawer
       v-model="drawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
@@ -42,7 +42,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
-          <v-list-item v-else :key="item.text" link>
+          <v-list-item v-else :key="item.text" link :to="item.link">
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
@@ -55,46 +55,36 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-  </v-app>
+    <v-app-bar
+      :clipped-left="$vuetify.breakpoint.lgAndUp"
+      app
+      color="yellow darken-1"
+    >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
+        <span class="hidden-sm-and-down">Toi-Toy（トイトイ）</span>
+      </v-toolbar-title>
+      <v-spacer />
+      <v-btn icon>
+        <v-icon>mdi-bell</v-icon>
+      </v-btn>
+    </v-app-bar>
+  </v-content>
 </template>
 
 <script>
 export default {
   name: "headerNav",
-  props: {
-  },
-  components: {
-  },
   data: () => ({
+    drawer: null,
     items: [
-      { icon: "mdi-contacts", text: "Contacts" },
-      { icon: "mdi-history", text: "Frequently contacted" },
-      { icon: "mdi-content-copy", text: "Duplicates" },
+      { link: "/", icon: "mdi-desktop-mac", text: "マイページ" },
       {
-        icon: "mdi-chevron-up",
-        "icon-alt": "mdi-chevron-down",
-        text: "Labels",
-        model: true,
-        children: [{ icon: "mdi-plus", text: "Create label" }]
+        link: "/questionTop",
+        icon: "mdi-account-question",
+        text: "トイ（TOI）"
       },
-      {
-        icon: "mdi-chevron-up",
-        "icon-alt": "mdi-chevron-down",
-        text: "More",
-        model: false,
-        children: [
-          { text: "Import" },
-          { text: "Export" },
-          { text: "Print" },
-          { text: "Undo changes" },
-          { text: "Other contacts" }
-        ]
-      },
-      { icon: "mdi-settings", text: "Settings" },
-      { icon: "mdi-message", text: "Send feedback" },
-      { icon: "mdi-help-circle", text: "Help" },
-      { icon: "mdi-cellphone-link", text: "App downloads" },
-      { icon: "mdi-keyboard", text: "Go to the old version" }
+      { link: "/logout", icon: "mdi-logout", text: "ログアウト" }
     ]
   })
 };

@@ -3,3 +3,13 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: ${self:custom.stageName}-toi-toy-private-image-storage
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - '*'
+          - AllowedMethod:
+              - GET
+              - PUT
+              - POST
+          - AllowedHeader:
+              - '*'

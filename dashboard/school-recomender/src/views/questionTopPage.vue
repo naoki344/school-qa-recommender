@@ -1,13 +1,13 @@
 <template>
   <v-app id="inspire">
     <headerNav />
-    <classroomSwiper />
+    <questionList />
     <topDialog />
   </v-app>
 </template>
 
 <script>
-import classroomSwiper from "@/components/classroom/classroomSwiper.vue";
+import questionList from "@/components/question/questionList.vue";
 import topDialog from "@/components/common/topDialog.vue";
 import headerNav from "@/components/common/headerNav.vue";
 export default {
@@ -17,10 +17,11 @@ export default {
   },
   components: {
     headerNav,
-    classroomSwiper,
+    questionList,
     topDialog,
   },
   data: () => ({
   })
 };
 </script>
+
