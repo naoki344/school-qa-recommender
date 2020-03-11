@@ -43,7 +43,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
-          <v-list-item v-else :key="item.text" link :to="item.link" >
+          <v-list-item v-else :key="item.text" link :to="item.link">
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
@@ -73,16 +73,19 @@
   </v-content>
 </template>
 
-
 <script>
 export default {
   name: "headerNav",
   data: () => ({
     drawer: null,
     items: [
-      { link: '/', icon: "mdi-desktop-mac", text: "マイページ" },
-      { link: '/questionTop', icon: "mdi-account-question", text: "トイ（TOI）" },
-      { link: '/logout', icon: "mdi-logout", text: "ログアウト" }
+      { link: "/", icon: "mdi-desktop-mac", text: "マイページ" },
+      {
+        link: "/questionTop",
+        icon: "mdi-account-question",
+        text: "トイ（TOI）"
+      },
+      { link: "/logout", icon: "mdi-logout", text: "ログアウト" }
     ]
   })
 };
