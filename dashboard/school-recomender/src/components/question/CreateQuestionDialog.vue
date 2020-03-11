@@ -78,7 +78,8 @@
                               accept="image/*"
                               show-size
                               @change="onSentenceImageChange"
-                              v-model="sentenceImage" />
+                              v-model="sentenceImage"
+                            />
                           </v-col>
                         </v-row>
                         <v-row align="center">
@@ -95,7 +96,8 @@
                               label="回答添付画像"
                               accept="image/*"
                               @change="onAnswerImageChange"
-                              v-model="answerImage" />
+                              v-model="answerImage"
+                            />
                           </v-col>
                         </v-row>
                         <v-row align="center">
@@ -112,7 +114,8 @@
                               label="解説添付画像"
                               accept="image/*"
                               @change="onCommentaryImageChange"
-                              v-model="commentaryImage" />
+                              v-model="commentaryImage"
+                            />
                           </v-col>
                         </v-row>
                       </v-form>
@@ -135,7 +138,9 @@
               <v-btn color="green darken-1" text @click="dialog = false"
                 >閉じる</v-btn
               >
-              <v-btn color="green darken-1" @click="createQuestion">作成する</v-btn>
+              <v-btn color="green darken-1" @click="createQuestion"
+                >作成する</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -153,9 +158,9 @@ export default {
       subjectName: "",
       questionType: "describing",
       estimatedTime: "",
-      sentence: { text: "", imageUrl: '' },
-      answer: { text: "", imageUrl: '' },
-      commentary: { text: "", imageUrl: '' },
+      sentence: { text: "", imageUrl: "" },
+      answer: { text: "", imageUrl: "" },
+      commentary: { text: "", imageUrl: "" },
       sortTagList: []
     },
     dialog: false,
@@ -190,22 +195,25 @@ export default {
             reject();
           }
           if (this.sentenceImage != null) {
-            this.$store.dispatch("putS3PublicFile", {
-              file: this.sentenceImage,
+            this.$store
+              .dispatch("putS3PublicFile", {
+                file: this.sentenceImage
               })
-              .then((data) => {
+              .then(data => {
                 this.question.sentence.imageUrl = data.key;
                 if (this.answerImage != null) {
-                  this.$store.dispatch("putS3PublicFile", {
-                    file: this.answerImage,
+                  this.$store
+                    .dispatch("putS3PublicFile", {
+                      file: this.answerImage
                     })
-                    .then((data) => {
+                    .then(data => {
                       this.question.answer.imageUrl = data.key;
                       if (this.commentaryImage != null) {
-                        this.$store.dispatch("putS3PublicFile", {
-                          file: this.commentaryImage,
+                        this.$store
+                          .dispatch("putS3PublicFile", {
+                            file: this.commentaryImage
                           })
-                          .then((data) => {
+                          .then(data => {
                             this.question.commentary.imageUrl = data.key;
                             resolve();
                           })
@@ -233,12 +241,14 @@ export default {
             resolve();
           }
         });
-      }
-      const main = async ()=> {
+      };
+      const main = async () => {
         await uploadQuestionImage()
           .then(() => {
             this.$store
-              .dispatch("question/createQuestion", { questionInput: this.question })
+              .dispatch("question/createQuestion", {
+                questionInput: this.question
+              })
               .then(() => {
                 this.$store.dispatch("question/fetchQuestionList");
                 this.dialog = false;
@@ -247,28 +257,38 @@ export default {
           .catch(err => {
             console.log(err);
           });
-      }
+      };
       main();
     },
     onSentenceImageChange() {
       if (this.sentenceImage != null) {
-        this.question.sentence.text = this.question.sentence.text + '<image>';
+        this.question.sentence.text = this.question.sentence.text + "<image>";
       } else {
-        this.question.sentence.text = this.question.sentence.text.replace('<image>', '');
+        this.question.sentence.text = this.question.sentence.text.replace(
+          "<image>",
+          ""
+        );
       }
     },
     onAnswerImageChange() {
       if (this.answerImage != null) {
-        this.question.answer.text = this.question.answer.text + '<image>';
+        this.question.answer.text = this.question.answer.text + "<image>";
       } else {
-        this.question.answer.text = this.question.answer.text.replace('<image>', '');
+        this.question.answer.text = this.question.answer.text.replace(
+          "<image>",
+          ""
+        );
       }
     },
     onCommentaryImageChange() {
       if (this.commentaryImage != null) {
-        this.question.commentary.text = this.question.commentary.text + '<image>';
+        this.question.commentary.text =
+          this.question.commentary.text + "<image>";
       } else {
-        this.question.commentary.text = this.question.commentary.text.replace('<image>', '');
+        this.question.commentary.text = this.question.commentary.text.replace(
+          "<image>",
+          ""
+        );
       }
     }
   }

@@ -24,21 +24,51 @@
           label="Email(確認)"
           required
         ></v-text-field>
-        <v-text-field v-model="nickname" prepend-icon counter="10" label="ニックネーム(表示名)" required></v-text-field>
+        <v-text-field
+          v-model="nickname"
+          prepend-icon
+          counter="10"
+          label="ニックネーム(表示名)"
+          required
+        ></v-text-field>
         <v-row>
           <v-col>
-            <v-text-field v-model="lastName" prepend-icon counter="10" label="姓" required></v-text-field>
+            <v-text-field
+              v-model="lastName"
+              prepend-icon
+              counter="10"
+              label="姓"
+              required
+            ></v-text-field>
           </v-col>
           <v-col>
-            <v-text-field v-model="firstName" prepend-icon counter="10" label="名" required></v-text-field>
+            <v-text-field
+              v-model="firstName"
+              prepend-icon
+              counter="10"
+              label="名"
+              required
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-text-field v-model="lastNameKana" prepend-icon counter="10" label="姓(カナ)" required></v-text-field>
+            <v-text-field
+              v-model="lastNameKana"
+              prepend-icon
+              counter="10"
+              label="姓(カナ)"
+              required
+            ></v-text-field>
           </v-col>
           <v-col>
-            <v-text-field v-model="firstNameKana" prepend-icon counter="10" label="名(カナ)" required></v-text-field>
+            <v-text-field
+              v-model="firstNameKana"
+              prepend-icon
+              counter="10"
+              label="名(カナ)"
+              required
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-text-field
@@ -120,4 +150,3 @@ export default {
   }
 };
 </script>
-
