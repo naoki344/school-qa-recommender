@@ -1,10 +1,10 @@
 <template>
-  <v-container>
+  <v-content>
     <v-item-group :mandatory="mandatory" :multiple="multiple">
       <v-container class="pa-0">
         <v-row>
           <v-col cols="12" sm="12" md="6" lg="4" xl="3">
-            <create-question-dialog></create-question-dialog>
+            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;"></create-question-dialog>
           </v-col>
           <v-col
             v-for="question in questionCardList"
@@ -18,14 +18,13 @@
             <v-item v-slot:default="{ active, toggle }">
               <v-card
                 v-if="type === 'cards'"
-                :color="active ? 'grey darken' : ''"
-                class="d-flex align-center"
+                class=""
+                style="height: 100%; position:relative;"
                 white
-                height="200"
-                @click="toggle"
+                @click="openQuestionDetailWindow()"
               >
-                <v-card-text>
-                  <amplify-s3-image v-if="exists(question.question_sentence, 'image_url')" :imagePath="question.question_sentence.image_url" />
+                <v-img v-if="getImageUrl(question.question_sentence)" :src="imageList[question.question_sentence.image_url]" style="width: 100%; height: 200px;"/>
+                <v-card-text style="padding-bottom: 50px;">
                   <div class="mb-2" style="display: flex; justify-content: space-between">
                     <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
                     <v-chip
@@ -42,27 +41,41 @@
                       >{{question.estimated_time}}</v-avatar>Min
                     </v-chip>
                   </div>
-                  <h2
-                    class="mb-1"
-                    style="size: 20px;"
-                  >【{{question.subject_type | subjectTypeFilter}}】{{question.sort_tag_list | sortTagListFilter}}</h2>
-                  <p>{{question.question_type | questionTypeFilter}}</p>
+                  <div class="">
+                    <h2>{{question.subject_type | subjectTypeFilter}}</h2>
+                    <p style="margin: 0;">{{question.question_type | questionTypeFilter}}</p>
+                  </div>
+                  <v-chip v-for="tag in question.sort_tag_list" :key="tag" style="margin:0 5px;">{{tag}}</v-chip>
                   <div class="text--primary">{{question.question_sentence.text}}</div>
                 </v-card-text>
-                <v-scroll-y-transition>
-                  <div
-                    v-if="active"
-                    class="display-1 font-weight-bold"
-                    style="position: absolute; right:5px; bottom:0;"
-                  >Add</div>
-                </v-scroll-y-transition>
+                <div style="margin: 5px; 0;">
+                  <v-card-actions style="position: absolute; bottom: 0; right: 0;">
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      v-if="active"
+                      color="brown"
+                      text
+                      @click="toggle"
+                    >
+                      解除
+                    </v-btn>
+                    <v-btn
+                      v-else
+                      color="brown"
+                      text
+                      @click="toggle"
+                    >
+                      選択
+                    </v-btn>
+                  </v-card-actions>
+                </div>
               </v-card>
             </v-item>
           </v-col>
         </v-row>
       </v-container>
     </v-item-group>
-  </v-container>
+  </v-content>
 </template>
 
 <script>
@@ -71,6 +84,7 @@ import moment from "moment";
 import "@mdi/font/css/materialdesignicons.css";
 import createQuestionDialog from "@/components/question/createQuestionDialog.vue";
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
+
 export default {
   name: "QuestionIndex",
   components: {
@@ -86,7 +100,8 @@ export default {
     multiple: true,
     dialog: false,
     questionList: [],
-    url: ""
+    url: "",
+    imageList: [],
   }),
   computed: {
     ...mapState({
@@ -97,14 +112,29 @@ export default {
     fetchQuestionList() {
       this.$store.dispatch("question/fetchQuestionList");
     },
-    exists(obj, name) {
-      console.log(obj);
-      if (obj[name] == null) { return false }
+    openQuestionDetailWindow() {
+      return false;
+    },
+    getImageUrl(obj) {
+      if (obj["image_url"] == null) { return false }
+      const path = obj["image_url"];
+      if (this.imageList[path] != null) { return true }
+      this.$store.dispatch("getS3PublicFile", path)
+        .then((url) => {
+          this.$set(this.imageList, path, url);
+        })
+        .catch(() => {
+          return false;
+        });
       return true;
+    },
+    imageUrlFilter(value){
+      return value;
     }
   },
   created() {
     this.fetchQuestionList();
+    document.getElementById("dv1");
   },
   filters: {
     subjectTypeFilter: function(value) {
@@ -121,17 +151,21 @@ export default {
       if (!value) return "";
       return moment(value).format("MM月DD日 hh:mm");
     },
-    sortTagListFilter: function(value) {
-      if (!value) return "";
-      return value.join(",");
-    },
     estimatedColorFilter: function(value) {
       if (!value) return "green";
       if (value <= 1) return "blue";
       if (value <= 5) return "green";
       if (value <= 15) return "orange";
       if (value > 15) return "red";
-    }
+    },
   }
 };
 </script>
+<style lang="scss">
+div[name="amplify-s3-image"] > img {
+  width: 100% !important;
+  margin: unset;
+  border-radius: unset !important;
+  border: unset !important;
+}
+</style>

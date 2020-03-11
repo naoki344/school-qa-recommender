@@ -1,7 +1,11 @@
 <!-- The ref attr used to find the swiper instance -->
 <template>
-  <v-container>
-    <swiper class="classroom-swiper-thumbs" :options="swiperOptionThumbs" ref="swiperThumbs">
+  <v-content>
+    <swiper
+      class="classroom-swiper-thumbs"
+      :options="swiperOptionThumbs"
+      ref="swiperThumbs"
+    >
       <swiper-slide
         v-for="myClass in classroomList"
         :key="myClass.classroom.classroom_id"
@@ -123,7 +127,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+  </v-content>
 </template>
 
 <script>
