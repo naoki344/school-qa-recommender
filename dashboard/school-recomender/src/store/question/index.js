@@ -28,6 +28,29 @@ export default {
           commit("setQuestionCardList", result.data["question_card_list"]);
         });
     },
+    fetchQuestion({ rootState }, questionId) {
+      return new Promise((resolve, reject) => {
+        const pathTemplate = '/question/{questionId}'
+        const pathParams = {questionId: questionId};
+        schoolApiClient
+          .fetchRestAPI(
+            rootState.cognitoUser,
+            "GET",
+            pathTemplate,
+            pathParams,
+            {},
+            {}
+          )
+          .then(result => {
+            resolve(result.data);
+          })
+          .catch(err => {
+            alert("API連携エラー", err);
+            console.log(err);
+            reject();
+          });
+        });
+    },
     createQuestion({ rootState }, { questionInput }) {
       return new Promise((resolve, reject) => {
         const data = schoolApiQuesionTransfer.toRequest(questionInput);
