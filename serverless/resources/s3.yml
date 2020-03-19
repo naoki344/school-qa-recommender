@@ -7,9 +7,9 @@ Resources:
         CorsRules:
           - AllowedOrigins:
               - '*'
-          - AllowedMethod:
+            AllowedMethods:
               - GET
               - PUT
               - POST
-          - AllowedHeader:
+            AllowedHeaders:
               - '*'

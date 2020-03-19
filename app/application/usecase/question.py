@@ -21,7 +21,7 @@ class CreateQuestion:
         self.user_service = user_service
 
     def run(self, user_id: UserId, item: dict) -> Question:
-        question_id = self.datasource.fetch_sequesnse_id()
+        question_id = self.datasource.fetch_sequense_id()
         user = self.user_service.find(user_id)
         question = Question.create(question_id, user, item)
         # TODO: validation
