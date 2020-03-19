@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-container>
     <v-navigation-drawer
       v-model="drawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
@@ -70,7 +70,7 @@
         <v-icon>mdi-bell</v-icon>
       </v-btn>
     </v-app-bar>
-  </v-content>
+  </v-container>
 </template>
 
 <script>
