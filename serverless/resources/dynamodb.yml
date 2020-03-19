@@ -141,3 +141,40 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
+
+  ToiToyWorkTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-Work"
+      AttributeDefinitions:
+        -
+          AttributeName: "work_id"
+          AttributeType: "N"
+        -
+          AttributeName: "classroom_id"
+          AttributeType: "N"
+        -
+          AttributeName: "register_date"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "work_id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "Classroom-Index"
+          KeySchema:
+            -
+              AttributeName: "classroom_id"
+              KeyType: "HASH"
+            -
+              AttributeName: "register_date"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"

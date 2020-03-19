@@ -23,7 +23,7 @@ class CreateClassroom:
         self.user_service = user_service
 
     def run(self, user_id: UserId, item: dict) -> Classroom:
-        _id = self.datasource.fetch_sequesnse_id()
+        _id = self.datasource.fetch_sequense_id()
         user = self.user_service.find(user_id)
         classroom = Classroom.create(_id, user, item)
         # TODO: validation

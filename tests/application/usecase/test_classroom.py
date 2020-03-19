@@ -8,6 +8,7 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import GetMyClassroomList
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.model.classroom.classmate import Classmate
 from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
@@ -46,8 +47,8 @@ class CreateClassroomTest(TestCase):
 
     def test_run(self):
         # datasource の作成
-        datasource = MagicMock()
-        datasource.fetch_sequesnse_id = MagicMock(return_value=1)
+        datasource = MagicMock(spec=ClassroomDatasource)
+        datasource.fetch_sequense_id = MagicMock(return_value=1)
         # user service の作成
         user_service = MagicMock(spec=UserQueryService)
         user_service.find = MagicMock(return_value=self.user)
@@ -69,7 +70,7 @@ class CreateClassroomTest(TestCase):
                 'email': 'trombone344@gmail.com'
             }]
         }
-        datasource.fetch_sequesnse_id.assert_called_once()
+        datasource.fetch_sequense_id.assert_called_once()
         datasource.insert_item.assert_called_once_with(
             Classroom.from_dict(expect))
         datasource.put_item.assert_not_called()

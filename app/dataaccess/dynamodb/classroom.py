@@ -23,7 +23,7 @@ class ClassroomDatasource:
     def put_item(self, item: Classroom) -> None:
         self.client.put_item(item.to_dict())
 
-    def fetch_sequesnse_id(self) -> int:
+    def fetch_sequense_id(self) -> int:
         name = f"Dynamodb#{self.client.table.table_name}"
         _id = self.sequenses_table.fetch_sequense_id(name)
         return _id

@@ -151,6 +151,32 @@ functions:
       TYPE: API
       SERVICE: Classroom
 
+  LambdaApiCreateWorkFromQuestion:
+    handler: ${self:custom.lambdaHandlerPrefix}api/work.create_work_from_question_handler
+    name: ${self:custom.resourcePrefix}-create-work-from-question
+    events:
+      - http:
+          path: classroom/{classroom_id}/work/{question_id}
+          method: POST
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiGetClassroomWorkList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/work.get_classroom_work_list_handler
+    name: ${self:custom.resourcePrefix}-get-classroom-work-list
+    events:
+      - http:
+          path: classroom/{classroom_id}/work
+          method: GET
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
 resources:
   - ${file(serverless/resources/outputs.yml)}
   - ${file(serverless/resources/dynamodb.yml)}

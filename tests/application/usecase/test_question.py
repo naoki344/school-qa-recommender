@@ -60,7 +60,7 @@ class CreateQuestionTest(TestCase):
     def test_run(self):
         # datasource の作成
         datasource = MagicMock()
-        datasource.fetch_sequesnse_id = MagicMock(return_value=1)
+        datasource.fetch_sequense_id = MagicMock(return_value=1)
         # user service の作成
         user_service = MagicMock(spec=UserQueryService)
         user_service.find = MagicMock(return_value=self.user)
@@ -77,7 +77,7 @@ class CreateQuestionTest(TestCase):
             'register_user_id': user_id.value,
             'register_user_name': 'Naoki'
         }
-        datasource.fetch_sequesnse_id.assert_called_once()
+        datasource.fetch_sequense_id.assert_called_once()
         datasource.insert_item.assert_called_once_with(
             Question.from_dict(expect))
         datasource.put_item.assert_not_called()
@@ -117,7 +117,7 @@ class UpdateQuestionTest(TestCase):
                                  logger=MagicMock())
         result = usecase.run(QuestionId(1), deepcopy(self.question_dict))
 
-        datasource.fetch_sequesnse_id.assert_not_called()
+        datasource.fetch_sequense_id.assert_not_called()
         datasource.put_item.assert_called_once_with(
             Question.from_dict(self.question_dict))
         self.assertEqual(result.to_dict(), self.question_dict)

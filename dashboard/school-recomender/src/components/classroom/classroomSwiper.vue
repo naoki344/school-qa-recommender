@@ -49,7 +49,7 @@
             </v-list-item-action>
           </v-list-item>
         </v-list>
-        <amplify-s3-image :imagePath="myClass.classroom.image_url"></amplify-s3-image>
+        <!--amplify-s3-image :imagePath="myClass.classroom.image_url"></amplify-s3-image-->
       </swiper-slide>
       <!-- Optional controls -->
       <div class="swiper-pagination" slot="pagination"></div>
@@ -57,12 +57,6 @@
       <div class="swiper-button-next" slot="button-next"></div>
       <div class="swiper-scrollbar" slot="scrollbar"></div>
     </swiper>
-    <v-btn color="green darken-1" @click="fetchS3Object">画像取得</v-btn>
-    <v-col clos="2" md="3" lg="3">
-      <v-file-input chips label="画像アップロード" accept="image/*" show-size v-model="file"></v-file-input>
-      <v-btn color="green darken-1" @click="putS3PublicFile">アップロード</v-btn>
-      <img :src="url" />
-    </v-col>
     <v-dialog v-model="dialog" persistent scrollable width="800px">
       <v-card>
         <v-card-title class="yellow darken-1">

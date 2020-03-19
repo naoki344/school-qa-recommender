@@ -22,8 +22,6 @@ export default {
     }
 
     return {
-    "register_user_id": "fjeiwo0g-rfar-fae",
-    "register_user_name": "三好 直紀",
     "estimated_time": questionInput.estimatedTime,
     "question_sentence": {
         "text": sentenceText,
@@ -71,5 +69,30 @@ export default {
       '国語', '数学', '英語', '世界史', '日本史',
       '地理', '現代社会', '物理', '化学', '生物', '地学'
     ]
+  },
+  getQuestionModel() {
+    return {
+      "estimated_time": 0,
+      "question_answer": {
+        "image_url": "",
+        "text": ""
+      },
+      "question_commentary": {
+        "image_url": "",
+        "text": ""
+      },
+      "question_id": 0,
+      "question_sentence": {
+        "image_url": "",
+        "summary": "",
+        "text": ""
+      },
+      "question_type": "",
+      "register_date": "",
+      "register_user_id": "",
+      "register_user_name": "",
+      "sort_tag_list": [],
+      "subject_type": ""
+    } 
   }
 }
