@@ -156,7 +156,7 @@ functions:
     name: ${self:custom.resourcePrefix}-create-work-from-question
     events:
       - http:
-          path: classroom/{classroom_id}/work/{question_id}
+          path: classroom/{classroom_id}/work
           method: POST
           cors: true
           authorizer: aws_iam

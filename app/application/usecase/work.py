@@ -22,10 +22,10 @@ class CreateWorkFromQuestion:
         self.user_service = user_service
         self.logger = logger
 
-    def run(self, user_id: UserId, question_id: QuestionId,
-            classroom_id: ClassroomId, data: dict):
+    def run(self, user_id: UserId, classroom_id: ClassroomId, data: dict):
         user = self.user_service.find(user_id)
-        question = self.question_serice.find(question_id)
+        question = self.question_serice.find(
+            QuestionId(int(data["question_id"])))
         classroom = self.classroom_serice.find(classroom_id)
         _id = self.work_datasource.fetch_sequense_id()
         work = Work.create_from_question(_id, classroom.classroom_id, user,

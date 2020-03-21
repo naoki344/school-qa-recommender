@@ -39,13 +39,19 @@
           <v-container fluid class="px-4 py-0">
             <v-checkbox v-for="room in classroomList" :key="room.classroom.classroom_id" class="pa-0" v-model="selectedClassroom" :label="room.classroom.name" :value="room.classroom.classroom_id" />
           </v-container>
-          <v-btn v-if="selectedClassroom.length > 0" style="height: 100%" col=12 class="ma-2 py-2 px-4" tile outlined color="success">選択した{{selectedClassroom.length}}つのクラスに<br />この問いを投稿</v-btn>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="green darken-1" text @click="closeDialog()"
-              >閉じる</v-btn
-            >
-          </v-card-actions>
+          <v-form>
+            <div v-if="selectedClassroom.length > 0" class="pb-2 px-4">
+              <v-text-field v-model="workTitle" counter="25" label="ワークのタイトル" required></v-text-field>
+              <v-text-field v-model="workCaption" counter="25" label="ワークの説明" required></v-text-field>
+              <v-btn style="height: 100%" col=12 class="ma-2 py-2 px-4" tile outlined color="success" @click="registerWorkSelectedClassroom()">選択した{{selectedClassroom.length}}つのクラスに<br />この問いを投稿</v-btn>
+            </div>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="closeDialog()"
+                >閉じる</v-btn
+              >
+            </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-row>
@@ -70,6 +76,8 @@ export default {
   data: () => ({
     imageList: [],
     selectedClassroom: [],
+    workCaption: '',
+    workTitle: '',
   }),
   computed: {
     ...mapState({
@@ -98,6 +106,15 @@ export default {
       this.$store.dispatch("classroom/fetchMyClassroomList");
       console.log(this.classroomList[0]);
     },
+    registerWorkSelectedClassroom() {
+      this.$store.dispatch("classroom/registerWork",
+        {question: this.question, selectedClassroom: this.selectedClassroom,
+		title: this.workTitle, caption: this.workCaption})
+        .then(() => {
+          alert("クラスへの投稿に成功しました。");
+          this.closeDialog();
+        });
+    }
   },
   filters: {
     subjectTypeFilter: function(value) {

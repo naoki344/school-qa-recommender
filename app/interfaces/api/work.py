@@ -14,13 +14,11 @@ from app.model.question.question import QuestionId
 def create_work_from_question_handler(event, context):
     path = event["pathParameters"]
     classroom_id = ClassroomId(int(path["classroom_id"]))
-    question_id = QuestionId(int(path["question_id"]))
     data = json.loads(event["body"])
     service: CreateWorkFromQuestion = \
         create_work_from_question(logger=getLogger())
     user_id = AuthenticationEventPerser.parse(event)
     work = service.run(user_id,
-                       question_id=question_id,
                        classroom_id=classroom_id,
                        data=data)
     return APIGatewayResponse.to_response({"work": work.to_dict()})

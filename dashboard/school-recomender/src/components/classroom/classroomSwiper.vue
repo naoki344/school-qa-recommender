@@ -11,45 +11,29 @@
         :key="myClass.classroom.classroom_id"
       >{{ myClass.classroom.name }}</swiper-slide>
     </swiper>
-    <swiper :options="swiperOptionTop" ref="swiperTop">
-      <swiper-slide v-for="myClass in classroomList" :key="myClass.classroom.classroom_id">
-        <h1>{{ myClass.classroom.name }}</h1>
-        <h2>{{ myClass.classmate.join_status }}</h2>
-        <v-list two-line subheader>
-          <v-subheader>新着</v-subheader>
-
-          <v-list-item v-for="item in items" :key="item.title" link @click="dialog = !dialog">
-            <v-list-item-avatar>
-              <v-icon :class="[item.iconClass]">{{ item.icon }}</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
+    <swiper :options="swiperOptionTop" ref="swiperTop" class="py-2 px-0">
+      <swiper-slide v-for="myClass in classroomList" :key="myClass.classroom.classroom_id" style="text-align: left;">
+        <v-img class="mb-2" v-if="getImageUrl(myClass.classroom)" :src="imageList[myClass.classroom.image_url]" style="width: 100%; max-width: 760px; height: 150px; margin: auto;"/>
+        <div v-if="isShowClassroomContent(myClass)">
+          <h1 class="pa-2">{{ myClass.classroom.name }}</h1>
+          <v-list two-line subheader>
+            <v-subheader>ワーク一覧</v-subheader>
+            <v-list-item v-for="item in classroomWorkList[myClass.classroom.classroom_id]" :key="item.work_id" link @click="openWorkDetail(item)">
+              <!--v-list-item-avatar>
+                <v-icon :class="[item.iconClass]">mdi-head-question</v-icon>
+              </v-list-item-avatar-->
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
+              </v-list-item-content>
               <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-information</v-icon>
+                <v-icon color="grey lighten-1">mdi-message</v-icon>
               </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-subheader>履歴</v-subheader>
-          <v-list-item v-for="item in items2" :key="item.title" link>
-            <v-list-item-avatar>
-              <v-icon :class="[item.iconClass]">{{ item.icon }}</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn icon ripple>
-                <v-icon color="grey lighten-1">mdi-information</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
-        <!--amplify-s3-image :imagePath="myClass.classroom.image_url"></amplify-s3-image-->
+            </v-list-item>
+            <v-divider></v-divider>
+          </v-list>
+          <classroom-work-detail-dialog :work="selectedWork" :dialogVisible="workDialogVisible"  v-on:closeDialog="closeWorkDetailDialog()" />
+        </div>
       </swiper-slide>
       <!-- Optional controls -->
       <div class="swiper-pagination" slot="pagination"></div>
@@ -57,70 +41,6 @@
       <div class="swiper-button-next" slot="button-next"></div>
       <div class="swiper-scrollbar" slot="scrollbar"></div>
     </swiper>
-    <v-dialog v-model="dialog" persistent scrollable width="800px">
-      <v-card>
-        <v-card-title class="yellow darken-1">
-          <v-spacer />
-          <strong>解答作成</strong>
-          <v-spacer />
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-carousel cycle height="400" hide-delimiter-background show-arrows-on-hover>
-          <v-carousel-item v-for="(slide, i) in slides" :key="i">
-            <v-sheet :color="colors[i]" height="100%">
-              <v-row class="fill-height" align="center" justify="center">
-                <div class="display-3">{{ slide }} Slide</div>
-              </v-row>
-            </v-sheet>
-          </v-carousel-item>
-        </v-carousel>
-        <v-card-text>
-          <v-container>
-            <v-row class="mx-2">
-              <v-col class="align-center justify-space-between" cols="12">
-                <v-row align="center" class="mr-0">
-                  <v-avatar size="40px" class="mx-3">
-                    <img src="//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png" alt />
-                  </v-avatar>
-                  <v-text-field placeholder="Name" />
-                </v-row>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  prepend-icon="mdi-account-card-details-outline"
-                  placeholder="Company"
-                />
-              </v-col>
-              <v-col cols="6">
-                <v-text-field placeholder="Job title" />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field prepend-icon="mdi-mail" placeholder="Email" />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field prepend-icon="mdi-text" placeholder="Notes" />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field prepend-icon="mdi-text" placeholder="Notes" />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field prepend-icon="mdi-text" placeholder="Notes" />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field prepend-icon="mdi-text" placeholder="Notes" />
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer />
-          <v-btn text color="primary" @click="dialog = false">キャンセル</v-btn>
-          <v-btn text @click="dialog = false">送信</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-content>
 </template>
 
@@ -129,12 +49,14 @@ import { mapState } from "vuex";
 import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { components } from "aws-amplify-vue";
+import classroomWorkDetailDialog from "@/components/classroom/classroomWorkDetailDialog.vue";
 
 export default {
   name: "classroomSwiper",
   components: {
     swiper,
     swiperSlide,
+    classroomWorkDetailDialog,
     ...components
   },
   data() {
@@ -149,6 +71,8 @@ export default {
           prevEl: ".swiper-button-prev"
         }
       },
+      imageList: [],
+      selectedWork: {},
       swiperOptionThumbs: {
         spaceBetween: 20,
         centeredSlides: true,
@@ -158,45 +82,28 @@ export default {
         watchSlidesVisibility: true,
         watchSlidesProgress: true
       },
-      dialog: false,
-      items: [
-        {
-          icon: "folder",
-          iconClass: "grey lighten-1 white--text",
-          title: "Photos",
-          subtitle: "Jan 9, 2014"
-        },
-        {
-          icon: "folder",
-          iconClass: "blue white--text",
-          title: "Recipes",
-          subtitle: "Jan 17, 2014"
-        }
-      ],
-      items2: [
-        {
-          icon: "assignment",
-          iconClass: "blue white--text",
-          title: "Vacation itinerary",
-          subtitle: "Jan 20, 2014"
-        },
-        {
-          icon: "call_to_action",
-          iconClass: "amber white--text",
-          title: "Kitchen remodel",
-          subtitle: "Jan 10, 2014"
-        }
-      ],
-      colors: ["indigo", "warning", "pink darken-2"],
-      slides: ["First", "Second", "Third"]
+      workDialogVisible: false,
     };
   },
   computed: {
     ...mapState({
-      classroomList: state => state.classroom.myClassroomList
-    })
+      classroomList: state => state.classroom.myClassroomList,
+      classroomWorkList: state => state.classroom.classroomWorkList,
+    }),
   },
   methods: {
+    isShowClassroomContent(classroom) {
+      if (classroom.classmate.join_status == 'approved') return true;
+      if (classroom.classmate.join_status == 'owner') return true;
+      return false;
+    },
+    openWorkDetail(work) {
+      this.selectedWork = work;
+      this.workDialogVisible = true;
+    },
+    closeWorkDetailDialog() {
+      this.workDialogVisible = false;
+    },
     fetchClassroomList() {
       this.$store.dispatch("classroom/fetchMyClassroomList");
     },
@@ -224,7 +131,20 @@ export default {
         .catch(err => {
           console.log(err);
         });
-    }
+    },
+    getImageUrl(obj) {
+      if (obj["image_url"] == null) { return false }
+      const path = obj["image_url"];
+      if (this.imageList[path] != null) { return true }
+      this.$store.dispatch("getS3PublicFile", path)
+        .then((url) => {
+          this.$set(this.imageList, path, url);
+        })
+        .catch(() => {
+          return false;
+        });
+      return true;
+    },
   },
   mounted() {
     this.$nextTick(() => {
