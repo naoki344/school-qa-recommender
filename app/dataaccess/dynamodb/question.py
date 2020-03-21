@@ -31,7 +31,9 @@ class QuestionDatasource:
 
     def find_by_id(self, question_id: QuestionId) -> Question:
         data = self.client.get_item({'question_id': question_id.value})
-        return Question.from_dict(data)
+        if data:
+            return Question.from_dict(data)
+        raise Exception(f'Question not found. {question_id: {question_id}}')
 
     def get_register_user_index(
         self, register_user_id: RegisterUserId
