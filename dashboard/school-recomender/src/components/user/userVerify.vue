@@ -1,23 +1,45 @@
 <template>
   <v-card class="elevation-6">
-    <v-toolbar color="yellow darken-1" flat>
-      <v-spacer></v-spacer>
+    <v-toolbar
+      color="yellow darken-1"
+      flat
+    >
+      <v-spacer />
       <v-toolbar-title>
         <strong>ユーザー認証画面</strong>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
     </v-toolbar>
     <v-card-text>
-      <div v-if="isFailure" v-bind:class="error_class">
+      <div
+        v-if="isFailure"
+        :class="error_class"
+      >
         認証コードが間違っています。
         再度入力してください。
       </div>
-      <v-text-field v-model="email" prepend-icon label="メールアドレス" required></v-text-field>
-      <v-text-field v-model="verificationCode" prepend-icon label="認証コード" required></v-text-field>
+      <v-text-field
+        v-model="email"
+        prepend-icon
+        label="メールアドレス"
+        required
+      />
+      <v-text-field
+        v-model="verificationCode"
+        prepend-icon
+        label="認証コード"
+        required
+      />
     </v-card-text>
     <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="yellow darken-1" @click="userVerify" block>認証する</v-btn>
+      <v-spacer />
+      <v-btn
+        color="yellow darken-1"
+        block
+        @click="userVerify"
+      >
+        認証する
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -25,7 +47,7 @@
 <script>
 import "@mdi/font/css/materialdesignicons.css";
 export default {
-  name: "userVerify",
+  name: "UserVerify",
   data: () => ({
     email: "",
     verificationCode: "",

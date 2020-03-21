@@ -9,10 +9,7 @@
 import classroomSwiper from "@/components/classroom/classroomSwiper.vue";
 import headerNav from "@/components/common/headerNav.vue";
 export default {
-  name: "topPage",
-  props: {
-    source: String
-  },
+  name: "TopPage",
   components: {
     headerNav,
     classroomSwiper,

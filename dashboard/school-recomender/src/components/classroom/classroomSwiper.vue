@@ -2,23 +2,48 @@
 <template>
   <v-content>
     <swiper
+      ref="swiperThumbs"
       class="classroom-swiper-thumbs"
       :options="swiperOptionThumbs"
-      ref="swiperThumbs"
     >
       <swiper-slide
         v-for="myClass in classroomList"
         :key="myClass.classroom.classroom_id"
-      >{{ myClass.classroom.name }}</swiper-slide>
+      >
+        {{ myClass.classroom.name }}
+      </swiper-slide>
     </swiper>
-    <swiper :options="swiperOptionTop" ref="swiperTop" class="py-2 px-0">
-      <swiper-slide v-for="myClass in classroomList" :key="myClass.classroom.classroom_id" style="text-align: left;">
-        <v-img class="mb-2" v-if="getImageUrl(myClass.classroom)" :src="imageList[myClass.classroom.image_url]" style="width: 100%; max-width: 760px; height: 150px; margin: auto;"/>
+    <swiper
+      ref="swiperTop"
+      :options="swiperOptionTop"
+      class="py-2 px-0"
+    >
+      <swiper-slide
+        v-for="myClass in classroomList"
+        :key="myClass.classroom.classroom_id"
+        style="text-align: left;"
+      >
+        <v-img
+          v-if="getImageUrl(myClass.classroom)"
+          class="mb-2"
+          :src="imageList[myClass.classroom.image_url]"
+          style="width: 100%; max-width: 760px; height: 150px; margin: auto;"
+        />
         <div v-if="isShowClassroomContent(myClass)">
-          <h1 class="pa-2">{{ myClass.classroom.name }}</h1>
-          <v-list two-line subheader>
+          <h1 class="pa-2">
+            {{ myClass.classroom.name }}
+          </h1>
+          <v-list
+            two-line
+            subheader
+          >
             <v-subheader>ワーク一覧</v-subheader>
-            <v-list-item v-for="item in classroomWorkList[myClass.classroom.classroom_id]" :key="item.work_id" link @click="openWorkDetail(item)">
+            <v-list-item
+              v-for="item in classroomWorkList[myClass.classroom.classroom_id]"
+              :key="item.work_id"
+              link
+              @click="openWorkDetail(item)"
+            >
               <!--v-list-item-avatar>
                 <v-icon :class="[item.iconClass]">mdi-head-question</v-icon>
               </v-list-item-avatar-->
@@ -27,19 +52,37 @@
                 <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
               </v-list-item-content>
               <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-message</v-icon>
+                <v-icon color="grey lighten-1">
+                  mdi-message
+                </v-icon>
               </v-btn>
             </v-list-item>
-            <v-divider></v-divider>
+            <v-divider />
           </v-list>
-          <classroom-work-detail-dialog :work="selectedWork" :dialogVisible="workDialogVisible"  v-on:closeDialog="closeWorkDetailDialog()" />
+          <classroom-work-detail-dialog
+            :work="selectedWork"
+            :dialog-visible="workDialogVisible"
+            @closeDialog="closeWorkDetailDialog()"
+          />
         </div>
       </swiper-slide>
       <!-- Optional controls -->
-      <div class="swiper-pagination" slot="pagination"></div>
-      <div class="swiper-button-prev" slot="button-prev"></div>
-      <div class="swiper-button-next" slot="button-next"></div>
-      <div class="swiper-scrollbar" slot="scrollbar"></div>
+      <div
+        slot="pagination"
+        class="swiper-pagination"
+      />
+      <div
+        slot="button-prev"
+        class="swiper-button-prev"
+      />
+      <div
+        slot="button-next"
+        class="swiper-button-next"
+      />
+      <div
+        slot="scrollbar"
+        class="swiper-scrollbar"
+      />
     </swiper>
   </v-content>
 </template>
@@ -52,7 +95,7 @@ import { components } from "aws-amplify-vue";
 import classroomWorkDetailDialog from "@/components/classroom/classroomWorkDetailDialog.vue";
 
 export default {
-  name: "classroomSwiper",
+  name: "ClassroomSwiper",
   components: {
     swiper,
     swiperSlide,
@@ -90,6 +133,15 @@ export default {
       classroomList: state => state.classroom.myClassroomList,
       classroomWorkList: state => state.classroom.classroomWorkList,
     }),
+  },
+  mounted() {
+    this.$nextTick(() => {
+      const swiperTop = this.$refs.swiperTop.swiper;
+      const swiperThumbs = this.$refs.swiperThumbs.swiper;
+      swiperTop.controller.control = swiperThumbs;
+      swiperThumbs.controller.control = swiperTop;
+    });
+    this.fetchClassroomList();
   },
   methods: {
     isShowClassroomContent(classroom) {
@@ -145,15 +197,6 @@ export default {
         });
       return true;
     },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      const swiperTop = this.$refs.swiperTop.swiper;
-      const swiperThumbs = this.$refs.swiperThumbs.swiper;
-      swiperTop.controller.control = swiperThumbs;
-      swiperThumbs.controller.control = swiperTop;
-    });
-    this.fetchClassroomList();
   }
 };
 </script>
