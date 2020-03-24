@@ -7,6 +7,8 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import GetMyClassroomList
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.application.usecase.comment import GetWorkCommentList
+from app.application.usecase.comment import RegisterWorkComment
 from app.application.usecase.question import CreateQuestion
 from app.application.usecase.question import FindQuestion
 from app.application.usecase.question import GetQuestionList
@@ -19,6 +21,8 @@ from app.configure.usecase.classroom import create_classroom
 from app.configure.usecase.classroom import find_classroom
 from app.configure.usecase.classroom import get_my_classroom_list
 from app.configure.usecase.classroom import request_join_classroom
+from app.configure.usecase.comment import get_work_comment_list
+from app.configure.usecase.comment import register_work_comment
 from app.configure.usecase.question import create_question
 from app.configure.usecase.question import find_question
 from app.configure.usecase.question import get_question_list
@@ -76,3 +80,11 @@ class QuestionUsecaseTest(TestCase):
         self.assertEqual(
             isinstance(find_classroom_work(logger=MagicMock()),
                        FindClassroomWork), True)
+
+        self.assertEqual(
+            isinstance(register_work_comment(logger=MagicMock()),
+                       RegisterWorkComment), True)
+
+        self.assertEqual(
+            isinstance(get_work_comment_list(logger=MagicMock()),
+                       GetWorkCommentList), True)

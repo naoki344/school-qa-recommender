@@ -190,6 +190,32 @@ functions:
       TYPE: API
       SERVICE: Work
 
+  LambdaApiRegisterWorkComment:
+    handler: ${self:custom.lambdaHandlerPrefix}api/comment.register_work_comment_handler
+    name: ${self:custom.resourcePrefix}-register-work-comment
+    events:
+      - http:
+          path: classroom/{classroom_id}/work/{work_id}/comment
+          method: POST
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiGetWorkCommentList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/comment.get_work_comment_list_handler
+    name: ${self:custom.resourcePrefix}-get-work-comment-list-handler
+    events:
+      - http:
+          path: classroom/{classroom_id}/work/{work_id}/comment
+          method: GET
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
 resources:
   - ${file(serverless/resources/outputs.yml)}
   - ${file(serverless/resources/dynamodb.yml)}
