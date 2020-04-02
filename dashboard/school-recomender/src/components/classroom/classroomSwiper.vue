@@ -42,11 +42,8 @@
               v-for="item in classroomWorkList[myClass.classroom.classroom_id]"
               :key="item.work_id"
               link
-              @click="openWorkDetail(item)"
+              @click="openWorkDetail(item, myClass)"
             >
-              <!--v-list-item-avatar>
-                <v-icon :class="[item.iconClass]">mdi-head-question</v-icon>
-              </v-list-item-avatar-->
               <v-list-item-content>
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                 <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
@@ -59,11 +56,6 @@
             </v-list-item>
             <v-divider />
           </v-list>
-          <classroom-work-detail-dialog
-            :work="selectedWork"
-            :dialog-visible="workDialogVisible"
-            @closeDialog="closeWorkDetailDialog()"
-          />
         </div>
       </swiper-slide>
       <!-- Optional controls -->
@@ -84,6 +76,12 @@
         class="swiper-scrollbar"
       />
     </swiper>
+    <classroom-work-detail-dialog
+      :work="selectedWork"
+      :classroom="selectedClass"
+      :dialog-visible="workDialogVisible"
+      @closeDialog="closeWorkDetailDialog()"
+    />
   </v-content>
 </template>
 
@@ -115,7 +113,8 @@ export default {
         }
       },
       imageList: [],
-      selectedWork: {},
+      selectedWork: '',
+      selectedClass: '',
       swiperOptionThumbs: {
         spaceBetween: 20,
         centeredSlides: true,
@@ -149,8 +148,9 @@ export default {
       if (classroom.classmate.join_status == 'owner') return true;
       return false;
     },
-    openWorkDetail(work) {
+    openWorkDetail(work, myClass) {
       this.selectedWork = work;
+      this.selectedClass = myClass.classroom;
       this.workDialogVisible = true;
     },
     closeWorkDetailDialog() {

@@ -128,7 +128,7 @@ class WorkCommentList:
                              key=itemgetter('parent_comment_id'))
         topic_message_dict = {}
         for k, v in groupby(sorted_data, key=itemgetter('parent_comment_id')):
-            topic_message_dict[k] = [item for item in v]
+            topic_message_dict[str(k)] = [item for item in v]
 
         return WorkCommentList(root_message_list=root_message_list,
                                topic_list=topic_list,
