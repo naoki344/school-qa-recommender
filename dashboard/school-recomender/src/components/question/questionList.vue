@@ -1,10 +1,19 @@
 <template>
   <v-content>
-    <v-item-group :mandatory="mandatory" :multiple="multiple">
+    <v-item-group
+      :mandatory="mandatory"
+      :multiple="multiple"
+    >
       <v-container>
         <v-row>
-          <v-col cols="12" sm="6" md="6" lg="4" xl="3">
-            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;"></create-question-dialog>
+          <v-col
+            cols="12"
+            sm="6"
+            md="6"
+            lg="4"
+            xl="3"
+          >
+            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;" />
           </v-col>
           <v-col
             v-for="question in questionCardList"
@@ -22,10 +31,17 @@
               white
               @click="openQuestionDetailDialog(question)"
             >
-              <v-img v-if="getImageUrl(question.question_sentence)" :src="imageList[question.question_sentence.image_url]" style="width: 100%; height: 200px;"/>
+              <v-img
+                v-if="getImageUrl(question.question_sentence)"
+                :src="imageList[question.question_sentence.image_url]"
+                style="width: 100%; height: 200px;"
+              />
               <v-card-text class="mb-2">
-                <div class="mb-2" style="display: flex; justify-content: space-between">
-                  <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
+                <div
+                  class="mb-2"
+                  style="display: flex; justify-content: space-between"
+                >
+                  <div>{{ question.register_date | dateTimeFilter }} ({{ question.register_user_name }})</div>
                   <v-chip
                     class
                     small
@@ -37,22 +53,38 @@
                       left
                       :class="question.estimated_time | estimatedColorFilter"
                       class="darken-4"
-                    >{{question.estimated_time}}</v-avatar>Min
+                    >
+                      {{ question.estimated_time }}
+                    </v-avatar>Min
                   </v-chip>
                 </div>
                 <div class="">
-                  <h2>{{question.subject_type | subjectTypeFilter}}</h2>
-                  <p style="margin: 0;">{{question.question_type | questionTypeFilter}}</p>
+                  <h2>{{ question.subject_type | subjectTypeFilter }}</h2>
+                  <p style="margin: 0;">
+                    {{ question.question_type | questionTypeFilter }}
+                  </p>
                 </div>
-                <v-chip v-for="tag in question.sort_tag_list" :key="tag" style="margin:0 5px;">{{tag}}</v-chip>
-                <div class="text--primary">{{question.question_sentence.text}}</div>
+                <v-chip
+                  v-for="tag in question.sort_tag_list"
+                  :key="tag"
+                  style="margin:0 5px;"
+                >
+                  {{ tag }}
+                </v-chip>
+                <div class="text--primary">
+                  {{ question.question_sentence.text }}
+                </div>
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
     </v-item-group>
-    <question-detail-dialog :question="selectedQuestion" :dialogVisible="questionDetailDialogVisible"  v-on:closeDialog="closeQuestionDetailDialog()"></question-detail-dialog>
+    <question-detail-dialog
+      :question="selectedQuestion"
+      :dialog-visible="questionDetailDialogVisible"
+      @closeDialog="closeQuestionDetailDialog()"
+    />
   </v-content>
 </template>
 
@@ -69,6 +101,29 @@ export default {
   components: {
     createQuestionDialog,
     questionDetailDialog
+  },
+  filters: {
+    subjectTypeFilter: function(value) {
+      if (!value) return "";
+      return schoolApiQuesionTransfer.getSubjectNameFromType(value);
+    },
+    questionTypeFilter: function(value) {
+      if (!value) return "";
+      if (value === "describing") return "記述式";
+      if (value === "selectable") return "選択式";
+      return "";
+    },
+    dateTimeFilter: function(value) {
+      if (!value) return "";
+      return moment(value).format("MM月DD日 hh:mm");
+    },
+    estimatedColorFilter: function(value) {
+      if (!value) return "green";
+      if (value <= 1) return "blue";
+      if (value <= 5) return "green";
+      if (value <= 15) return "orange";
+      if (value > 15) return "red";
+    },
   },
   data: () => ({
     types: ["cards", "images"],
@@ -88,6 +143,9 @@ export default {
     ...mapState({
       questionCardList: state => state.question.questionCardList
     })
+  },
+  created() {
+    this.fetchQuestionList();
   },
   methods: {
     fetchQuestionList() {
@@ -121,32 +179,6 @@ export default {
       return value;
     }
   },
-  created() {
-    this.fetchQuestionList();
-  },
-  filters: {
-    subjectTypeFilter: function(value) {
-      if (!value) return "";
-      return schoolApiQuesionTransfer.getSubjectNameFromType(value);
-    },
-    questionTypeFilter: function(value) {
-      if (!value) return "";
-      if (value === "describing") return "記述式";
-      if (value === "selectable") return "選択式";
-      return "";
-    },
-    dateTimeFilter: function(value) {
-      if (!value) return "";
-      return moment(value).format("MM月DD日 hh:mm");
-    },
-    estimatedColorFilter: function(value) {
-      if (!value) return "green";
-      if (value <= 1) return "blue";
-      if (value <= 5) return "green";
-      if (value <= 15) return "orange";
-      if (value > 15) return "red";
-    },
-  }
 };
 </script>
 <style lang="scss">

@@ -4,9 +4,11 @@ from unittest.mock import MagicMock
 from app.application.query.classroom import ClassroomQueryService
 from app.application.query.question import QuestionQueryService
 from app.application.query.user import UserQueryService
+from app.application.query.work import WorkQueryService
 from app.configure.query.classroom import classroom_query_service
 from app.configure.query.question import question_query_service
 from app.configure.query.user import user_query_service
+from app.configure.query.work import work_query_service
 
 
 class QueryConfigureTest(TestCase):
@@ -20,3 +22,6 @@ class QueryConfigureTest(TestCase):
         self.assertEqual(
             isinstance(classroom_query_service(logger=MagicMock()),
                        ClassroomQueryService), True)
+        self.assertEqual(
+            isinstance(work_query_service(logger=MagicMock()),
+                       WorkQueryService), True)

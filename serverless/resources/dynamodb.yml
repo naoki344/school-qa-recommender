@@ -178,3 +178,39 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
+  ToiToyWorkCommentTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-WorkComment"
+      AttributeDefinitions:
+        -
+          AttributeName: "comment_id"
+          AttributeType: "N"
+        -
+          AttributeName: "work_id"
+          AttributeType: "N"
+        -
+          AttributeName: "register_date"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "comment_id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "WorkId-Index"
+          KeySchema:
+            -
+              AttributeName: "work_id"
+              KeyType: "HASH"
+            -
+              AttributeName: "register_date"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
