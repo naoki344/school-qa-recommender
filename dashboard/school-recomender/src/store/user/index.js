@@ -3,7 +3,7 @@ import schoolApiClient from "@/api/common.js";
 export default {
   namespaced: true,
   state: {
-      loginUser: {},
+    loginUser: {}
   },
   mutations: {
     setLoginUser(state, data) {
@@ -47,10 +47,10 @@ export default {
             commit("setLoginUser", cognitoUser);
             resolve();
           })
-          .catch(() => {
-            reject();
+          .catch(err => {
+            reject(err);
           });
       });
-    },
+    }
   }
-}
+};
