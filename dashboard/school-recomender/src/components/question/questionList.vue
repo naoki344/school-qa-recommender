@@ -1,80 +1,90 @@
 <template>
   <v-content>
-    <v-item-group :mandatory="mandatory" :multiple="multiple">
-      <v-container class="pa-0">
+    <v-item-group
+      :mandatory="mandatory"
+      :multiple="multiple"
+    >
+      <v-container>
         <v-row>
-          <v-col cols="12" sm="12" md="6" lg="4" xl="3">
-            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;"></create-question-dialog>
+          <v-col
+            cols="12"
+            sm="6"
+            md="6"
+            lg="4"
+            xl="3"
+          >
+            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;" />
           </v-col>
           <v-col
             v-for="question in questionCardList"
             :key="question.question_id"
             cols="12"
-            sm="12"
+            sm="6"
             md="6"
             lg="4"
             xl="3"
           >
-            <v-item v-slot:default="{ active, toggle }">
-              <v-card
-                v-if="type === 'cards'"
-                class=""
-                style="height: 100%; position:relative;"
-                white
-                @click="openQuestionDetailWindow()"
-              >
-                <v-img v-if="getImageUrl(question.question_sentence)" :src="imageList[question.question_sentence.image_url]" style="width: 100%; height: 200px;"/>
-                <v-card-text style="padding-bottom: 50px;">
-                  <div class="mb-2" style="display: flex; justify-content: space-between">
-                    <div>{{question.register_date | dateTimeFilter}} ({{question.register_user_name}})</div>
-                    <v-chip
-                      class
-                      small
-                      :color="question.estimated_time | estimatedColorFilter"
-                      text-color="white"
-                      style="padding-left: 6px;"
+            <v-card
+              v-if="type === 'cards'"
+              class=""
+              style="height: 100%; position:relative;"
+              white
+              @click="openQuestionDetailDialog(question)"
+            >
+              <v-img
+                v-if="getImageUrl(question.question_sentence)"
+                :src="imageList[question.question_sentence.image_url]"
+                style="width: 100%; height: 200px;"
+              />
+              <v-card-text class="mb-2">
+                <div
+                  class="mb-2"
+                  style="display: flex; justify-content: space-between"
+                >
+                  <div>{{ question.register_date | dateTimeFilter }} ({{ question.register_user_name }})</div>
+                  <v-chip
+                    class
+                    small
+                    :color="question.estimated_time | estimatedColorFilter"
+                    text-color="white"
+                    style="padding-left: 6px;"
+                  >
+                    <v-avatar
+                      left
+                      :class="question.estimated_time | estimatedColorFilter"
+                      class="darken-4"
                     >
-                      <v-avatar
-                        left
-                        :class="question.estimated_time | estimatedColorFilter"
-                        class="darken-4"
-                      >{{question.estimated_time}}</v-avatar>Min
-                    </v-chip>
-                  </div>
-                  <div class="">
-                    <h2>{{question.subject_type | subjectTypeFilter}}</h2>
-                    <p style="margin: 0;">{{question.question_type | questionTypeFilter}}</p>
-                  </div>
-                  <v-chip v-for="tag in question.sort_tag_list" :key="tag" style="margin:0 5px;">{{tag}}</v-chip>
-                  <div class="text--primary">{{question.question_sentence.text}}</div>
-                </v-card-text>
-                <div style="margin: 5px; 0;">
-                  <v-card-actions style="position: absolute; bottom: 0; right: 0;">
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      v-if="active"
-                      color="brown"
-                      text
-                      @click="toggle"
-                    >
-                      解除
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      color="brown"
-                      text
-                      @click="toggle"
-                    >
-                      選択
-                    </v-btn>
-                  </v-card-actions>
+                      {{ question.estimated_time }}
+                    </v-avatar>Min
+                  </v-chip>
                 </div>
-              </v-card>
-            </v-item>
+                <div class="">
+                  <h2>{{ question.subject_type | subjectTypeFilter }}</h2>
+                  <p style="margin: 0;">
+                    {{ question.question_type | questionTypeFilter }}
+                  </p>
+                </div>
+                <v-chip
+                  v-for="tag in question.sort_tag_list"
+                  :key="tag"
+                  style="margin:0 5px;"
+                >
+                  {{ tag }}
+                </v-chip>
+                <div class="text--primary">
+                  {{ question.question_sentence.text }}
+                </div>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
     </v-item-group>
+    <question-detail-dialog
+      :question="selectedQuestion"
+      :dialog-visible="questionDetailDialogVisible"
+      @closeDialog="closeQuestionDetailDialog()"
+    />
   </v-content>
 </template>
 
@@ -83,58 +93,14 @@ import { mapState } from "vuex";
 import moment from "moment";
 import "@mdi/font/css/materialdesignicons.css";
 import createQuestionDialog from "@/components/question/createQuestionDialog.vue";
+import questionDetailDialog from "@/components/question/questionDetailDialog.vue";
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 
 export default {
   name: "QuestionIndex",
   components: {
-    createQuestionDialog
-  },
-  data: () => ({
-    types: ["cards", "images"],
-    type: "cards",
-    username: "",
-    password: "",
-    showPassword: false,
-    mandatory: false,
-    multiple: true,
-    dialog: false,
-    questionList: [],
-    url: "",
-    imageList: [],
-  }),
-  computed: {
-    ...mapState({
-      questionCardList: state => state.question.questionCardList
-    })
-  },
-  methods: {
-    fetchQuestionList() {
-      this.$store.dispatch("question/fetchQuestionList");
-    },
-    openQuestionDetailWindow() {
-      return false;
-    },
-    getImageUrl(obj) {
-      if (obj["image_url"] == null) { return false }
-      const path = obj["image_url"];
-      if (this.imageList[path] != null) { return true }
-      this.$store.dispatch("getS3PublicFile", path)
-        .then((url) => {
-          this.$set(this.imageList, path, url);
-        })
-        .catch(() => {
-          return false;
-        });
-      return true;
-    },
-    imageUrlFilter(value){
-      return value;
-    }
-  },
-  created() {
-    this.fetchQuestionList();
-    document.getElementById("dv1");
+    createQuestionDialog,
+    questionDetailDialog
   },
   filters: {
     subjectTypeFilter: function(value) {
@@ -158,7 +124,61 @@ export default {
       if (value <= 15) return "orange";
       if (value > 15) return "red";
     },
-  }
+  },
+  data: () => ({
+    types: ["cards", "images"],
+    type: "cards",
+    username: "",
+    password: "",
+    showPassword: false,
+    mandatory: false,
+    multiple: true,
+    questionList: [],
+    url: "",
+    imageList: [],
+    selectedQuestion: schoolApiQuesionTransfer.getQuestionModel(),
+    questionDetailDialogVisible: false,
+  }),
+  computed: {
+    ...mapState({
+      questionCardList: state => state.question.questionCardList
+    })
+  },
+  created() {
+    this.fetchQuestionList();
+  },
+  methods: {
+    fetchQuestionList() {
+      this.$store.dispatch("question/fetchQuestionList");
+    },
+    openQuestionDetailDialog(question) {
+      this.$store.dispatch("question/fetchQuestion", question.question_id)
+        .then((question) => {
+          this.selectedQuestion = question;
+          this.questionDetailDialogVisible = true;
+        });
+    },
+    closeQuestionDetailDialog() {
+      this.selectedQuestion = schoolApiQuesionTransfer.getQuestionModel()
+      this.questionDetailDialogVisible = false;
+    },
+    getImageUrl(obj) {
+      if (obj["image_url"] == null) { return false }
+      const path = obj["image_url"];
+      if (this.imageList[path] != null) { return true }
+      this.$store.dispatch("getS3PublicFile", path)
+        .then((url) => {
+          this.$set(this.imageList, path, url);
+        })
+        .catch(() => {
+          return false;
+        });
+      return true;
+    },
+    imageUrlFilter(value){
+      return value;
+    }
+  },
 };
 </script>
 <style lang="scss">

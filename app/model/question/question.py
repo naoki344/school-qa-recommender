@@ -1,15 +1,15 @@
 from dataclasses import dataclass
-from datetime import datetime as DateTime
 from enum import Enum
 from enum import auto
 from typing import Dict
 from typing import List
 from typing import Optional
 
+from app.model.register import RegisterDate
+from app.model.register import RegisterUserId
+from app.model.register import RegisterUserName
 from app.model.subject import SubjectType
 from app.model.user.user import User
-from app.utils.datetime import datetime_jst_now
-from app.utils.datetime import parse_datetime_as_jst
 
 
 @dataclass(frozen=True)
@@ -17,6 +17,7 @@ class QuestionId:
     value: int
 
 
+@dataclass(frozen=True)
 class QuestionType(Enum):
     describing = auto()
     selectable = auto()
@@ -122,32 +123,6 @@ class SortTagList:
 
     def to_list(self) -> List[str]:
         return [s.value for s in self.values]
-
-
-@dataclass(frozen=True)
-class RegisterDate:
-    value: DateTime
-
-    @staticmethod
-    def from_string(data: str) -> 'RegisterDate':
-        return RegisterDate(parse_datetime_as_jst(data))
-
-    def to_string(self):
-        return self.value.isoformat()
-
-    @staticmethod
-    def create() -> 'RegisterDate':
-        return RegisterDate(datetime_jst_now())
-
-
-@dataclass(frozen=True)
-class RegisterUserId:
-    value: str
-
-
-@dataclass(frozen=True)
-class RegisterUserName:
-    value: str
 
 
 @dataclass(frozen=True)

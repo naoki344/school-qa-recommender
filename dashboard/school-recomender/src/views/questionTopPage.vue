@@ -9,10 +9,7 @@
 import questionList from "@/components/question/questionList.vue";
 import headerNav from "@/components/common/headerNav.vue";
 export default {
-  name: "topPage",
-  props: {
-    source: String
-  },
+  name: "TopPage",
   components: {
     headerNav,
     questionList,

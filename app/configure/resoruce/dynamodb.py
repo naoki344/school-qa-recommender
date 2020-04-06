@@ -5,8 +5,10 @@ from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.aws.dynamodb import TableResource
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
+from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
+from app.dataaccess.dynamodb.work import WorkDatasource
 
 stage_name = os.environ['STAGE_NAME']
 
@@ -39,3 +41,17 @@ def classmate_datasource(logger: Logger) -> ClassmateDatasource:
     return ClassmateDatasource(client=create_dynamodb_client(
         f'{stage_name}-tt-Classmate', logger),
                                logger=logger)
+
+
+def work_datasource(logger: Logger) -> WorkDatasource:
+    return WorkDatasource(client=create_dynamodb_client(
+        f'{stage_name}-tt-Work', logger),
+                          sequenses_table=sequences_datasource(logger),
+                          logger=logger)
+
+
+def work_comment_datasource(logger: Logger) -> WorkCommentDatasource:
+    return WorkCommentDatasource(client=create_dynamodb_client(
+        f'{stage_name}-tt-WorkComment', logger),
+                                 sequenses_table=sequences_datasource(logger),
+                                 logger=logger)

@@ -1,14 +1,22 @@
 <template>
   <v-card class="elevation-6">
-    <v-toolbar color="yellow darken-1" flat>
-      <v-spacer></v-spacer>
+    <v-toolbar
+      color="yellow darken-1"
+      flat
+    >
+      <v-spacer />
       <v-toolbar-title>
         <strong>Toi-Toyにログイン</strong>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
     </v-toolbar>
     <v-card-text>
-      <p v-if="error" class="alert">メールアドレス または パスワードが間違っています</p>
+      <p
+        v-if="error"
+        class="alert"
+      >
+        メールアドレス または パスワードが間違っています
+      </p>
       <v-form>
         <v-text-field
           v-model="username"
@@ -17,9 +25,10 @@
           hint="ユーザー作成時のメールアドレスを入力"
           label="メールアドレス"
           required
-        ></v-text-field>
+        />
         <v-text-field
           v-model="password"
+          required
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
           name="input-10-1"
@@ -27,13 +36,19 @@
           label="パスワードを入力"
           counter
           @click:append="showPassword = !showPassword"
-          required
-        ></v-text-field>
+        />
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="yellow darken-1" @click="userLogin" x-large block>ログイン</v-btn>
+      <v-spacer />
+      <v-btn
+        color="yellow darken-1"
+        x-large
+        block
+        @click="userLogin"
+      >
+        ログイン
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
