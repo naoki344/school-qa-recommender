@@ -2,8 +2,14 @@
   <v-container>
     <v-col>
       <label for="avatarImage">
-        <v-avatar color="indigo" size="66">
-          <v-icon v-if="cropImg == ''" dark>mdi-account-circle</v-icon>
+        <v-avatar
+          color="indigo"
+          size="66"
+        >
+          <v-icon
+            v-if="cropImg == ''"
+            dark
+          >mdi-account-circle</v-icon>
           <v-img
             v-if="cropImg != ''"
             class="round"
@@ -15,17 +21,22 @@
         <h4>画像を選択</h4>
       </label>
       <input
+        id="avatarImage"
         type="file"
         name="image"
         accept="image/*"
-        id="avatarImage"
+        style="display:none;"
         @change="setImage"
         @click="openDialog"
-        style="display:none;"
-      />
-      <v-dialog v-model="dialog" persistent v-if="imgSrc != ''" max-width="460">
+      >
+      <v-dialog
+        v-if="imgSrc != ''"
+        v-model="dialog"
+        persistent
+        max-width="460"
+      >
         <v-card>
-          <v-divider></v-divider>
+          <v-divider />
           <v-card-text>
             <div
               v-if="imgSrc != ''"
@@ -44,13 +55,23 @@
                 :src="imgSrc"
                 :img-style="{ width: '100%' }"
                 :aspect-ratio="yoko / tate"
-              ></vue-cropper>
+              />
             </div>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="grey lighten-1" @click="dialog=false">戻る</v-btn>
+            <v-btn
+              color="grey lighten-1"
+              @click="dialog=false"
+            >
+              戻る
+            </v-btn>
             <v-spacer />
-            <v-btn color="yellow darken-1" @click="cropImage">適用する</v-btn>
+            <v-btn
+              color="yellow darken-1"
+              @click="cropImage"
+            >
+              適用する
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -63,7 +84,7 @@ import VueCropper from "vue-cropperjs";
 import "cropperjs/dist/cropper.css";
 import "@mdi/font/css/materialdesignicons.css";
 export default {
-  name: "avatarCreate",
+  name: "AvatarCreate",
   components: {
     VueCropper
   },
