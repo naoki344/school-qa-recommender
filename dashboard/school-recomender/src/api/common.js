@@ -2,7 +2,7 @@
 // https://github.com/aws-amplify/amplify-js/tree/master/packages/amazon-cognito-identity-js#usage
 // import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from 'amazon-cognito-identity-js';
 // require('amazon-cognito-js');
-import { Auth,Storage } from 'aws-amplify';
+import { Auth, Storage } from "aws-amplify";
 
 const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
 const AWS = require("aws-sdk");
@@ -13,19 +13,19 @@ var cognitoConfig = {
   appClientId: process.env.VUE_APP_COGNITO_APP_CLIENT_ID,
   identifyPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
   loginsKey: process.env.VUE_APP_LOGINS_KEY
-}
+};
 
 export default {
   userLogin(username, password) {
     return new Promise((resolve, reject) => {
       Auth.signIn(username, password)
-      .then((data) => {
-        console.log(data);
-        resolve(data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
+        .then(data => {
+          console.log(data);
+          resolve(data);
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   },
   isUserLogin() {
@@ -37,8 +37,10 @@ export default {
       userPoolData
     );
     const cognitoUser = gCognitoUserPool.getCurrentUser();
-    if (cognitoUser == null) {return false}
-    return true
+    if (cognitoUser == null) {
+      return false;
+    }
+    return true;
   },
   userSignUp(inputData) {
     return new Promise((resolve, reject) => {
@@ -71,10 +73,7 @@ export default {
         userAttributeList,
         null,
         function(err, result) {
-          console.log("err: ", err);
-          console.log("result: ", result);
           if (err) {
-            alert("sorry, your try to sign up has failed.");
             reject(err);
           }
           resolve(result.user);
@@ -110,14 +109,7 @@ export default {
       );
     });
   },
-  getApiData(
-    apiUrl,
-    method,
-    pathTemplate,
-    pathParams,
-    queryParams,
-    body
-  ) {
+  getApiData(apiUrl, method, pathTemplate, pathParams, queryParams, body) {
     const userPoolData = {
       UserPoolId: cognitoConfig.userPoolId,
       ClientId: cognitoConfig.appClientId
@@ -198,8 +190,7 @@ export default {
     queryParams,
     body
   ) {
-    const apiUrl =
-      process.env.VUE_APP_TOITOY_API_URL;
+    const apiUrl = process.env.VUE_APP_TOITOY_API_URL;
     return this.getApiData(
       apiUrl,
       method,
@@ -211,9 +202,9 @@ export default {
   },
   getS3PublicFile(filePath) {
     return new Promise((resolve, reject) => {
-      Storage.configure({ level: 'public' });
-      Storage.get(filePath, {expires: 3600})
-        .then((result) => {
+      Storage.configure({ level: "public" });
+      Storage.get(filePath, { expires: 3600 })
+        .then(result => {
           resolve(result);
         })
         .catch(err => {
@@ -224,15 +215,15 @@ export default {
   putS3PublicFile(file) {
     return new Promise((resolve, reject) => {
       const dt = new Date();
-      const filePath = dt.getTime() + '-' + file.name;
-      Storage.configure({ level: 'public' });
-      Storage.put('' + filePath, file)
-        .then((result) => {
+      const filePath = dt.getTime() + "-" + file.name;
+      Storage.configure({ level: "public" });
+      Storage.put("" + filePath, file)
+        .then(result => {
           resolve(result);
         })
         .catch(err => {
           reject(err);
         });
     });
-  },
+  }
 };

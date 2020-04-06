@@ -11,6 +11,12 @@
       <v-spacer />
     </v-toolbar>
     <v-card-text>
+      <p
+        v-if="error"
+        class="alert"
+      >
+        メールアドレス または パスワードが間違っています
+      </p>
       <v-form>
         <v-text-field
           v-model="username"
@@ -18,9 +24,11 @@
           counter="25"
           hint="ユーザー作成時のメールアドレスを入力"
           label="メールアドレス"
+          required
         />
         <v-text-field
           v-model="password"
+          required
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
           name="input-10-1"
@@ -54,7 +62,8 @@ export default {
   data: () => ({
     username: "",
     password: "",
-    showPassword: false
+    showPassword: false,
+    error: false
   }),
   methods: {
     userLogin() {
@@ -68,9 +77,18 @@ export default {
         })
         .catch(err => {
           console.log(err);
+          this.error = true;
+          this.password = "";
         });
     }
   }
 };
 </script>
 
+<style lang="scss">
+.alert {
+  background-color: #fcc;
+  padding: 5px;
+  border: 1px solid #f33;
+}
+</style>
