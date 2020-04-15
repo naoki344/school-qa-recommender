@@ -123,7 +123,10 @@
           class="user-register-input-form"
           :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPasswordConfirm ? 'text' : 'password'"
-          :rules="[required, v => v === password || 'パスワードが一致していません',]"
+          :rules="[
+            required,
+            v => v === password || 'パスワードが一致していません'
+          ]"
           name="input-10-1"
           prepend-icon="mdi-key"
           label="パスワード(確認)"
@@ -195,10 +198,13 @@ export default {
           lastNameKana: this.lastNameKana,
           username: this.username,
           password: this.password,
-          avatarImageDataUrl: this.avatarImageDataUrl,
+          avatarImageDataUrl: this.avatarImageDataUrl
         })
         .then(() => {
-          this.$router.push({ path: "/userVerify", query: { "email": this.email } });
+          this.$router.push({
+            path: "/userVerify",
+            query: { email: this.email }
+          });
         })
         .catch(err => {
           this.errorMessage = err.message;
@@ -220,15 +226,15 @@ export default {
       }
     },
     moveNext(event) {
-	  if (event.keyCode !== 13) {
-        return
+      if (event.keyCode !== 13) {
+        return;
       }
       const index = this.findIndex(event.target);
       this.moveFocus(index + 1);
     },
     changeAvatorImage(data) {
       this.avatarImageDataUrl = data;
-      console.log(this.avatarImageDataUrl)
+      console.log(this.avatarImageDataUrl);
     }
   }
 };

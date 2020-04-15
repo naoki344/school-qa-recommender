@@ -38,6 +38,7 @@
         <div v-if="isShowClassroomContent(myClass)">
           <v-subheader>ワーク一覧</v-subheader>
           <v-divider />
+
           <v-list
             subheader
             two-line
@@ -56,15 +57,13 @@
                 <div class="classroom-work-list-item-image">
                   <v-img
                     v-if="getImageUrl(item)"
-                    class=""
+                    class
                     width="80"
                     min-height="60"
                     :src="imageList[item.image_url]"
                   />
                 </div>
-                <v-list-item-content
-                  class="pa-0"
-                >
+                <v-list-item-content class="pa-0">
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                   <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
                 </v-list-item-content>
@@ -103,26 +102,26 @@ export default {
       file: null,
       url: "",
       swiperOptionTop: {
-        slidesPerView: 'auto',
-        centeredSlides: true,
+        slidesPerView: "auto",
+        centeredSlides: true
       },
       imageList: [],
-      selectedWork: '',
-      selectedClass: '',
+      selectedWork: "",
+      selectedClass: "",
       swiperOptionThumbs: {
         speed: 500,
         slidesPerView: "auto",
         spaceBetween: 20,
-        centeredSlides: true,
+        centeredSlides: true
       },
-      workDialogVisible: false,
+      workDialogVisible: false
     };
   },
   computed: {
     ...mapState({
       classroomList: state => state.classroom.myClassroomList,
-      classroomWorkList: state => state.classroom.classroomWorkList,
-    }),
+      classroomWorkList: state => state.classroom.classroomWorkList
+    })
   },
   mounted() {
     this.$nextTick(() => {
@@ -135,8 +134,8 @@ export default {
   },
   methods: {
     isShowClassroomContent(classroom) {
-      if (classroom.classmate.join_status == 'approved') return true;
-      if (classroom.classmate.join_status == 'owner') return true;
+      if (classroom.classmate.join_status == "approved") return true;
+      if (classroom.classmate.join_status == "owner") return true;
       return false;
     },
     openWorkDetail(work, myClass) {
@@ -176,18 +175,23 @@ export default {
         });
     },
     getImageUrl(obj) {
-      if (obj["image_url"] == null) { return false }
+      if (obj["image_url"] == null) {
+        return false;
+      }
       const path = obj["image_url"];
-      if (this.imageList[path] != null) { return true }
-      this.$store.dispatch("getS3PublicFile", path)
-        .then((url) => {
+      if (this.imageList[path] != null) {
+        return true;
+      }
+      this.$store
+        .dispatch("getS3PublicFile", path)
+        .then(url => {
           this.$set(this.imageList, path, url);
         })
         .catch(() => {
           return false;
         });
       return true;
-    },
+    }
   }
 };
 </script>
@@ -210,31 +214,32 @@ export default {
     width: 80%;
   }
   .classroom-swiper-thumbs-image {
-     width: 100%;
-     max-height: 180px;
-     margin: auto;
-     margin-bottom: 15px;
+    width: 100%;
+    max-height: 180px;
+    margin: auto;
+    margin-bottom: 15px;
   }
   .v-card {
     border-radius: 12px;
   }
   .v-card__title {
     padding: 12px;
-	display: flex;
+    display: flex;
     justify-content: flex-end;
-	background-color: rgb(0, 0, 0, 0.5);
-	h3 {
+    background-color: rgb(0, 0, 0, 0.5);
+    h3 {
       font-weight: 300;
-	  marign-bottom: 0;
+      marign-bottom: 0;
       line-height: 1;
-	}
+    }
   }
 }
-.swiper-slide-next, .swiper-slide-prev {
+.swiper-slide-next,
+.swiper-slide-prev {
   .classroom-swiper-thumbs-box {
     .classroom-swiper-thumbs-image {
-       max-height: 160px;
-	   margin: 10px 0;
+      max-height: 160px;
+      margin: 10px 0;
     }
   }
 }
@@ -248,7 +253,7 @@ export default {
   .v-list-item__title {
     font-size: 1.4;
     font-weight: 600;
-	margin-bottom: 5px;
+    margin-bottom: 5px;
   }
   .v-list-item__content {
     margin-left: 10px;

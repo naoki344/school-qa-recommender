@@ -1,6 +1,9 @@
 <template>
   <v-card class="elevation-6">
-    <v-toolbar color="yellow darken-1" flat>
+    <v-toolbar
+      color="yellow darken-1"
+      flat
+    >
       <v-spacer />
       <v-toolbar-title>
         <strong>Toi-Toyにログイン</strong>
@@ -8,7 +11,10 @@
       <v-spacer />
     </v-toolbar>
     <v-card-text>
-      <p v-if="error" class="alert">
+      <p
+        v-if="error"
+        class="alert"
+      >
         メールアドレス または パスワードが間違っています
       </p>
       <v-form>
