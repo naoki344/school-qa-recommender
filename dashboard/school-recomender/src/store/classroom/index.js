@@ -21,7 +21,6 @@ export default {
         const pathTemplate = '/classroom/my_classroom'
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "GET",
             pathTemplate,
             {},
@@ -49,7 +48,6 @@ export default {
         const pathTemplate = '/classroom/{classroom_id}/work'
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "GET",
             pathTemplate,
             {"classroom_id": classroom_id},
@@ -70,7 +68,6 @@ export default {
         const pathTemplate = '/classroom/{classroom_id}/work/{work_id}'
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "GET",
             pathTemplate,
             {"classroom_id": classroomId, "work_id": workId},
@@ -90,7 +87,6 @@ export default {
         const pathTemplate = '/classroom/{classroom_id}/work/{work_id}/comment'
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "GET",
             pathTemplate,
             {"classroom_id": classroomId, "work_id": workId},
@@ -110,7 +106,6 @@ export default {
         const pathTemplate = '/classroom/{classroom_id}/work/{work_id}/comment'
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "POST",
             pathTemplate,
             {"classroom_id": classroomId, "work_id": workId},
@@ -131,7 +126,6 @@ export default {
         return new Promise((resolve, reject) => {
           schoolApiClient
             .fetchRestAPI(
-              rootState.cognitoUser,
               "POST",
               pathTemplate,
               {"classroom_id": classroomId},

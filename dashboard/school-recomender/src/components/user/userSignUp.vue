@@ -15,7 +15,10 @@
       <v-spacer />
     </v-toolbar>
     <p>{{ errorMessage }}</p>
-    <avatarCreate />
+    <avatarCreate
+      :croped-image-url="avatarImageDataUrl"
+      @changeCropedImage="changeAvatorImage"
+    />
     <v-card-text>
       <v-form
         ref="form"
@@ -30,7 +33,7 @@
           label="ニックネーム(表示名)"
           :rules="[required]"
           required
-          @keyup.prevent.enter="moveNext"
+          @keydown.prevent.enter="moveNext"
         />
         <v-row>
           <v-col>
@@ -42,7 +45,7 @@
               label="姓"
               :rules="[required]"
               required
-              @keyup.prevent.enter="moveNext"
+              @keydown.prevent.enter="moveNext"
             />
           </v-col>
           <v-col>
@@ -54,7 +57,7 @@
               required
               label="名"
               :rules="[required]"
-              @keyup.prevent.enter="moveNext"
+              @keydown.prevent.enter="moveNext"
             />
           </v-col>
         </v-row>
@@ -68,7 +71,7 @@
               label="姓(カナ)"
               :rules="[required]"
               required
-              @keyup.prevent.enter="moveNext"
+              @keydown.prevent.enter="moveNext"
             />
           </v-col>
           <v-col>
@@ -80,7 +83,7 @@
               label="名(カナ)"
               :rules="[required]"
               required
-              @keyup.prevent.enter="moveNext"
+              @keydown.prevent.enter="moveNext"
             />
           </v-col>
         </v-row>
@@ -91,7 +94,7 @@
           hint="メールアドレスを入力"
           label="Email"
           :rules="[required]"
-          @keyup.prevent.enter="moveNext"
+          @keydown.prevent.enter="moveNext"
         />
         <v-text-field
           v-model="emailConfirm"
@@ -99,7 +102,7 @@
           prepend-icon="mdi-email"
           label="Email(確認)"
           :rules="[required, v => v === email || 'メールアドレスが一致していません',]"
-          @keyup.prevent.enter="moveNext"
+          @keydown.prevent.enter="moveNext"
         />
         <v-text-field
           v-model="password"
@@ -112,7 +115,7 @@
           :rules="[required]"
           counter
           required
-          @keyup.prevent.enter="moveNext"
+          @keydown.prevent.enter="moveNext"
           @click:append="showPassword = !showPassword"
         />
         <v-text-field
@@ -172,7 +175,8 @@ export default {
     showPasswordConfirm: false,
     buttonActive: false,
     required: value => !!value || "入力されていません",
-    errorMessage: ""
+    errorMessage: "",
+    avatarImageDataUrl: ""
   }),
   computed: {
     elements() {
@@ -190,16 +194,18 @@ export default {
           firstNameKana: this.firstNameKana,
           lastNameKana: this.lastNameKana,
           username: this.username,
-          password: this.password
+          password: this.password,
+          avatarImageDataUrl: this.avatarImageDataUrl,
         })
         .then(() => {
-          this.$router.push({ path: "/userConfirm" });
+          this.$router.push({ path: "/userVerify", query: { "email": this.email } });
         })
         .catch(err => {
           this.errorMessage = err.message;
         });
     },
     validation() {
+      if (this.$refs.form == null) return;
       this.buttonActive = this.$refs.form.validate();
       this.$refs.form.resetValidation();
     },
@@ -214,8 +220,15 @@ export default {
       }
     },
     moveNext(event) {
+	  if (event.keyCode !== 13) {
+        return
+      }
       const index = this.findIndex(event.target);
       this.moveFocus(index + 1);
+    },
+    changeAvatorImage(data) {
+      this.avatarImageDataUrl = data;
+      console.log(this.avatarImageDataUrl)
     }
   }
 };
