@@ -92,6 +92,11 @@ class RegisterDate:
 
 
 @dataclass(frozen=True)
+class UserAvatarUrl:
+    value: str
+
+
+@dataclass(frozen=True)
 class User:
     user_id: UserId
     nickname: Nickname

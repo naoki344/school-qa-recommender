@@ -30,7 +30,7 @@ class CreateWorkFromQuestionTest(TestCase):
             'question_sentence': {
                 'text': 'Question1 XXXX is ???',
                 'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+                'image_url': 'https://xxxxxxxxxxxxxxx1.jpg'
             },
             'question_answer': {
                 'text': 'Question1 XXXX is ???',
@@ -123,6 +123,7 @@ class CreateWorkFromQuestionTest(TestCase):
             'classroom_id': 20,
             'title': 'work title test',
             'caption': 'caption test',
+            'image_url': 'https://xxxxxxxxxxxxxxx1.jpg',
             'origin_id': 1,
             'origin_type': 'question',
             'register_date': '2020-02-26T00:18:16.874000+09:00',
@@ -147,7 +148,7 @@ class FindClassroomWorkTest(TestCase):
             'question_sentence': {
                 'text': 'Question1 XXXX is ???',
                 'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+                'image_url': 'https://xxxxxxxxxxxxxxx1.jpg'
             },
             'question_answer': {
                 'text': 'Question1 XXXX is ???',
@@ -183,6 +184,7 @@ class FindClassroomWorkTest(TestCase):
             'classroom_id': 20,
             'title': 'work title test',
             'caption': 'caption test',
+            'image_url': 'https://xxxxxxxxxxxxxxx1.jpg',
             'origin_id': 1,
             'origin_type': 'question',
             'register_date': '2020-02-26T00:18:16.874000+09:00',

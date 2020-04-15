@@ -1,6 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 
+from app.application.usecase.user import UploadUserAvatarImage
 from app.application.query.user import UserQueryService
 from app.application.usecase.classroom import ApproveJoinClassroomRequest
 from app.application.usecase.classroom import CreateClassroom
@@ -30,6 +31,7 @@ from app.configure.usecase.question import update_question
 from app.configure.usecase.work import create_work_from_question
 from app.configure.usecase.work import find_classroom_work
 from app.configure.usecase.work import get_classroom_work_list
+from app.configure.usecase.user import upload_user_avatar_image
 
 
 class QuestionUsecaseTest(TestCase):
@@ -88,3 +90,7 @@ class QuestionUsecaseTest(TestCase):
         self.assertEqual(
             isinstance(get_work_comment_list(logger=MagicMock()),
                        GetWorkCommentList), True)
+
+        self.assertEqual(
+            isinstance(upload_user_avatar_image(logger=MagicMock()),
+                       UploadUserAvatarImage), True)

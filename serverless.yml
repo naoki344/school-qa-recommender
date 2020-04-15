@@ -216,6 +216,18 @@ functions:
       TYPE: API
       SERVICE: Work
 
+  LambdaApiUploadUserAvatarImage:
+    handler: ${self:custom.lambdaHandlerPrefix}api/user.upload_user_avatar_image_handler
+    name: ${self:custom.resourcePrefix}-upload-user-avatar-image
+    events:
+      - http:
+          path: public/user/avatar
+          method: PUT
+          cors: true
+    tags:
+      TYPE: API
+      SERVICE: User
+
 resources:
   - ${file(serverless/resources/outputs.yml)}
   - ${file(serverless/resources/dynamodb.yml)}
