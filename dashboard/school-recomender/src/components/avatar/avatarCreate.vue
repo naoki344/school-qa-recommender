@@ -7,13 +7,13 @@
           size="66"
         >
           <v-icon
-            v-if="cropImg == ''"
+            v-if="cropedImageUrl == ''"
             dark
           >mdi-account-circle</v-icon>
           <v-img
-            v-if="cropImg != ''"
+            v-if="cropedImageUrl != ''"
             class="round"
-            :src="cropImg"
+            :src="cropedImageUrl"
             style="width: yoko; height: tate; border: 1px solid gray;"
             alt="Cropped Image"
           />
@@ -88,20 +88,22 @@ export default {
   components: {
     VueCropper
   },
+  props: {
+    cropedImageUrl: {
+      type: String,
+      required: true
+    },
+  },
   data() {
     return {
       yoko: 1,
       tate: 1,
       imgSrc: "",
-      cropImg: "",
       filename: "",
       dialog: false
     };
   },
   methods: {
-    appendIconCallback() {
-      alert("click:append");
-    },
     openDialog() {
       this.dialog = true;
     },
@@ -128,7 +130,8 @@ export default {
       }
     },
     cropImage() {
-      this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+      const cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+      this.$emit('changeCropedImage', cropImg);
       this.dialog = false;
     }
   }

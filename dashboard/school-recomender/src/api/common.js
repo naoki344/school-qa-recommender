@@ -3,10 +3,12 @@
 // import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from 'amazon-cognito-identity-js';
 // require('amazon-cognito-js');
 import { Auth, Storage } from "aws-amplify";
+import axios from "axios";
 
 const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
 const AWS = require("aws-sdk");
 const apigClientFactory = require("aws-api-gateway-client").default;
+
 var cognitoConfig = {
   region: process.env.VUE_APP_REGION,
   userPoolId: process.env.VUE_APP_COGNITO_USER_POOL_ID,
@@ -42,6 +44,16 @@ export default {
     }
     return true;
   },
+  getCurrentUser() {
+    const userPoolData = {
+      UserPoolId: cognitoConfig.userPoolId,
+      ClientId: cognitoConfig.appClientId
+    };
+    const gCognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool(
+      userPoolData
+    );
+    return gCognitoUserPool.getCurrentUser();
+  },
   userSignUp(inputData) {
     return new Promise((resolve, reject) => {
       const userPoolData = {
@@ -57,7 +69,8 @@ export default {
         { key: "lastName", name: "custom:last_name" },
         { key: "firstName", name: "custom:first_name" },
         { key: "firstNameKana", name: "custom:first_name_kana" },
-        { key: "lastNameKana", name: "custom:last_name_kana" }
+        { key: "lastNameKana", name: "custom:last_name_kana" },
+        { key: "avatarUrl", name: "custom:avatar_url" }
       ];
       const userAttributeList = attributeList.map(attribute => {
         return new AmazonCognitoIdentity.CognitoUserAttribute({
@@ -183,7 +196,6 @@ export default {
     });
   },
   fetchRestAPI(
-    cognitoUser,
     method,
     pathTemplate,
     pathParams,
@@ -223,6 +235,22 @@ export default {
         })
         .catch(err => {
           reject(err);
+        });
+    });
+  },
+  publicApiPutClient(path, data) {
+    return new Promise((resolve, reject) => {
+      const api = axios.create({
+        baseURL: process.env.VUE_APP_TOITOY_API_URL
+      });
+      console.log(path);
+      api.put(path, data
+	  ).then((response) => {
+          resolve(response.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          reject("ユーザー画像のアップロードに失敗しました")
         });
     });
   }

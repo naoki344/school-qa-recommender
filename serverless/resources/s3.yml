@@ -13,3 +13,22 @@ Resources:
               - POST
             AllowedHeaders:
               - '*'
+  ToiToyPublicImageStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.stageName}-toi-toy-public-image-storage
+      AccessControl: Private
+  ToiToyPublicImageStorageBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: ToiToyPublicImageStorage
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+            - s3:GetObject
+            Resource:
+              Fn::Join: ["", ["arn:aws:s3:::",{"Ref": "ToiToyPublicImageStorage"},"/*"]]
