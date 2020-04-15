@@ -50,7 +50,7 @@ export default {
         }
         const cognitoUser = await schoolApiClient.userSignUp(inputData)
       } catch(err) {
-        throw new Error(err.message)
+        throw new Error(err)
       }
     }
   }

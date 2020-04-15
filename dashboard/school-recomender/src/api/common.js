@@ -246,12 +246,11 @@ export default {
       console.log(path);
       api.put(path, data
 	  ).then((response) => {
-          console.log(response);
           resolve(response.data);
         })
         .catch((err) => {
           console.log(err);
-          reject(err)
+          reject("ユーザー画像のアップロードに失敗しました")
         });
     });
   }
