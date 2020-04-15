@@ -17,7 +17,6 @@ export default {
       const pathParams = {};
       schoolApiClient
         .fetchRestAPI(
-          rootState.cognitoUser,
           "GET",
           pathTemplate,
           pathParams,
@@ -34,7 +33,6 @@ export default {
         const pathParams = {questionId: questionId};
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "GET",
             pathTemplate,
             pathParams,
@@ -58,7 +56,6 @@ export default {
         const pathTemplate = '/question'
         schoolApiClient
           .fetchRestAPI(
-            rootState.cognitoUser,
             "POST",
             pathTemplate,
             {},

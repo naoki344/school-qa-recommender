@@ -3,12 +3,13 @@ import schoolApiClient from "@/api/common.js";
 export default {
   namespaced: true,
   state: {
-    loginUser: {}
+    loginUser: schoolApiClient.getCurrentUser(),
+    registeredUser: {}
   },
   mutations: {
     setLoginUser(state, data) {
       state.loginUser = data;
-    }
+    },
   },
   actions: {
     userLogin({ commit }, { username, password }) {
@@ -39,18 +40,18 @@ export default {
           });
       });
     },
-    userSignUp({ commit }, inputData) {
-      return new Promise((resolve, reject) => {
-        schoolApiClient
-          .userSignUp(inputData)
-          .then(cognitoUser => {
-            commit("setLoginUser", cognitoUser);
-            resolve();
-          })
-          .catch(err => {
-            reject(err);
-          });
-      });
+    async userSignUp({ commit }, inputData) {
+      try {
+        if (inputData.avatarImageDataUrl != '') {
+          const res = await schoolApiClient.publicApiPutClient(
+              "/public/user/avatar",
+              inputData.avatarImageDataUrl)
+          inputData["avatarUrl"] = res["avatar_url"]
+        }
+        const cognitoUser = await schoolApiClient.userSignUp(inputData)
+      } catch(err) {
+        throw new Error(err)
+      }
     }
   }
 };

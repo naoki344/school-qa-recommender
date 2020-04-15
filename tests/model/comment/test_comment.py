@@ -171,7 +171,7 @@ class WorkCommentListTest(TestCase):
                 },
             ],
             "topic_message_dict": {
-                101: [
+                '101': [
                     {
                         'comment_id': 103,
                         'comment_type': 'message',

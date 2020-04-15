@@ -45,15 +45,20 @@
 </template>
 
 <script>
+import { mapGetter } from "vuex";
 import "@mdi/font/css/materialdesignicons.css";
 export default {
   name: "UserVerify",
   data: () => ({
-    email: "",
     verificationCode: "",
     isFailure: false,
     error_class: "alert"
   }),
+  computed: {
+    email() {
+      return this.$route.query.email
+    }
+  },
   methods: {
     userVerify() {
       this.$store
