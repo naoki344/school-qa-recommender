@@ -1,6 +1,7 @@
 import userStore from "@/store/user/index.js";
 import questionStore from "@/store/question/index.js";
 import classroomStore from "@/store/classroom/index.js";
+import { Storage } from "aws-amplify";
 
 import Vue from "vue";
 import Vuex from "vuex";
