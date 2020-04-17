@@ -4,6 +4,14 @@
   </v-app>
 </template>
 
+<script>
+export default {
+  async created() {
+    await this.$store.dispatch("user/fetchLoginUserInfo")
+  },
+}
+</script>
+
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

@@ -104,7 +104,7 @@ export default {
         icon: "mdi-account-question",
         text: "トイ（TOI）"
       },
-      { link: "/logout", icon: "mdi-logout", text: "ログアウト" }
+      { link: "/userLogout", icon: "mdi-logout", text: "ログアウト" }
     ]
   })
 };
