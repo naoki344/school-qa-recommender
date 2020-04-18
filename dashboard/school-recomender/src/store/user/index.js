@@ -119,6 +119,16 @@ export default {
             commit("setLoginUser", undefined)
           });
         });
+    },
+    fetchMyAvatarImageUrl({ commit, state }) {
+      const userId = state.loginUser.attributes["custom:avatar_url"]
+      if (userId === undefined) {
+        return ""
+	  }
+      return userId
+    },
+    userAvatarImageUrl({ commit, state }, userId) {
+      return `${process.env.VUE_APP_TOITOY_PUBLIC_IMAGE_STORAGE_URL}/user/${userId}/avatar_image`
     }
   }
 };

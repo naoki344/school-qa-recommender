@@ -84,10 +84,18 @@
       <v-toolbar-title style="width: 100%; display: flex; padding: 0; justify-content: center;">
         <img src="@/assets/toi-toy-logo-wide-s--no-border-small.png">
       </v-toolbar-title>
-      <v-spacer />
-      <v-btn icon>
-        <v-icon>mdi-bell</v-icon>
-      </v-btn>
+      <v-avatar
+        size="40"
+      >
+        <v-icon
+          v-if="myAvatarImageUrl == ''"
+        >mdi-account</v-icon>
+        <v-img
+          v-if="myAvatarImageUrl != ''"
+          :src="myAvatarImageUrl"
+          alt="Cropped Image"
+        />
+      </v-avatar>
     </v-app-bar>
   </v-container>
 </template>
@@ -105,7 +113,18 @@ export default {
         text: "トイ（TOI）"
       },
       { link: "/userLogout", icon: "mdi-logout", text: "ログアウト" }
-    ]
-  })
+    ],
+    myAvatarImageUrl: "",
+  }),
+  mounted() {
+    this.$store.dispatch("user/fetchMyAvatarImageUrl")
+      .then((res) => {
+          console.log(res);
+		  this.myAvatarImageUrl = res;
+      })
+      .catch(() => {
+          return "";
+      });
+  }
 };
 </script>
