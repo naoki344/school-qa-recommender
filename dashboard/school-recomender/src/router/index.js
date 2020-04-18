@@ -61,6 +61,10 @@ router.beforeEach(async (to, from, next) => {
     .catch(err => {
       return false;
     });
+  if (to.name === "userSignUpPage" || to.name === "userVerifyPage") {
+    next();
+    return
+  }
   if (to.name === "userLoginPage") {
     if (isLogin) {
       next('/');
@@ -70,12 +74,10 @@ router.beforeEach(async (to, from, next) => {
     return
   }
   if (!isLogin) {
-    if (to.name !== "userSignUpPage" && to.name !== "userVerifyPage") {
-      next('/userLogin');
-      return
-    }
-    next();
+    next('/userLogin');
+    return
   }
+  next();
 });
 
 export default router;
