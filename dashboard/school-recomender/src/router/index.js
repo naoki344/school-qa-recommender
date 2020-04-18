@@ -64,12 +64,16 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === "userLoginPage") {
     if (isLogin) {
       next('/');
-    } else {
-      next();
+      return
     }
-  } else if (!isLogin) {
-    next('/userLogin');
-  }else{
+    next();
+    return
+  }
+  if (!isLogin) {
+    if (to.name !== "userSignUpPage" && to.name !== "userVerifyPage") {
+      next('/userLogin');
+      return
+    }
     next();
   }
 });
