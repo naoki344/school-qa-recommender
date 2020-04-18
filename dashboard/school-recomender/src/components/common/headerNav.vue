@@ -89,7 +89,9 @@
       >
         <v-icon
           v-if="myAvatarImageUrl == ''"
-        >mdi-account</v-icon>
+        >
+          mdi-account
+        </v-icon>
         <v-img
           v-if="myAvatarImageUrl != ''"
           :src="myAvatarImageUrl"
