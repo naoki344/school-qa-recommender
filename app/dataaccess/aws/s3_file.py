@@ -1,4 +1,5 @@
 import boto3
+import mimetypes
 
 
 class S3FileClient:
@@ -20,3 +21,20 @@ class S3FileClient:
                 Bucket=self.bucket_name)
         resion = response["LocationConstraint"]
         return f"https://{self.bucket_name}.s3-{resion}.amazonaws.com/{s3_key}"
+
+    def get(self, s3_key: str) -> bytes:
+        '''S3からデータを取得する'''
+        result = self.s3_bucket.Object(s3_key).get()
+        data = result['Body'].read()
+        return data
+
+    def get_list(self, prefix: str):
+        return self.s3_bucket.objects.filter(Prefix=prefix)
+
+    def copy(self, from_file, to_bucket, to_file):
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket(to_bucket)
+        bucket.Object(to_file).copy({
+            'Bucket': self.s3_bucket_name,
+            'Key': from_file
+        })
