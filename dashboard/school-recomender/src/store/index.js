@@ -1,7 +1,7 @@
 import userStore from "@/store/user/index.js";
 import questionStore from "@/store/question/index.js";
 import classroomStore from "@/store/classroom/index.js";
-import schoolApiClient from "@/api/common.js";
+import { Storage } from "aws-amplify";
 
 import Vue from "vue";
 import Vuex from "vuex";
@@ -17,8 +17,8 @@ export default new Vuex.Store({
   actions: {
     getS3PublicFile(_, filePath) {
       return new Promise((resolve, reject) => {
-        schoolApiClient
-          .getS3PublicFile(filePath)
+        Storage.configure({ level: "public" });
+        Storage.get(filePath, { expires: 3600 })
           .then((url) => {
             resolve(url);
           })
@@ -30,8 +30,10 @@ export default new Vuex.Store({
     },
     putS3PublicFile(_, {file}) {
       return new Promise((resolve, reject) => {
-        schoolApiClient
-          .putS3PublicFile(file)
+        const dt = new Date();
+        const filePath = dt.getTime() + "-" + file.name;
+        Storage.configure({ level: "public" });
+        Storage.put("" + filePath, file)
           .then((result) => {
             resolve(result);
           })

@@ -8,13 +8,6 @@ class S3FileClient:
         self.s3 = boto3.resource('s3')
         self.s3_bucket = self.s3.Bucket(bucket_name)
 
-    def upload_file(self, s3_key: str, data: bytes, content_type: str) -> str:
-        self.s3_bucket.put_object(
-                Key=s3_key,
-                Body=data,
-                ContentType=content_type)
-        return self.get_obj_url(s3_key)
-
     def get_obj_url(self, s3_key: str):
         client = boto3.client('s3')
         response = client.get_bucket_location(
@@ -31,10 +24,10 @@ class S3FileClient:
     def get_list(self, prefix: str):
         return self.s3_bucket.objects.filter(Prefix=prefix)
 
-    def copy(self, from_file, to_bucket, to_file):
+    def copy(self, from_s3_key, to_bucket, to_s3_key):
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(to_bucket)
-        bucket.Object(to_file).copy({
-            'Bucket': self.s3_bucket_name,
-            'Key': from_file
+        bucket.Object(to_s3_key).copy({
+            'Bucket': self.bucket_name,
+            'Key': from_s3_key
         })
