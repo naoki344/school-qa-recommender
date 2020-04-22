@@ -38,7 +38,6 @@
         <div v-if="isShowClassroomContent(myClass)">
           <v-subheader>ワーク一覧</v-subheader>
           <v-divider />
-
           <v-list
             subheader
             two-line
@@ -229,7 +228,6 @@ export default {
     background-color: rgb(0, 0, 0, 0.5);
     h3 {
       font-weight: 300;
-      marign-bottom: 0;
       line-height: 1;
     }
   }

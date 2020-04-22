@@ -5,20 +5,23 @@ const userApiClient = {
   userSignUp(inputData) {
     return new Promise((resolve, reject) => {
       let attributes = {
-          "email": inputData.email,
-          "nickname": inputData.nickname,
-          "custom:last_name": inputData.lastName,
-          "custom:first_name": inputData.firstName,
-          "custom:last_name_kana": inputData.lastNameKana,
-          "custom:first_name_kana": inputData.firstNameKana
-      }
+        email: inputData.email,
+        nickname: inputData.nickname,
+        "custom:last_name": inputData.lastName,
+        "custom:first_name": inputData.firstName,
+        "custom:last_name_kana": inputData.lastNameKana,
+        "custom:first_name_kana": inputData.firstNameKana
+      };
       if (inputData.avatarUrl != null) {
-        attributes = { ...attributes, "custom:avatar_url": inputData.avatarUrl }
+        attributes = {
+          ...attributes,
+          "custom:avatar_url": inputData.avatarUrl
+        };
       }
       Auth.signUp({
         username: inputData.email,
         password: inputData.password,
-        attributes: attributes,
+        attributes: attributes
       })
         .then(() => {
           resolve();
@@ -36,17 +39,18 @@ const userApiClient = {
         baseURL: process.env.VUE_APP_TOITOY_API_URL
       });
       console.log(path);
-      api.put(path, data
-	  ).then((response) => {
+      api
+        .put(path, data)
+        .then(response => {
           resolve(response.data);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
-          reject("ユーザー画像のアップロードに失敗しました")
+          reject("ユーザー画像のアップロードに失敗しました");
         });
     });
   }
-}
+};
 
 export default {
   namespaced: true,
@@ -57,7 +61,12 @@ export default {
   mutations: {
     setLoginUser(state, data) {
       state.loginUser = data;
-    },
+    }
+  },
+  getters: {
+    userAvatarImageUrl: state => userId => {
+      return `${process.env.VUE_APP_TOITOY_PUBLIC_IMAGE_STORAGE_URL}/user/${userId}/avatar_image`;
+    }
   },
   actions: {
     userLogin({ commit }, { username, password }) {
@@ -67,7 +76,7 @@ export default {
             commit("setLoginUser", cognitoUser);
             resolve();
           })
-          .catch((err) => {
+          .catch(err => {
             reject(err);
           });
       });
@@ -76,20 +85,17 @@ export default {
       return new Promise((resolve, reject) => {
         Auth.signOut()
           .then(() => {
-            commit("setLoginUser", undefined)
+            commit("setLoginUser", undefined);
             resolve();
           })
-          .catch((err) => {
+          .catch(err => {
             reject(err);
           });
       });
     },
     userVerify(_, { email, verificationCode }) {
       return new Promise((resolve, reject) => {
-	    Auth.confirmSignUp(
-          email,
-          verificationCode
-	    )
+        Auth.confirmSignUp(email, verificationCode)
           .then(() => {
             resolve();
           })
@@ -100,37 +106,35 @@ export default {
     },
     async userSignUp({ commit }, inputData) {
       try {
-        if (inputData.avatarImageDataUrl != '') {
+        if (inputData.avatarImageDataUrl != "") {
           const res = await userApiClient.publicApiPutClient(
-              "/public/user/avatar",
-              inputData.avatarImageDataUrl)
-          inputData["avatarUrl"] = res["avatar_url"]
+            "/public/user/avatar",
+            inputData.avatarImageDataUrl
+          );
+          inputData["avatarUrl"] = res["avatar_url"];
         }
-        const cognitoUser = await userApiClient.userSignUp(inputData)
-      } catch(err) {
-        throw new Error(err)
+        const cognitoUser = await userApiClient.userSignUp(inputData);
+      } catch (err) {
+        throw new Error(err);
       }
     },
     fetchLoginUserInfo({ commit }) {
       return new Promise((resolve, reject) => {
         Auth.currentAuthenticatedUser()
           .then(user => {
-            commit("setLoginUser", user)
+            commit("setLoginUser", user);
           })
           .catch(() => {
-            commit("setLoginUser", undefined)
+            commit("setLoginUser", undefined);
           });
-        });
+      });
     },
     fetchMyAvatarImageUrl({ commit, state }) {
-      const userId = state.loginUser.attributes["custom:avatar_url"]
+      const userId = state.loginUser.attributes["custom:avatar_url"];
       if (userId === undefined) {
-        return ""
-	  }
-      return userId
-    },
-    userAvatarImageUrl({ commit, state }, userId) {
-      return `${process.env.VUE_APP_TOITOY_PUBLIC_IMAGE_STORAGE_URL}/user/${userId}/avatar_image`
+        return "";
+      }
+      return userId;
     }
   }
 };
