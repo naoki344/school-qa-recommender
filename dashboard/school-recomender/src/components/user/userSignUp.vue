@@ -22,7 +22,7 @@
     <v-card-text>
       <v-form
         ref="form"
-        @input="validation()"
+        v-model="inputFormIsValid"
       >
         <v-text-field
           v-model="nickname"
@@ -31,7 +31,7 @@
           prepend-icon
           counter="10"
           label="ニックネーム(表示名)"
-          :rules="[required]"
+          :rules="[rules.required]"
           required
           @keydown.prevent.enter="moveNext"
         />
@@ -43,7 +43,7 @@
               prepend-icon
               counter="10"
               label="姓"
-              :rules="[required]"
+              :rules="[rules.required]"
               required
               @keydown.prevent.enter="moveNext"
             />
@@ -56,7 +56,7 @@
               counter="10"
               required
               label="名"
-              :rules="[required]"
+              :rules="[rules.required]"
               @keydown.prevent.enter="moveNext"
             />
           </v-col>
@@ -67,9 +67,10 @@
               v-model="lastNameKana"
               class="user-register-input-form"
               prepend-icon
+              name="last-name-kana"
               counter="10"
               label="姓(カナ)"
-              :rules="[required]"
+              :rules="[rules.required]"
               required
               @keydown.prevent.enter="moveNext"
             />
@@ -78,10 +79,11 @@
             <v-text-field
               v-model="firstNameKana"
               class="user-register-input-form"
+              name="first-name-kana"
               prepend-icon
               counter="10"
               label="名(カナ)"
-              :rules="[required]"
+              :rules="[rules.required]"
               required
               @keydown.prevent.enter="moveNext"
             />
@@ -90,18 +92,22 @@
         <v-text-field
           v-model="email"
           class="user-register-input-form"
+          name="email"
           prepend-icon="mdi-email"
           hint="メールアドレスを入力"
           label="Email"
-          :rules="[required]"
+          :rules="[rules.required, rules.email]"
+          @change="emailValidation"
           @keydown.prevent.enter="moveNext"
         />
         <v-text-field
+          ref="emailConfirm"
           v-model="emailConfirm"
+          name="email-confirm"
           class="user-register-input-form"
           prepend-icon="mdi-email"
           label="Email(確認)"
-          :rules="[required, v => v === email || 'メールアドレスが一致していません',]"
+          :rules="[rules.required, rules.email, v => v === email || 'メールアドレスが一致していません',]"
           @keydown.prevent.enter="moveNext"
         />
         <v-text-field
@@ -109,22 +115,28 @@
           class="user-register-input-form"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
-          name="input-10-1"
+          name="password"
           prepend-icon="mdi-key"
           label="パスワード"
-          :rules="[required]"
+          :rules="[rules.required, rules.password]"
           counter
           required
           @keydown.prevent.enter="moveNext"
           @click:append="showPassword = !showPassword"
+          @change="passwordValidation"
         />
         <v-text-field
+          ref="passwordConfirm"
           v-model="passwordConfirm"
           class="user-register-input-form"
           :append-icon="showPasswordConfirm ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPasswordConfirm ? 'text' : 'password'"
-          :rules="[required, v => v === password || 'パスワードが一致していません',]"
-          name="input-10-1"
+          :rules="[
+            rules.required,
+            rules.password,
+            v => v === password || 'パスワードが一致していません'
+          ]"
+          name="password-confirm"
           prepend-icon="mdi-key"
           label="パスワード(確認)"
           counter
@@ -143,7 +155,7 @@
         color="yellow darken-1"
         class="user-register-input-form"
         block
-        :disabled="!buttonActive"
+        :disabled="!inputFormIsValid"
         @click="userSignUp"
       >
         登録
@@ -173,10 +185,14 @@ export default {
     checkbox: false,
     showPassword: false,
     showPasswordConfirm: false,
-    buttonActive: false,
-    required: value => !!value || "入力されていません",
+    rules: {
+      required: value => !!value || "入力されていません",
+      email: value => /.+@.+\..+/.test(value) || 'メールアドレスの形式が正しくありません',
+      password: value => /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{6,100}$/.test(value) || "パスワードには、大文字、小文字、記号を使用してください",
+    },
     errorMessage: "",
-    avatarImageDataUrl: ""
+    avatarImageDataUrl: "",
+    inputFormIsValid: false,
   }),
   computed: {
     elements() {
@@ -185,6 +201,8 @@ export default {
   },
   methods: {
     userSignUp() {
+      this.inputFormIsValid = this.$refs.form.validate();
+      if (this.inputFormIsValid === false) return
       this.$store
         .dispatch("user/userSignUp", {
           email: this.email,
@@ -195,19 +213,26 @@ export default {
           lastNameKana: this.lastNameKana,
           username: this.username,
           password: this.password,
-          avatarImageDataUrl: this.avatarImageDataUrl,
+          avatarImageDataUrl: this.avatarImageDataUrl
         })
         .then(() => {
-          this.$router.push({ path: "/userVerify", query: { "email": this.email } });
+          this.$router.push({
+            path: "/userVerify",
+            query: { email: this.email }
+          });
         })
         .catch(err => {
+          console.log(err)
           this.errorMessage = err.message;
         });
     },
-    validation() {
+    passwordValidation() {
       if (this.$refs.form == null) return;
-      this.buttonActive = this.$refs.form.validate();
-      this.$refs.form.resetValidation();
+      this.$refs.passwordConfirm.validate();
+    },
+    emailValidation() {
+      if (this.$refs.form == null) return;
+      this.$refs.emailConfirm.validate();
     },
     findIndex(target) {
       return this.elements.findIndex(
@@ -220,15 +245,15 @@ export default {
       }
     },
     moveNext(event) {
-	  if (event.keyCode !== 13) {
-        return
+      if (event.keyCode !== 13) {
+        return;
       }
       const index = this.findIndex(event.target);
       this.moveFocus(index + 1);
     },
     changeAvatorImage(data) {
       this.avatarImageDataUrl = data;
-      console.log(this.avatarImageDataUrl)
+      console.log(this.avatarImageDataUrl);
     }
   }
 };

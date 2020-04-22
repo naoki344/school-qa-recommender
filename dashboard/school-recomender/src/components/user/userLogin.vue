@@ -20,14 +20,18 @@
       <v-form>
         <v-text-field
           v-model="username"
+          class="user-login-input-form"
           prepend-icon="mdi-email"
           counter="25"
           hint="ユーザー作成時のメールアドレスを入力"
           label="メールアドレス"
+          autofocus
           required
+          @keydown.prevent.enter="moveNext"
         />
         <v-text-field
           v-model="password"
+          class="user-login-input-form"
           required
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           :type="showPassword ? 'text' : 'password'"
@@ -35,6 +39,7 @@
           prepend-icon="mdi-key"
           label="パスワードを入力"
           counter
+          @keydown.enter="userLogin"
           @click:append="showPassword = !showPassword"
         />
       </v-form>
@@ -45,6 +50,7 @@
         color="yellow darken-1"
         x-large
         block
+        class="user-login-input-form"
         @click="userLogin"
       >
         ログイン
@@ -52,8 +58,6 @@
     </v-card-actions>
   </v-card>
 </template>
-
-
 
 <script>
 import "@mdi/font/css/materialdesignicons.css";
@@ -80,6 +84,21 @@ export default {
           this.error = true;
           this.password = "";
         });
+    },
+    findIndex(target) {
+      return this.elements.findIndex(
+        e => e.getElementsByTagName("input")[0] === target
+      );
+    },
+    moveFocus(index) {
+      if (this.elements[index]) {
+        this.elements[index].getElementsByTagName("input")[0].focus();
+      }
+    },
+    moveNext(event) {
+      if (event.keyCode !== 13) return;
+      const index = this.findIndex(event.target);
+      this.moveFocus(index + 1);
     }
   }
 };

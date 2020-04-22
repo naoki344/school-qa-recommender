@@ -13,7 +13,6 @@ var cognitoConfig = {
   identifyPoolId: process.env.VUE_APP_IDENTITY_POOL_ID,
   loginsKey: process.env.VUE_APP_LOGINS_KEY
 }
-// TODO: 全てamplifyに統一する
 Amplify.configure({
   Auth: {
       identityPoolId: cognitoConfig.identifyPoolId,
@@ -25,7 +24,8 @@ Amplify.configure({
     endpoints: [
       {
           name: "ToiToyApi",
-          endpoint: process.env.VUE_APP_TOITOY_API_URL
+          endpoint: process.env.VUE_APP_TOITOY_API_URL,
+          region: "ap-northeast-1",
       }
     ]
   },

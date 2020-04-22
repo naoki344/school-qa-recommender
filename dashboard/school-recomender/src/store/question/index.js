@@ -1,4 +1,4 @@
-import schoolApiClient from "@/api/common.js";
+import { API } from "aws-amplify";
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 
 export default {
@@ -13,34 +13,20 @@ export default {
   },
   actions: {
     fetchQuestionList({ commit, rootState }) {
-      const pathTemplate = '/question'
-      const pathParams = {};
-      schoolApiClient
-        .fetchRestAPI(
-          "GET",
-          pathTemplate,
-          pathParams,
-          {},
-          {}
-        )
+      API.get(
+        "ToiToyApi",
+        "/question")
         .then(result => {
-          commit("setQuestionCardList", result.data["question_card_list"]);
+          commit("setQuestionCardList", result["question_card_list"]);
         });
     },
     fetchQuestion({ rootState }, questionId) {
       return new Promise((resolve, reject) => {
-        const pathTemplate = '/question/{questionId}'
-        const pathParams = {questionId: questionId};
-        schoolApiClient
-          .fetchRestAPI(
-            "GET",
-            pathTemplate,
-            pathParams,
-            {},
-            {}
-          )
+        API.get(
+          "ToiToyApi",
+          `/question${questionId}`)
           .then(result => {
-            resolve(result.data);
+            resolve(result);
           })
           .catch(err => {
             alert("API連携エラー", err);
@@ -51,17 +37,12 @@ export default {
     },
     createQuestion({ rootState }, { questionInput }) {
       return new Promise((resolve, reject) => {
-        const data = schoolApiQuesionTransfer.toRequest(questionInput);
-        console.log(data);
-        const pathTemplate = '/question'
-        schoolApiClient
-          .fetchRestAPI(
-            "POST",
-            pathTemplate,
-            {},
-            {},
-            data
-          )
+        API.post(
+          "ToiToyApi",
+          "/question",
+          {
+            body: schoolApiQuesionTransfer.toRequest(questionInput)
+		  })
           .then(() => {
             alert("登録に成功しました");
             resolve();

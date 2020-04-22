@@ -1,12 +1,13 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import userLoginPage from "../views/userLoginPage.vue";
+import userLogoutPage from "../views/userLogoutPage.vue";
 import userSignUpPage from "../views/userSignUpPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
 import classroomCreatePage from "../views/classroomCreatePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
-import schoolApiClient from "@/api/common.js";
 import topPage from "../views/topPage.vue";
+import { Auth } from "aws-amplify";
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,11 @@ const routes = [
     path: "/",
     name: "topPage",
     component: topPage
+  },
+  {
+    path: "/userLogout",
+    name: "userLogoutPage",
+    component: userLogoutPage
   },
   {
     path: "/userLogin",
@@ -47,18 +53,31 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.name === "userLoginPage") {
-    if (schoolApiClient.isUserLogin()) {
-      next('/');
-    } else {
-      next();
-    }
-  } else if (!schoolApiClient.isUserLogin()) {
-    next('/userLogin');
-  }else{
+router.beforeEach(async (to, from, next) => {
+  const isLogin = await Auth.currentAuthenticatedUser()
+    .then(data => {
+      return true;
+    })
+    .catch(err => {
+      return false;
+    });
+  if (to.name === "userSignUpPage" || to.name === "userVerifyPage") {
     next();
+    return
   }
+  if (to.name === "userLoginPage") {
+    if (isLogin) {
+      next('/');
+      return
+    }
+    next();
+    return
+  }
+  if (!isLogin) {
+    next('/userLogin');
+    return
+  }
+  next();
 });
 
 export default router;
