@@ -41,6 +41,7 @@
           <v-list
             subheader
             two-line
+            style="margin-bottom: 50px;"
           >
             <div
               v-for="item in classroomWorkList[myClass.classroom.classroom_id]"
@@ -70,6 +71,52 @@
               <v-divider />
             </div>
           </v-list>
+          <v-subheader class="create-approve-join-request-header">クラスメイト一覧
+            <div class="create-approve-join-request-link"><a>招待用リンクを取得</a></div>
+          </v-subheader>
+          <v-divider />
+          <v-list
+            subheader
+            two-line
+            style="margin-bottom: 50px;"
+          >
+            <div
+              v-for="classmate in myClass.classmate_list"
+              :key="classmate.user_id"
+              subheader
+              two-line
+            >
+              <v-list-item
+                link
+                class="classmate-list-item"
+              >
+                <v-avatar
+                  tile
+                  size="40"
+                >
+                  <v-img
+                    :src="getUserAvatarImageUrl(classmate.user_id)"
+                  />
+                </v-avatar>
+                <v-list-item-content class="pa-0">
+                  <div>{{ classmate.nickname }} <span>{{ classmate.join_status | joinStatusFilter }}</span></div>
+                </v-list-item-content>
+                <v-list-item-content
+                  v-if="classmate.join_status === 'requested'"
+                  class="pa-0"
+                >
+                  <div class="approve-join-request-text">
+                    <a
+                      @click="approveJoinRequest(myClass.classroom.classroom_id, classmate.user_id, classmate.nickname)"
+                    >
+                      参加を承認する
+                    </a>
+                  </div>
+                </v-list-item-content>
+              </v-list-item>
+              <v-divider />
+            </div>
+          </v-list>
         </div>
       </swiper-slide>
     </swiper>
@@ -79,6 +126,15 @@
       :dialog-visible="workDialogVisible"
       @closeDialog="closeWorkDetailDialog()"
     />
+    <v-dialog
+      v-model="inviteLinkDialogVisible"
+      max-width="600"
+      @click:outside="closeDialog()"
+      @keydown.esc="closeDialog()"
+    >
+      <v-card>
+      </v-card>
+    </v-dialog>
   </v-content>
 </template>
 
@@ -95,6 +151,14 @@ export default {
     swiperSlide,
     classroomWorkDetailDialog,
     ...components
+  },
+  filters: {
+    joinStatusFilter(value) {
+      if (value === "") return "";
+      if (value === "approved") return "参加中";
+      if (value === "owner") return "オーナー";
+      if (value === "requested") return "承認待ち";
+    },
   },
   data() {
     return {
@@ -113,7 +177,8 @@ export default {
         spaceBetween: 20,
         centeredSlides: true
       },
-      workDialogVisible: false
+      workDialogVisible: false,
+      inviteLinkDialogVisible: false,
     };
   },
   computed: {
@@ -137,6 +202,9 @@ export default {
       if (classroom.classmate.join_status == "owner") return true;
       return false;
     },
+    getUserAvatarImageUrl(userId) {
+      return this.$store.getters["user/userAvatarImageUrl"](userId);
+    },
     openWorkDetail(work, myClass) {
       this.selectedWork = work;
       this.selectedClass = myClass.classroom;
@@ -147,6 +215,17 @@ export default {
     },
     fetchClassroomList() {
       this.$store.dispatch("classroom/fetchMyClassroomList");
+    },
+    approveJoinRequest(classroomId, userId, nickName) {
+      this.$store
+        .dispatch("classroom/approveClassroomJoinRequest", { classroomId, userId } )
+        .then(data => {
+          this.$store.dispatch("classroom/fetchMyClassroomList");
+          alert(`${nickName} をクラスに追加しました。`);
+        })
+        .catch(err => {
+          alert(`${nickName} のクラスに追加に失敗しました。(再度実行してくだください)`);
+        });
     },
     fetchS3Object(path) {
       this.$store
@@ -249,7 +328,6 @@ export default {
     height: 100%;
   }
   .v-list-item__title {
-    font-size: 1.4;
     font-weight: 600;
     margin-bottom: 5px;
   }
@@ -260,6 +338,39 @@ export default {
     white-space: pre-line;
     max-height: 2rem;
     overflow: hidden;
+  }
+}
+
+.classmate-list-item {
+  font-weight: 600;
+  margin: 0;
+  span {
+    font-size: 0.8rem;
+    margin-left: 5px;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .v-list-item__content {
+    margin-left: 10px;
+  }
+  .approve-join-request-text {
+    text-align: right;
+	a {
+      text-decoration: underline;
+      color: #35A7FF;
+	}
+  }
+}
+
+.create-approve-join-request-header {
+  display: flex;
+  justify-content: space-between;
+	a {
+      text-decoration: underline;
+      color: #35A7FF;
+	}
+  .create-approve-join-request-link {
+    margin-top: 10px;
   }
 }
 </style>

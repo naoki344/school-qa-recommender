@@ -369,6 +369,18 @@ class GetMyClassroomListTest(TestCase):
         }
         self.user = User.from_dict(self.user_dict)
 
+        self.classmate_list = [{
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'requested'
+        }, {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af392',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'approved'
+        }]
+
     def test_run_is_owner(self):
         datasource = MagicMock()
         datasource.find_by_id = MagicMock(
@@ -378,6 +390,8 @@ class GetMyClassroomListTest(TestCase):
             ClassroomId(1),
             Classmate.from_dict(self.classmate_dict)
         ]])
+        classmate_datasource.get_classmate_list = MagicMock(
+            return_value=ClassmateList.from_list(self.classmate_list))
         user_service = MagicMock(spec=UserQueryService)
         user_service.find = MagicMock(return_value=self.user)
         usecase = GetMyClassroomList(datasource=datasource,
@@ -388,9 +402,12 @@ class GetMyClassroomListTest(TestCase):
         usecase.datasource.find_by_id.assert_called_once_with(ClassroomId(1))
         usecase.classmate_datasource.find_by_user_id.assert_called_once_with(
             UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39'))
+        usecase.classmate_datasource.get_classmate_list.assert_called_once_with(
+            ClassroomId(1))
         self.assertEqual(
             result,
             MyClassroomList.from_list([{
                 "classmate": self.classmate_dict,
-                "classroom": self.classroom_dict
+                "classroom": self.classroom_dict,
+                "classmate_list": self.classmate_list
             }]))

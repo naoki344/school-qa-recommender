@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from app.model.classroom.classmate import Classmate
+from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
 
 
@@ -9,20 +10,24 @@ from app.model.classroom.classroom import Classroom
 class MyClassroom:
     classroom: Classroom
     classmate: Classmate
+    classmate_list: ClassmateList
 
     def from_dict(data: dict) -> 'MyClassroom':
         return MyClassroom(classroom=Classroom.from_dict(data["classroom"]),
-                           classmate=Classmate.from_dict(data["classmate"]))
+                           classmate=Classmate.from_dict(data["classmate"]),
+                           classmate_list=ClassmateList.from_list(
+                               data["classmate_list"]))
 
     def to_dict(self) -> dict:
         return {
             "classroom": self.classroom.to_dict(),
-            "classmate": self.classmate.to_dict()
+            "classmate": self.classmate.to_dict(),
+            "classmate_list": self.classmate_list.to_list()
         }
 
 
 @dataclass(frozen=True)
-class MyClassroomList():
+class MyClassroomList:
     values: List[MyClassroom]
 
     @staticmethod

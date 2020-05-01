@@ -69,7 +69,8 @@ class ClassmateList:
         return [s.to_dict() for s in self.values]
 
     def approved_only(self) -> 'ClassmateList':
+        allow_status = [JoinStatus.approved, JoinStatus.owner]
         return ClassmateList([
             item for item in self.values
-            if item.join_status == JoinStatus.approved
+            if item.join_status in allow_status
         ])

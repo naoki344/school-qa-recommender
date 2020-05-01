@@ -108,10 +108,17 @@ class GetMyClassroomList:
 
     def run(self, user_id: UserId) -> MyClassroomList:
         user = self.user_service.find(user_id)
-        classmate_list = self.classmate_datasource.find_by_user_id(
+        my_classmate_list = self.classmate_datasource.find_by_user_id(
             user.user_id)
         items = []
-        for classroom_id, classmate in classmate_list:
+        for classroom_id, my_classmate_info in my_classmate_list:
             classroom = self.datasource.find_by_id(classroom_id)
-            items.append(MyClassroom(classroom=classroom, classmate=classmate))
+            classmate_list = self.classmate_datasource.get_classmate_list(
+                classroom_id)
+            if not classroom.is_owner(user_id):
+                classmate_list = classmate_list.approved_only()
+            items.append(MyClassroom(
+                classroom=classroom,
+                classmate=my_classmate_info,
+                classmate_list=classmate_list))
         return MyClassroomList(items)
