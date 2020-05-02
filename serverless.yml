@@ -151,6 +151,19 @@ functions:
       TYPE: API
       SERVICE: Classroom
 
+  LambdaApiRequestJoinClassroomByInviteKey:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.request_join_classroom_by_invite_key_handler
+    name: ${self:custom.resourcePrefix}-request-join-classroom-by-invite-key
+    events:
+      - http:
+          path: invite_key/{invite_key}/join_request
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
   LambdaApiApproveJoinClassroomRequest:
     handler: ${self:custom.lambdaHandlerPrefix}api/classroom.approve_join_classroom_request_handler
     name: ${self:custom.resourcePrefix}-approve-join-class-room-request

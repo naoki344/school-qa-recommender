@@ -8,6 +8,7 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import FindClassroomByInviteKey
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.application.usecase.classroom import RequestJoinClassroomByInviteKey
 from app.configure.usecase.classroom import approve_join_classroom_request
 from app.configure.usecase.classroom import create_classmate_invite_link
 from app.configure.usecase.classroom import create_classroom
@@ -15,6 +16,8 @@ from app.configure.usecase.classroom import find_classroom
 from app.configure.usecase.classroom import find_classroom_by_invite_key
 from app.configure.usecase.classroom import get_my_classroom_list
 from app.configure.usecase.classroom import request_join_classroom
+from app.configure.usecase.classroom import \
+    request_join_classroom_by_invite_key
 from app.interfaces.api.response import APIGatewayResponse
 from app.model.classroom.classroom import ClassroomId
 from app.model.classroom.invite import InviteKey
@@ -66,6 +69,17 @@ def create_classmate_invite_link_handler(event, context):
     classmate_invite = service.run(user_id, classroom_id)
     return APIGatewayResponse.to_response(
         {"classmate_invite": classmate_invite.to_dict()})
+
+
+def request_join_classroom_by_invite_key_handler(event, context):
+    user_id = AuthenticationEventPerser.parse(event)
+    path = event["pathParameters"]
+    logger = getLogger()
+    invite_key = InviteKey(str(path["invite_key"]))
+    service: RequestJoinClassroomByInviteKey = request_join_classroom_by_invite_key(
+        logger=logger)
+    classmate = service.run(user_id, invite_key)
+    return APIGatewayResponse.to_response({"classmate": classmate.to_dict()})
 
 
 def request_join_classroom_handler(event, context):

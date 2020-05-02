@@ -59,14 +59,13 @@ class FindClassroom:
 class CreateClassmateInviteLink:
     def __init__(self, datasource: ClassroomDatasource,
                  invite_datasource: ClassmateInviteDatasource,
-                 user_service: UserQueryService,
-                 logger: Logger) -> ClassmateInvite:
+                 user_service: UserQueryService, logger: Logger) -> None:
         self.datasource = datasource
         self.invite_datasource = invite_datasource
         self.user_service = user_service
 
     def run(self, user_id: UserId,
-            classroom_id: ClassroomId) -> Tuple[Classroom, ClassmateList]:
+            classroom_id: ClassroomId) -> ClassmateInvite:
         user = self.user_service.find(user_id)
         classroom = self.datasource.find_by_id(classroom_id)
         if not classroom.is_owner(user.user_id):
@@ -89,6 +88,27 @@ class FindClassroomByInviteKey:
             invite_key=invite_key)
         classroom = self.datasource.find_by_id(classmate_invite.classroom_id)
         return classroom
+
+
+class RequestJoinClassroomByInviteKey:
+    def __init__(self, datasource: ClassroomDatasource,
+                 classmate_datasource: ClassmateDatasource,
+                 invite_datasource: ClassmateInviteDatasource,
+                 user_service: UserQueryService, logger: Logger) -> None:
+        self.datasource = datasource
+        self.classmate_datasource = classmate_datasource
+        self.invite_datasource = invite_datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId, invite_key: InviteKey) -> Classmate:
+        user = self.user_service.find(user_id)
+        classmate_invite = self.invite_datasource.find_by_invite_key(
+            invite_key=invite_key)
+        classmate = Classmate.create(user)
+        # TODO: 既に登録済みのユーザーの場合エラー文言を分ける
+        self.classmate_datasource.insert_item(classmate_invite.classroom_id,
+                                              classmate)
+        return classmate
 
 
 class RequestJoinClassroom:

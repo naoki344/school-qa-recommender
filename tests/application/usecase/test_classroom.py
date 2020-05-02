@@ -10,6 +10,7 @@ from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import FindClassroomByInviteKey
 from app.application.usecase.classroom import GetMyClassroomList
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.application.usecase.classroom import RequestJoinClassroomByInviteKey
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.model.classroom.classmate import Classmate
 from app.model.classroom.classmate import ClassmateList
@@ -357,6 +358,61 @@ class FindClassroomByInviteKeyTest(TestCase):
             invite_key=invite_key)
         usecase.datasource.find_by_id.assert_called_once_with(ClassroomId(1))
         self.assertEqual(result, self.classroom)
+
+
+class RequestJoinClassroomByInviteKeyTest(TestCase):
+    def setUp(self):
+        self.user_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'user_name': {
+                'first_name': '直紀',
+                'last_name': '三好'
+            },
+            'user_name_kana': {
+                'first_name_kana': 'ナオキ',
+                'last_name_kana': 'ミヨシ'
+            },
+            'email': 'trombone344@gmail.com',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
+        }
+        self.user = User.from_dict(self.user_dict)
+        self.invite = ClassmateInvite.from_dict({
+            'classroom_id':
+            1,
+            'invite_key':
+            '79434gatbgare',
+            'expire_date':
+            '2020-02-15T00:18:16.874000+09:00'
+        })
+        self.classmate = Classmate.from_dict({
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'email': 'trombone344@gmail.com',
+            'join_status': 'requested'
+        })
+
+    def test_run_ok(self):
+        datasource = MagicMock()
+        user_service = MagicMock(spec=UserQueryService)
+        user_service.find = MagicMock(return_value=self.user)
+        invite_datasource = MagicMock()
+        invite_datasource.find_by_invite_key = MagicMock(
+            return_value=self.invite)
+        usecase = RequestJoinClassroomByInviteKey(
+            datasource=datasource,
+            classmate_datasource=MagicMock(),
+            invite_datasource=invite_datasource,
+            user_service=user_service,
+            logger=MagicMock())
+        user_id = UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39')
+        invite_key = InviteKey('79434gatbgare')
+        result = usecase.run(user_id, invite_key)
+        usecase.invite_datasource.find_by_invite_key.assert_called_once_with(
+            invite_key=invite_key)
+        usecase.classmate_datasource.insert_item.assert_called_once()
+        self.assertEqual(result, self.classmate)
 
 
 class ApproveJoinClassroomRequestTest(TestCase):
