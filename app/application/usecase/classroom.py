@@ -4,15 +4,16 @@ from typing import Tuple
 
 from app.application.query.user import UserQueryService
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
-from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.dataaccess.dynamodb.classroom import ClassmateInviteDatasource
+from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.model.classroom.classmate import Classmate
 from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
+from app.model.classroom.invite import ClassmateInvite
+from app.model.classroom.invite import InviteKey
 from app.model.classroom.my_classroom import MyClassroom
 from app.model.classroom.my_classroom import MyClassroomList
-from app.model.classroom.invite import ClassmateInvite
 from app.model.user.user import UserId
 
 
@@ -58,7 +59,8 @@ class FindClassroom:
 class CreateClassmateInviteLink:
     def __init__(self, datasource: ClassroomDatasource,
                  invite_datasource: ClassmateInviteDatasource,
-                 user_service: UserQueryService, logger: Logger) -> Classroom:
+                 user_service: UserQueryService,
+                 logger: Logger) -> ClassmateInvite:
         self.datasource = datasource
         self.invite_datasource = invite_datasource
         self.user_service = user_service
@@ -72,6 +74,21 @@ class CreateClassmateInviteLink:
         classmate_invite = ClassmateInvite.create(classroom_id)
         self.invite_datasource.put_item(classmate_invite)
         return classmate_invite
+
+
+class FindClassroomByInviteKey:
+    def __init__(self, datasource: ClassroomDatasource,
+                 invite_datasource: ClassmateInviteDatasource,
+                 user_service: UserQueryService, logger: Logger) -> Classroom:
+        self.datasource = datasource
+        self.invite_datasource = invite_datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId, invite_key: InviteKey) -> Classroom:
+        classmate_invite = self.invite_datasource.find_by_invite_key(
+            invite_key=invite_key)
+        classroom = self.datasource.find_by_id(classmate_invite.classroom_id)
+        return classroom
 
 
 class RequestJoinClassroom:
@@ -138,8 +155,8 @@ class GetMyClassroomList:
                 classroom_id)
             if not classroom.is_owner(user_id):
                 classmate_list = classmate_list.approved_only()
-            items.append(MyClassroom(
-                classroom=classroom,
-                classmate=my_classmate_info,
-                classmate_list=classmate_list))
+            items.append(
+                MyClassroom(classroom=classroom,
+                            classmate=my_classmate_info,
+                            classmate_list=classmate_list))
         return MyClassroomList(items)

@@ -3,18 +3,21 @@ from logging import getLogger
 
 from app.anticorruption.model.user.parser import AuthenticationEventPerser
 from app.application.usecase.classroom import ApproveJoinClassroomRequest
+from app.application.usecase.classroom import CreateClassmateInviteLink
 from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
+from app.application.usecase.classroom import FindClassroomByInviteKey
 from app.application.usecase.classroom import RequestJoinClassroom
-from app.application.usecase.classroom import CreateClassmateInviteLink
 from app.configure.usecase.classroom import approve_join_classroom_request
+from app.configure.usecase.classroom import create_classmate_invite_link
 from app.configure.usecase.classroom import create_classroom
 from app.configure.usecase.classroom import find_classroom
+from app.configure.usecase.classroom import find_classroom_by_invite_key
 from app.configure.usecase.classroom import get_my_classroom_list
 from app.configure.usecase.classroom import request_join_classroom
-from app.configure.usecase.classroom import create_classmate_invite_link
 from app.interfaces.api.response import APIGatewayResponse
 from app.model.classroom.classroom import ClassroomId
+from app.model.classroom.invite import InviteKey
 from app.model.classroom.my_classroom import MyClassroomList
 from app.model.user.user import UserId
 
@@ -42,6 +45,17 @@ def find_classroom_handler(event, context):
     })
 
 
+def find_classroom_by_invite_key_handler(event, context):
+    user_id = AuthenticationEventPerser.parse(event)
+    path = event["pathParameters"]
+    logger = getLogger()
+    invite_key = InviteKey(str(path["invite_key"]))
+    service: FindClassroomByInviteKey = find_classroom_by_invite_key(
+        logger=logger)
+    classroom = service.run(user_id, invite_key)
+    return APIGatewayResponse.to_response({"classroom": classroom.to_dict()})
+
+
 def create_classmate_invite_link_handler(event, context):
     path = event["pathParameters"]
     classroom_id = ClassroomId(int(path["classroom_id"]))
@@ -51,7 +65,7 @@ def create_classmate_invite_link_handler(event, context):
         logger=logger)
     classmate_invite = service.run(user_id, classroom_id)
     return APIGatewayResponse.to_response(
-            {"classmate_invite": classmate_invite.to_dict()})
+        {"classmate_invite": classmate_invite.to_dict()})
 
 
 def request_join_classroom_handler(event, context):

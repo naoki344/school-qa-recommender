@@ -1,23 +1,23 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from app.dataaccess.aws.s3_file import S3FileClient
 from app.configure.resoruce.cognito import create_cognito_client
 from app.configure.resoruce.cognito import user_datasource
 from app.configure.resoruce.dynamodb import classmate_datasource
+from app.configure.resoruce.dynamodb import classmate_invite_datasource
 from app.configure.resoruce.dynamodb import classroom_datasource
 from app.configure.resoruce.dynamodb import create_dynamodb_client
 from app.configure.resoruce.dynamodb import question_datasource
 from app.configure.resoruce.dynamodb import sequences_datasource
 from app.configure.resoruce.dynamodb import work_comment_datasource
 from app.configure.resoruce.dynamodb import work_datasource
-from app.configure.resoruce.dynamodb import classmate_invite_datasource
 from app.configure.resoruce.s3 import create_s3_file_client
 from app.dataaccess.aws.cognito import CognitoClient
 from app.dataaccess.aws.dynamodb import DynamoDBClient
+from app.dataaccess.aws.s3_file import S3FileClient
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
-from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.dataaccess.dynamodb.classroom import ClassmateInviteDatasource
+from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
@@ -68,6 +68,5 @@ class ResourceConfigureTest(TestCase):
                        S3FileClient), True)
 
         self.assertEqual(
-            isinstance(classmate_invite_datasource(
-                logger=MagicMock()),
-                ClassmateInviteDatasource), True)
+            isinstance(classmate_invite_datasource(logger=MagicMock()),
+                       ClassmateInviteDatasource), True)

@@ -1,6 +1,6 @@
 import uuid
-from typing import Dict
 from dataclasses import dataclass
+from typing import Dict
 
 from app.model.classroom.classroom import ClassroomId
 from app.model.datetime import DateTime
@@ -21,8 +21,7 @@ class InviteLinkExpireDate(DateTime):
     value: str
 
     def create() -> 'InviteLinkExpireDate':
-        return InviteLinkExpireDate(
-                datetime_jst_now_delta(weeks=2))
+        return InviteLinkExpireDate(datetime_jst_now_delta(weeks=2))
 
 
 @dataclass(frozen=True)
@@ -33,10 +32,9 @@ class ClassmateInvite:
 
     @staticmethod
     def create(classroom_id: ClassroomId) -> 'ClassmateInvite':
-        return ClassmateInvite(
-            classroom_id=classroom_id,
-            invite_key=InviteKey.create(),
-            expire_date=InviteLinkExpireDate.create())
+        return ClassmateInvite(classroom_id=classroom_id,
+                               invite_key=InviteKey.create(),
+                               expire_date=InviteLinkExpireDate.create())
 
     def to_dict(self) -> Dict[str, str]:
         return {
@@ -50,5 +48,4 @@ class ClassmateInvite:
         return ClassmateInvite(
             classroom_id=ClassroomId(int(data['classroom_id'])),
             invite_key=InviteKey(str(data['invite_key'])),
-            expire_date=InviteLinkExpireDate.from_string(
-                data['expire_date']))
+            expire_date=InviteLinkExpireDate.from_string(data['expire_date']))

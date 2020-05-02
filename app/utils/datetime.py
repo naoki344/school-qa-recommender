@@ -14,13 +14,18 @@ def datetime_jst_now() -> datetime:
     return datetime.now(tz=timezone_jst)
 
 
-def datetime_jst_now_delta(
-        weeks=0, days=0, hours=0, minutes=0,
-        seconds=0, microseconds=0) -> datetime:
-    delta = timedelta(
-            weeks=weeks, days=days, hours=hours,
-            minutes=minutes, seconds=seconds,
-            microseconds=microseconds)
+def datetime_jst_now_delta(weeks=0,
+                           days=0,
+                           hours=0,
+                           minutes=0,
+                           seconds=0,
+                           microseconds=0) -> datetime:
+    delta = timedelta(weeks=weeks,
+                      days=days,
+                      hours=hours,
+                      minutes=minutes,
+                      seconds=seconds,
+                      microseconds=microseconds)
     return datetime.now(tz=timezone_jst) + delta
 
 

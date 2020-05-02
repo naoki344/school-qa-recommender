@@ -70,7 +70,5 @@ class ClassmateList:
 
     def approved_only(self) -> 'ClassmateList':
         allow_status = [JoinStatus.approved, JoinStatus.owner]
-        return ClassmateList([
-            item for item in self.values
-            if item.join_status in allow_status
-        ])
+        return ClassmateList(
+            [item for item in self.values if item.join_status in allow_status])

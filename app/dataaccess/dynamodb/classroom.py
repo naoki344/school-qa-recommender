@@ -8,6 +8,7 @@ from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
 from app.model.classroom.invite import ClassmateInvite
+from app.model.classroom.invite import InviteKey
 from app.model.user.user import UserId
 
 
@@ -77,10 +78,15 @@ class ClassmateDatasource:
 
 
 class ClassmateInviteDatasource:
-    def __init__(self, client: DynamoDBClient,
-                 logger: Logger) -> None:
+    def __init__(self, client: DynamoDBClient, logger: Logger) -> None:
         self.client = client
         self.logger = logger
 
     def put_item(self, item: ClassmateInvite) -> None:
         self.client.put_item(item.to_dict())
+
+    def find_by_invite_key(self, invite_key: InviteKey) -> ClassmateInvite:
+        items = self.client.get_items(name='invite_key',
+                                      value=invite_key.value,
+                                      index_name='InviteKey-Index')
+        return ClassmateInvite.from_dict(list(items)[0])
