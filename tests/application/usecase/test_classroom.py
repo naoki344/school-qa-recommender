@@ -8,6 +8,7 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import GetMyClassroomList
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.application.usecase.classroom import CreateClassmateInviteLink
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.model.classroom.classmate import Classmate
 from app.model.classroom.classmate import ClassmateList
@@ -237,6 +238,67 @@ class RequestJoinClassroomTest(TestCase):
         usecase.user_service.find.assert_called_once_with(user_id)
         usecase.classmate_datasource.insert_item.assert_called_once()
         self.assertEqual(result.to_dict(), classmate_dict)
+
+
+class CreateClassmateInviteLinkTest(TestCase):
+    def setUp(self):
+        self.classroom_dict = {
+            'classroom_id':
+            1,
+            'owner_list': [{
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
+            }, {
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39-1',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
+            }],
+            'name':
+            'test name',
+            'image_url':
+            'https://example.example.com/test.jpg',
+            'publish_type':
+            'public',
+            'tag_list': ['tag1', 'tag2'],
+            'capacity':
+            10,
+            'caption':
+            'test caption'
+        }
+        self.user_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'user_name': {
+                'first_name': '直紀',
+                'last_name': '三好'
+            },
+            'user_name_kana': {
+                'first_name_kana': 'ナオキ',
+                'last_name_kana': 'ミヨシ'
+            },
+            'email': 'trombone344@gmail.com',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
+        }
+        self.user = User.from_dict(self.user_dict)
+
+    def test_run_ok(self):
+        datasource = MagicMock()
+        datasource.find_by_id = MagicMock(
+            return_value=Classroom.from_dict(self.classroom_dict))
+        user_service = MagicMock(spec=UserQueryService)
+        user_service.find = MagicMock(return_value=self.user)
+        usecase = CreateClassmateInviteLink(datasource=datasource,
+                                       invite_datasource=MagicMock(),
+                                       user_service=user_service,
+                                       logger=MagicMock())
+        user_id = UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39')
+        result = usecase.run(user_id, ClassroomId(1))
+        usecase.datasource.find_by_id.assert_called_once_with(ClassroomId(1))
+        usecase.user_service.find.assert_called_once_with(user_id)
+        usecase.invite_datasource.put_item.assert_called_once()
+        self.assertEqual(result.classroom_id, ClassroomId(1))
 
 
 class ApproveJoinClassroomRequestTest(TestCase):

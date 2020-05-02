@@ -5,12 +5,14 @@ from typing import Tuple
 from app.application.query.user import UserQueryService
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
+from app.dataaccess.dynamodb.classroom import ClassmateInviteDatasource
 from app.model.classroom.classmate import Classmate
 from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
 from app.model.classroom.my_classroom import MyClassroom
 from app.model.classroom.my_classroom import MyClassroomList
+from app.model.classroom.invite import ClassmateInvite
 from app.model.user.user import UserId
 
 
@@ -44,13 +46,32 @@ class FindClassroom:
 
     def run(self, user_id: UserId,
             classroom_id: ClassroomId) -> Tuple[Classroom, ClassmateList]:
-        owner = self.user_service.find(user_id)
+        user = self.user_service.find(user_id)
         classroom = self.datasource.find_by_id(classroom_id)
         classmate_list = self.classmate_datasource.get_classmate_list(
             classroom_id)
-        if not classroom.is_owner(owner.user_id):
+        if not classroom.is_owner(user.user_id):
             classmate_list = classmate_list.approved_only()
         return classroom, classmate_list
+
+
+class CreateClassmateInviteLink:
+    def __init__(self, datasource: ClassroomDatasource,
+                 invite_datasource: ClassmateInviteDatasource,
+                 user_service: UserQueryService, logger: Logger) -> Classroom:
+        self.datasource = datasource
+        self.invite_datasource = invite_datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId,
+            classroom_id: ClassroomId) -> Tuple[Classroom, ClassmateList]:
+        user = self.user_service.find(user_id)
+        classroom = self.datasource.find_by_id(classroom_id)
+        if not classroom.is_owner(user.user_id):
+            raise Exception('Can not create classroom invite link')
+        classmate_invite = ClassmateInvite.create(classroom_id)
+        self.invite_datasource.put_item(classmate_invite)
+        return classmate_invite
 
 
 class RequestJoinClassroom:

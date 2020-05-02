@@ -8,6 +8,7 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import GetMyClassroomList
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.application.usecase.classroom import CreateClassmateInviteLink
 from app.application.usecase.comment import GetWorkCommentList
 from app.application.usecase.comment import RegisterWorkComment
 from app.application.usecase.question import CreateQuestion
@@ -22,6 +23,7 @@ from app.configure.usecase.classroom import create_classroom
 from app.configure.usecase.classroom import find_classroom
 from app.configure.usecase.classroom import get_my_classroom_list
 from app.configure.usecase.classroom import request_join_classroom
+from app.configure.usecase.classroom import create_classmate_invite_link
 from app.configure.usecase.comment import get_work_comment_list
 from app.configure.usecase.comment import register_work_comment
 from app.configure.usecase.question import create_question
@@ -94,3 +96,7 @@ class QuestionUsecaseTest(TestCase):
         self.assertEqual(
             isinstance(upload_user_avatar_image(logger=MagicMock()),
                        UploadUserAvatarImage), True)
+
+        self.assertEqual(
+            isinstance(create_classmate_invite_link(logger=MagicMock()),
+                       CreateClassmateInviteLink), True)

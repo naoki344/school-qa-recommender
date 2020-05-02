@@ -214,3 +214,34 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
+
+  ToiToyClassroomInviteTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-ClassmateInvite"
+      AttributeDefinitions:
+        -
+          AttributeName: "classroom_id"
+          AttributeType: "N"
+        -
+          AttributeName: "invite_key"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "classroom_id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "InviteKey-Index"
+          KeySchema:
+            -
+              AttributeName: "invite_key"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"

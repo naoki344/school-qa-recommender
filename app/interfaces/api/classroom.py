@@ -6,11 +6,13 @@ from app.application.usecase.classroom import ApproveJoinClassroomRequest
 from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import RequestJoinClassroom
+from app.application.usecase.classroom import CreateClassmateInviteLink
 from app.configure.usecase.classroom import approve_join_classroom_request
 from app.configure.usecase.classroom import create_classroom
 from app.configure.usecase.classroom import find_classroom
 from app.configure.usecase.classroom import get_my_classroom_list
 from app.configure.usecase.classroom import request_join_classroom
+from app.configure.usecase.classroom import create_classmate_invite_link
 from app.interfaces.api.response import APIGatewayResponse
 from app.model.classroom.classroom import ClassroomId
 from app.model.classroom.my_classroom import MyClassroomList
@@ -38,6 +40,18 @@ def find_classroom_handler(event, context):
         "classmate_list":
         classmate_list.to_list()
     })
+
+
+def create_classmate_invite_link_handler(event, context):
+    path = event["pathParameters"]
+    classroom_id = ClassroomId(int(path["classroom_id"]))
+    user_id = AuthenticationEventPerser.parse(event)
+    logger = getLogger()
+    service: CreateClassmateInviteLink = create_classmate_invite_link(
+        logger=logger)
+    classmate_invite = service.run(user_id, classroom_id)
+    return APIGatewayResponse.to_response(
+            {"classmate_invite": classmate_invite.to_dict()})
 
 
 def request_join_classroom_handler(event, context):

@@ -11,11 +11,13 @@ from app.configure.resoruce.dynamodb import question_datasource
 from app.configure.resoruce.dynamodb import sequences_datasource
 from app.configure.resoruce.dynamodb import work_comment_datasource
 from app.configure.resoruce.dynamodb import work_datasource
+from app.configure.resoruce.dynamodb import classmate_invite_datasource
 from app.configure.resoruce.s3 import create_s3_file_client
 from app.dataaccess.aws.cognito import CognitoClient
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
+from app.dataaccess.dynamodb.classroom import ClassmateInviteDatasource
 from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
 from app.dataaccess.dynamodb.question import SequensesDatasource
@@ -64,3 +66,8 @@ class ResourceConfigureTest(TestCase):
         self.assertEqual(
             isinstance(create_s3_file_client('test', logger=MagicMock()),
                        S3FileClient), True)
+
+        self.assertEqual(
+            isinstance(classmate_invite_datasource(
+                logger=MagicMock()),
+                ClassmateInviteDatasource), True)

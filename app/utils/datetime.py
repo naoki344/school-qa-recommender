@@ -2,11 +2,6 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-from typing import Callable
-from typing import Generator
-from typing import Hashable
-from typing import Iterator
-from typing import TypeVar
 
 from dateutil.parser import parse
 
@@ -17,6 +12,16 @@ timezone_jst = timezone(timedelta(hours=9))
 def datetime_jst_now() -> datetime:
     """JSTタイムゾーンの現在時刻のdatetimeオブジェクトを生成する"""
     return datetime.now(tz=timezone_jst)
+
+
+def datetime_jst_now_delta(
+        weeks=0, days=0, hours=0, minutes=0,
+        seconds=0, microseconds=0) -> datetime:
+    delta = timedelta(
+            weeks=weeks, days=days, hours=hours,
+            minutes=minutes, seconds=seconds,
+            microseconds=microseconds)
+    return datetime.now(tz=timezone_jst) + delta
 
 
 def datetime_jst(year, month, day, hour=0, minute=0, second=0, microsecond=0):
