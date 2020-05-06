@@ -29,7 +29,8 @@ export default {
                 .catch((err) => {
                   console.log(err);
                 });
-            })
+            });
+            resolve();
           })
           .catch((err) => {
             console.log(err);
