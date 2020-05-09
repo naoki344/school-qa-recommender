@@ -6,10 +6,11 @@
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
+      scrollable
     >
       <v-card>
         <v-toolbar
-          color="yellow darken-1"
+          color="yellow darken-1 "
           style="max-height: 56px;"
         >
           <v-btn
@@ -33,141 +34,213 @@
             v-if="question != null"
             class="pa-0"
           >
-            <div
-              class="px-4 pt-3 pb-2"
-              style="display: flex; justify-content: space-between"
-            >
-              <v-card-title
-                class="headline font-weight-bold"
-                style="padding: 0;"
-              >
-                {{ workDetail.title }}
-              </v-card-title>
-              <v-chip
-                small
-                :color="question.estimated_time | estimatedColorFilter"
-                text-color="white"
-                style="padding-left: 6px;"
-              >
-                {{ question.subject_type | subjectTypeFilter }}
-              </v-chip>
-            </div>
-            <div
-              class="px-4 pb-4"
-              style="display: flex; justify-content: letf"
-            >
-              {{ tag }}
-            </div>
-            <v-divider class="pb-4" />
-            <v-card-text
-              class="px-4 pt-0 pb-6 body-1"
-              style="text-align: left;"
-            >
-              {{ question.question_sentence.text }}
-            </v-card-text>
-            <v-img
-              v-if="getImageUrl(question.question_sentence)"
-              class="mb-2"
-              :src="imageList[question.question_sentence.image_url]"
-              style="width: 100%;"
-            />
-            <v-divider />
-
-            <v-col cols="6">
-              <v-select
-                v-model="prefixTopic"
-                :items="topicSelectList"
-                :menu-props="{ offsetY: true }"
-                @change="setDisplayMessageList"
-              >
-                <template v-slot:append-item>
-                  <v-divider />
-                  <div
-                    style="color: blue;"
-                    @click="topicCreateDialog = true"
-                  >
-                    新しいトピックを作成する
-                  </div>
-                </template>
-              </v-select>
-            </v-col>
-
-            <v-divider />
-            <v-list three-line>
-              <template v-for="item in topicMessageList">
-                <v-list-item :key="item.comment_id">
-                  <v-list-item-avatar tile>
-                    <v-img
-                      :src="getUserAvatarImageUrl(item.register_user_id)"
-                    />
-                  </v-list-item-avatar>
-
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      <p style="text-align: left">
-                        {{ item.register_user_name }}
-                      </p>
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      <p style="text-align: left">
-                        {{ item.body }}
-                      </p>
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-              <v-textarea
-                v-model="rootCommentBody"
-                label="Leave a comment..."
-                solo
-              />
-              <div style="display: flex;">
-                <v-spacer />
-                <v-btn
-                  class="mx-0"
-                  depressed
-                  @click="postRootCommentBody"
+            <div class="split">
+              <div class="split-left">
+                <div
+                  class="px-4 pt-3 pb-2"
+                  style="display: flex; justify-content: space-between"
                 >
-                  Post1
-                </v-btn>
+                  <v-card-title
+                    class="headline font-weight-bold"
+                    style="padding: 0;"
+                  >
+                    {{ workDetail.title }}
+                  </v-card-title>
+                  <v-chip
+                    small
+                    :color="question.estimated_time | estimatedColorFilter"
+                    text-color="white"
+                    style="padding-left: 6px;"
+                  >
+                    {{ question.subject_type | subjectTypeFilter }}
+                  </v-chip>
+                </div>
+                <!-- <div class="px-4 pb-4" style="display: flex; justify-content: letf">{{ tag }}</div> -->
+                <v-divider class="pb-4" />
+                <v-card-text
+                  class="px-4 pt-0 pb-6 body-1"
+                  style="text-align: left;"
+                >
+                  {{ question.question_sentence.text }}
+                </v-card-text>
+                <v-img
+                  v-if="getImageUrl(question.question_sentence)"
+                  class="mb-2"
+                  :src="imageList[question.question_sentence.image_url]"
+                  style="width: 100%;"
+                />
+                <v-divider />
+                <v-row style="justify-content: space-around; ">
+                  <v-col
+                    cols="7"
+                    md="4"
+                    lg="4"
+                    class="py-2 px-5"
+                  >
+                    <v-select
+                      v-model="selectedTopicId"
+                      :items="topicSelectList"
+                      :menu-props="{ offsetY: true }"
+                      class="font-weight-medium"
+                      @change="setDisplayMessageList"
+                    >
+                      <template v-slot:append-item>
+                        <v-divider />
+                        <div
+                          style="color: blue;"
+                          @click="topicCreateDialog = true"
+                        >
+                          トピックを作成
+                        </div>
+                      </template>
+                    </v-select>
+                  </v-col>
+
+                  <v-col
+                    cols="4"
+                    class="topic-creator px-0"
+                  >
+                    <div>
+                      <v-avatar size="26">
+                        <v-img :src="getUserAvatarImageUrl(selectedTopic.register_user_id)" />
+                      </v-avatar>
+                      <span class="font-weight-black ml-1">{{ selectedTopic.register_user_name }}</span>
+                    </div>
+                  </v-col>
+                  <v-spacer />
+                </v-row>
+                <v-divider />
+
+                <div
+                  v-for="item in topicMessageList"
+                  :key="item.comment_id"
+                  class="message-whole ma-3"
+                >
+                  <v-avatar
+                    tile
+                    style="border-radius: 6px;"
+                    size="44"
+                  >
+                    <v-img :src="getUserAvatarImageUrl(item.register_user_id)" />
+                  </v-avatar>
+
+                  <div class="message-area ms-3">
+                    <p class="font-weight-bold ma-0 message-contributer-name">
+                      {{ item.register_user_name }}
+                      <span
+                        class="font-weight-medium message-time"
+                      >{{ item.register_date | messageTimeSortFilter }}</span>
+                    </p>
+                    <p class="font-weight-light mb-0 message-body">
+                      {{ item.body }}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </v-list>
+              <div class="split-right">
+                <div class="split-right-inner">
+                  <v-card>
+                    <v-card-title>＜{{ selectedTopic.body }}＞に投稿</v-card-title>
+                    <v-card-text class="px-2 pb-0">
+                      <v-textarea
+                        v-model="editingComment"
+                        background-color="amber lighten-4"
+                        rows="15"
+                        row-height="20"
+                        outlined
+                        @keydown.enter.shift.exact="postTopicCommentBody"
+                      />
+                    </v-card-text>
+                    <v-card-actions class="pt-0">
+                      <v-spacer />
+                      <v-btn
+                        :disabled="!editingComment"
+                        color="yellow darken-1"
+                        @click="postTopicCommentBody"
+                      >
+                        投稿する
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </div>
+              </div>
+            </div>
           </v-container>
+        </v-card-text>
+
+        <v-card-text style="height: 70px;">
+          <v-btn
+            color="pink"
+            large
+            dark
+            fab
+            fixed
+            bottom
+            right
+            class="post-comment-btn"
+            @click="postCommentDialog = !postCommentDialog"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="postCommentDialog">
+      <v-card class="pa-0">
+        <v-card-actions>
+          <v-btn
+            depressed
+            icon
+            @click="postCommentDialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            :disabled="!editingComment"
+            color="yellow darken-1"
+            @click="postTopicCommentBody"
+          >
+            投稿する
+          </v-btn>
+        </v-card-actions>
+        <v-divider />
+        <v-card-text class="pa-1">
+          <v-textarea
+            v-model="editingComment"
+            autofocus
+            solo
+            flat
+            label="コメントを記入"
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
     <v-dialog
       v-model="topicCreateDialog"
-      hide-overlay
       transition="dialog-bottom-transition"
     >
-      <v-card class="pa-0">
-        <v-card-title>新しいトピックを作成する</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <v-textarea
-            v-model="topicBody"
-            label="Leave a comment..."
-            solo
-          />
-        </v-card-text>
+      <v-card>
         <v-card-actions>
+          <v-btn icon　@click="topicCreateDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
           <v-spacer />
           <v-btn
-            class="mx-0"
-            depressed
+            :disabled="!topicBody"
+            color="yellow darken-1"
             @click="postTopic"
           >
-            Post3
-          </v-btn>
-          <v-btn
-            color="primary"
-            text
-            @click="topicCreateDialog = false"
-          >
-            閉じる
+            作成する
           </v-btn>
         </v-card-actions>
+        <v-card-text>
+          <v-text-field
+            v-model="topicBody"
+            label="トピック名"
+            autofocus
+          />
+        </v-card-text>
       </v-card>
     </v-dialog>
   </v-container>
@@ -205,6 +278,18 @@ export default {
       if (value <= 5) return "green";
       if (value <= 15) return "orange";
       if (value > 15) return "red";
+    },
+    messageTimeSortFilter: function(value) {
+      if (!value) return "";
+      const currentTime = moment();
+      const messageTime = moment(value);
+      const yesterday = moment().subtract(1, "day");
+      if (messageTime.isSame(currentTime, "day"))
+        return messageTime.format("今日 H:m");
+      if (messageTime.isSame(yesterday, "day"))
+        return messageTime.format("昨日 H:m");
+      if (messageTime.isBefore(currentTime))
+        return messageTime.format("M月D日 H:m");
     }
   },
   props: {
@@ -228,14 +313,16 @@ export default {
       imageList: [],
       rootMessageList: [],
       topicList: [],
-      selectedTopic: { body: "", register_user_name: "" },
+      selectedTopic: { body: "", register_user_name: "", register_user_id: "" },
       topicMessageList: [],
       topicMessageDict: {},
       topicCreateDialog: false,
       rootCommentBody: "",
-      topicCommentBody: "",
       topicBody: "",
-      prefixTopic: "test"
+      selectedTopicId: null,
+      postCommentDialog: false,
+      editingComment: "",
+      editingCommentDict: {}
     };
   },
   computed: {
@@ -250,7 +337,6 @@ export default {
           value: topic.comment_id
         };
       });
-
       return msgList;
     }
   },
@@ -270,6 +356,20 @@ export default {
     },
 
     setDisplayMessageList(comment_id) {
+      const beforeCommentId = this.selectedTopic.comment_id;
+      if (beforeCommentId !== undefined) {
+        this.editingCommentDict[beforeCommentId] = this.editingComment;
+      }
+      const editingComment = this.editingCommentDict[comment_id];
+      if (editingComment !== undefined) {
+        this.editingComment = editingComment;
+      } else {
+        this.editingComment = "";
+      }
+      this.selectedTopic = this.topicList.find(
+        item => item.comment_id === comment_id
+      );
+      console.log(this.selectedTopic);
       const l = this.topicMessageDict[comment_id];
       if (l != undefined) {
         this.topicMessageList = l;
@@ -357,7 +457,7 @@ export default {
       this.postWorkComment(
         "message",
         this.selectedTopic.comment_id,
-        this.topicCommentBody
+        this.editingComment
       ).then(data => {
         const topicMessage = this.topicMessageDict[
           this.selectedTopic.comment_id
@@ -374,7 +474,7 @@ export default {
         } else {
           this.topicMessageList.splice(0, this.topicMessageList.length, [data]);
         }
-        this.topicCommentBody = "";
+        this.editingComment = "";
       });
     },
     postTopic() {
@@ -404,3 +504,60 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.message-whole {
+  display: flex;
+  max-width: 600px;
+}
+.message-area {
+  display: inline-block;
+}
+.message-contributer-name {
+  justify-items: start;
+  text-align: left;
+  font-family: HiraginoSans-W3;
+  font-size: 14px;
+}
+.message-body {
+  white-space: pre-wrap;
+  text-align: left;
+  font-family: HiraginoSans-W5;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.message-time {
+  font-size: 70%;
+}
+.topic-creator {
+  display: flex;
+  align-items: center;
+}
+.split {
+  display: flex;
+}
+.split-right {
+  display: none;
+}
+
+.split-left {
+  width: 100%;
+}
+@media screen and (min-width: 961px) {
+  .split-left {
+    width: 50%;
+  }
+  .split-right {
+    display: block;
+    width: 50%;
+  }
+  .split-right-inner {
+    position: fixed;
+    width: 46%;
+    padding: 5px;
+  }
+  .post-comment-btn {
+    display: none;
+  }
+}
+</style>
