@@ -154,11 +154,11 @@
                     <v-card-actions class="pt-0">
                       <v-spacer />
                       <v-btn
-                        :disabled="!editingComment"
+                        x-large
                         color="yellow darken-1"
                         @click="postTopicCommentBody"
                       >
-                        投稿する
+                        投稿する(Shift+Enter)
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -454,6 +454,8 @@ export default {
       return this.$store.getters["user/userAvatarImageUrl"](userId);
     },
     postTopicCommentBody() {
+      if (!(this.editingComment && this.editingComment.match(/\S/g)))
+        alert("空白や改行のみの投稿は不可です").return;
       this.postWorkComment(
         "message",
         this.selectedTopic.comment_id,
@@ -475,6 +477,7 @@ export default {
           this.topicMessageList.splice(0, this.topicMessageList.length, [data]);
         }
         this.editingComment = "";
+        this.postCommentDialog = false;
       });
     },
     postTopic() {
