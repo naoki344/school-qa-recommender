@@ -52,7 +52,8 @@ class WorkTest(TestCase):
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
             'question_sentence': {
-                'contents': '<a>Question1 XXXX is ???</a><img src="./image_url.png" />',
+                'contents':
+                '<a>Question1 XXXX is ???</a><img src="./image_url.png" />',
                 'summary': 'Question1 XXXX is ???'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',

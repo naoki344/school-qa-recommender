@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from enum import Enum
 from enum import auto
 from typing import Dict
-from typing import Optional
 from typing import List
+from typing import Optional
+
 from bs4 import BeautifulSoup
 
 from app.model.register import RegisterDate
@@ -66,17 +67,14 @@ class QuestionSentence:
                                 summary=SentenceSummary(data['summary']))
 
     def to_dict(self) -> Dict[str, any]:
-        return {
-            'contents': self.contents.value,
-            'summary': self.summary.value
-        }
+        return {'contents': self.contents.value, 'summary': self.summary.value}
 
     @staticmethod
     def create(data):
         contents = SentenceContents(data['contents'])
-        return QuestionSentence(
-            contents=contents,
-            summary=SentenceSummary(contents.get_text()[:50]))
+        return QuestionSentence(contents=contents,
+                                summary=SentenceSummary(
+                                    contents.get_text()[:50]))
 
     def get_top_image_url(self) -> Optional[str]:
         return self.contents.get_top_image_url()
