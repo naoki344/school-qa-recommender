@@ -5,16 +5,8 @@
       :multiple="multiple"
     >
       <v-container>
+        <create-question-dialog />
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-            md="6"
-            lg="4"
-            xl="3"
-          >
-            <create-question-dialog style="height: 100%; min-height: 200px; align-items: center;" />
-          </v-col>
           <v-col
             v-for="question in questionCardList"
             :key="question.question_id"

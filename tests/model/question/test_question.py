@@ -14,23 +14,13 @@ class QuestionTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
-                'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+                'contents': 'Question1 XXXX is ???',
+                'summary': 'Question1 XXXX is ???'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
-            'question_type': 'selectable',
+            'subject_name': '数学',
+            'question_type': 'discussion',
             'sort_tag_list': ['数学I', '初級']
         }
 
@@ -42,21 +32,11 @@ class QuestionTest(TestCase):
         question_dict = {
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text':
+                'contents':
                 'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'subject_type': 'math',
+            'subject_name': '数学',
             'question_type': 'describing',
             'sort_tag_list': ['数学I', '初級']
         }
@@ -95,22 +75,12 @@ class QuestionTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
+                'contents': 'Question1 XXXX is ???',
                 'summary': 'Question1 XXXX is ???',
-                'image_url': None
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': None
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': None
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': '数学',
             'question_type': 'describing',
             'sort_tag_list': ['数学I', '初級']
         }
@@ -121,20 +91,19 @@ class QuestionTest(TestCase):
 
 class QuestionCardTest(TestCase):
     def test_dict_max(self):
+        self.maxDiff = None
         question_dict = {
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
-                'summary': 'Question1 XXXX is ???',
-                'image_url': None
+                'contents': '<a>Question1 XXXX is ???</a><img src="./image_url.png" />',
+                'summary': 'Question1 XXXX is ???'
             },
-            'estimated_time': 15,
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': '数学',
             'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
-        self.assertEqual(question_dict,
+        self.assertEqual({**question_dict, 'image_url': './image_url.png'},
                          QuestionCard.from_db(question_dict).to_dict())

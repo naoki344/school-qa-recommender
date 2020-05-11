@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from enum import auto
+from typing import Optional
 
 from app.model.classroom.classroom import ClassroomId
 from app.model.question.question import Question
@@ -52,7 +53,7 @@ class Work:
     classroom_id: ClassroomId
     title: WorkTitle
     caption: WorkCaption
-    image_url: WorkImageUrl
+    image_url: Optional[WorkImageUrl]
     origin_id: OriginId
     origin_type: OriginType
     register_date: RegisterDate
@@ -67,7 +68,8 @@ class Work:
             classroom_id=ClassroomId(data['classroom_id']),
             title=WorkTitle(str(data['title'])),
             caption=WorkCaption(str(data['caption'])),
-            image_url=WorkImageUrl(str(data['image_url'])),
+            image_url=WorkImageUrl(str(data['image_url']))
+            if data.get('image_url') else None,
             origin_id=OriginId(int(data['origin_id'])),
             origin_type=OriginType[data['origin_type']],
             register_date=RegisterDate.from_string(data['register_date']),
@@ -82,7 +84,7 @@ class Work:
             'classroom_id': self.classroom_id.value,
             'title': self.title.value,
             'caption': self.caption.value,
-            'image_url': self.image_url.value,
+            'image_url': self.image_url.value if self.image_url else None,
             'origin_id': self.origin_id.value,
             'origin_type': self.origin_type.name,
             'register_date': self.register_date.to_string(),
@@ -99,7 +101,7 @@ class Work:
                     title=WorkTitle(str(data['title'])),
                     caption=WorkCaption(str(data['caption'])),
                     image_url=WorkImageUrl(
-                        question.question_sentence.image_url.value),
+                        question.question_sentence.get_top_image_url()),
                     origin_id=OriginId(int(question.question_id.value)),
                     origin_type=OriginType.question,
                     register_date=RegisterDate.create(),
