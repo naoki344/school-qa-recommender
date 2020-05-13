@@ -22,7 +22,7 @@ Resources:
         WriteCapacityUnits: "5"
       GlobalSecondaryIndexes:
         -
-          IndexName: "RegisterUser-Index"
+          IndexName: "RegisterUserId-Index"
           KeySchema:
             -
               AttributeName: "register_user_id"

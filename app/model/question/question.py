@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from urllib.parse import urlparse
+
 from enum import Enum
 from enum import auto
 from typing import Dict
@@ -35,15 +37,28 @@ class SentenceContents:
     value: str
 
     def get_top_image_url(self) -> Optional[str]:
-        soup = BeautifulSoup(self.value, 'html.parser')
+        soup = BeautifulSoup(self.value, features='html.parser')
         img = soup.find('img')
         if img is not None:
-            return img.get('src')
+            return img.get('s3-key')
         return None
 
     def get_text(self):
-        soup = BeautifulSoup(self.value, 'html.parser')
+        soup = BeautifulSoup(self.value, features='html.parser')
         return soup.get_text(strip=True)
+
+    @staticmethod
+    def create(data: str):
+        soup = BeautifulSoup(data, features='html.parser')
+        for img in soup.find_all('img'):
+            img["s3-key"] = SentenceContents.parse_src(img['src'])
+            img["src"] = ""
+        return SentenceContents(soup.prettify())
+
+    @staticmethod
+    def parse_src(src: str):
+        url = urlparse(src)
+        return url.path.replace('/public/', '')
 
 
 @dataclass(frozen=True)
@@ -71,10 +86,10 @@ class QuestionSentence:
 
     @staticmethod
     def create(data):
-        contents = SentenceContents(data['contents'])
+        contents = SentenceContents.create(data['contents'])
         return QuestionSentence(contents=contents,
                                 summary=SentenceSummary(
-                                    contents.get_text()[:50]))
+                                    contents.get_text()[:50].strip()))
 
     def get_top_image_url(self) -> Optional[str]:
         return self.contents.get_top_image_url()
@@ -167,14 +182,14 @@ class QuestionCard:
             register_user_id=RegisterUserId(str(data['register_user_id'])),
             register_user_name=RegisterUserName(str(
                 data['register_user_name'])),
-            question_sentence=QuestionSentence.create(
+            question_sentence=QuestionSentence.from_dict(
                 data['question_sentence']),
             register_date=RegisterDate.from_string(data['register_date']),
             subject_name=SubjectName(data['subject_name']),
             question_type=QuestionType[data['question_type']],
             sort_tag_list=SortTagList.from_list(data['sort_tag_list']))
 
-    def to_dict(self) -> Dict[str, any]:
+    def to_response(self) -> Dict[str, any]:
         return {
             'question_id': self.question_id.value,
             'question_sentence': self.question_sentence.to_dict(),

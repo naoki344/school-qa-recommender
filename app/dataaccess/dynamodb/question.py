@@ -41,7 +41,7 @@ class QuestionDatasource:
         names = {'#user_id': 'register_user_id'}
         values = {':value': register_user_id.value}
         expression = '#user_id = :value'
-        data, paging_key = self.client.query(index_name='RegisterUser-Index',
+        data, paging_key = self.client.query(index_name='RegisterUserId-Index',
                                              names=names,
                                              values=values,
                                              expression=expression)

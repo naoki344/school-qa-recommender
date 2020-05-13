@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from unittest import TestCase
 
@@ -29,12 +30,13 @@ class QuestionTest(TestCase):
 
     @freezegun.freeze_time('2020-02-11T20:20:18.033712+09:00')
     def test_create(self):
+        self.maxDiff = None
         question_dict = {
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
             'question_sentence': {
                 'contents':
-                'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。',
+                '<a>\nQuestion1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a><img s3-key="" src="./image_url.png"/>\n',
             },
             'subject_name': '数学',
             'question_type': 'describing',
@@ -61,12 +63,16 @@ class QuestionTest(TestCase):
             'question_id': 2,
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'question_sentence': {
-                **question_dict['question_sentence'], 'summary':
+                'contents':
+                '<a>\n Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
+                'summary':
                 'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'
             },
             'register_user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'register_user_name': 'Naoki',
         }
+        print(json.dumps(expect))
+        print(json.dumps(Question.create(2, user, question_dict).to_dict()))
         self.assertEqual(expect,
                          Question.create(2, user, question_dict).to_dict())
 
@@ -98,7 +104,7 @@ class QuestionCardTest(TestCase):
             'register_user_name': '三好直紀',
             'question_sentence': {
                 'contents':
-                '<a>Question1 XXXX is ???</a><img src="./image_url.png" />',
+                '<a>\nQuestion1 XXXX is ???\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
                 'summary': 'Question1 XXXX is ???'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
@@ -106,7 +112,20 @@ class QuestionCardTest(TestCase):
             'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
-        self.assertEqual({
-            **question_dict, 'image_url': './image_url.png'
-        },
-                         QuestionCard.from_db(question_dict).to_dict())
+        expect_dict = {
+            'question_id': 1,
+            'register_user_id': "fjeiwo0g-rfar-fae",
+            'register_user_name': '三好直紀',
+            'question_sentence': {
+                'contents':
+                '<a>\nQuestion1 XXXX is ???\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
+                'summary': 'Question1 XXXX is ???'
+            },
+            'image_url': './image_url.png',
+            'register_date': '2020-02-11T20:20:18.033712+09:00',
+            'subject_name': '数学',
+            'question_type': 'selectable',
+            'sort_tag_list': ['数学I', '初級']
+        }
+        self.assertEqual(expect_dict,
+                         QuestionCard.from_db(question_dict).to_response())

@@ -53,7 +53,7 @@ class WorkTest(TestCase):
             'register_user_name': '三好直紀',
             'question_sentence': {
                 'contents':
-                '<a>Question1 XXXX is ???</a><img src="./image_url.png" />',
+                '<a>\nQuestion1 XXXX is ???\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
                 'summary': 'Question1 XXXX is ???'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',

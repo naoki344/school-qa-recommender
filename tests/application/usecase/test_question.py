@@ -21,8 +21,8 @@ class CreateQuestionTest(TestCase):
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
             'question_sentence': {
-                'contents': 'Question1 XXXX is ???',
-                'summary': 'Question1 XXXX is ???',
+                'contents':
+                '<a>\nQuestion1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a><img s3-key="" src="./image_url.png"/>\n',
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
             'subject_name': 'math',
@@ -64,6 +64,12 @@ class CreateQuestionTest(TestCase):
 
         expect = {
             **self.question_dict, 'question_id': 1,
+            'question_sentence': {
+                'contents':
+                '<a>\n Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
+                'summary':
+                'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'
+            },
             'register_user_id': user_id.value,
             'register_user_name': 'Naoki'
         }
