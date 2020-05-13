@@ -1,26 +1,35 @@
-import { API } from "aws-amplify";
+import {
+  API
+} from "aws-amplify";
 import Vue from "vue";
 
 export default {
   namespaced: true,
   state: {
-      myClassroomList: [],
-      classroomWorkList: {},
+    myClassroomList: [],
+    classroomWorkList: {},
   },
   mutations: {
     setMyClassroomList(state, data) {
       state.myClassroomList = data;
     },
-    setClassroomWorkList(state, {classroom_id, work_list}) {
+    setClassroomWorkList(state, {
+      classroom_id,
+      work_list
+    }) {
       Vue.set(state.classroomWorkList, classroom_id, work_list);
     }
   },
   actions: {
-    fetchMyClassroomList({ commit, rootState, dispatch }) {
+    fetchMyClassroomList({
+      commit,
+      rootState,
+      dispatch
+    }) {
       return new Promise((resolve, reject) => {
         API.get(
-          "ToiToyApi",
-          "/classroom/my_classroom")
+            "ToiToyApi",
+            "/classroom/my_classroom")
           .then(result => {
             const classroom_list = result["my_classroom_list"];
             commit("setMyClassroomList", classroom_list);
@@ -38,15 +47,21 @@ export default {
           });
       });
     },
-    fetchClassroomWorkList({ commit, rootState }, classroom_id) {
+    fetchClassroomWorkList({
+      commit,
+      rootState
+    }, classroom_id) {
       return new Promise((resolve, reject) => {
         const pathTemplate = `/classroom/${classroom_id}/work`
         API.get(
-          "ToiToyApi",
-          `/classroom/${classroom_id}/work`
+            "ToiToyApi",
+            `/classroom/${classroom_id}/work`
           )
           .then(result => {
-            commit("setClassroomWorkList", {"classroom_id": classroom_id, "work_list": result["work_list"]});
+            commit("setClassroomWorkList", {
+              "classroom_id": classroom_id,
+              "work_list": result["work_list"]
+            });
             resolve();
           })
           .catch((e) => {
@@ -54,11 +69,16 @@ export default {
           });
       });
     },
-    fetchClassroomWork({ rootState }, { classroomId, workId }) {
+    fetchClassroomWork({
+      rootState
+    }, {
+      classroomId,
+      workId
+    }) {
       return new Promise((resolve, reject) => {
         API.get(
-          "ToiToyApi",
-          `/classroom/${classroomId}/work/${workId}`
+            "ToiToyApi",
+            `/classroom/${classroomId}/work/${workId}`
           )
           .then(result => {
             resolve(result);
@@ -68,11 +88,16 @@ export default {
           });
       });
     },
-    getWorkCommentList({ rootState }, { classroomId, workId }) {
+    getWorkCommentList({
+      rootState
+    }, {
+      classroomId,
+      workId
+    }) {
       return new Promise((resolve, reject) => {
         API.get(
-          "ToiToyApi",
-          `/classroom/${classroomId}/work/${workId}/comment`
+            "ToiToyApi",
+            `/classroom/${classroomId}/work/${workId}/comment`
           )
           .then(result => {
             resolve(result);
@@ -104,16 +129,16 @@ export default {
     },
     postWorkComment({ rootState }, { classroomId, workId, commentType, parentCommentId, body }) {
       return new Promise((resolve, reject) => {
+        const trimmedBody = body.trim();
         API.post(
-          "ToiToyApi",
-          `/classroom/${classroomId}/work/${workId}/comment`,
-          {
-            body: {
-              comment_type: commentType,
-              parent_comment_id: parentCommentId,
-              body: body
-		    }
-		  })
+            "ToiToyApi",
+            `/classroom/${classroomId}/work/${workId}/comment`, {
+              body: {
+                comment_type: commentType,
+                parent_comment_id: parentCommentId,
+                body: trimmedBody
+              }
+            })
           .then(result => {
             resolve(result);
           })
@@ -122,20 +147,26 @@ export default {
           });
       });
     },
-    registerWork({ rootState }, {question, selectedClassroom, title, caption}) {
+    registerWork({
+      rootState
+    }, {
+      question,
+      selectedClassroom,
+      title,
+      caption
+    }) {
       const pathTemplate = '/classroom/{classroom_id}/work'
       Promise.all(selectedClassroom.map(async classroomId => {
         return new Promise((resolve, reject) => {
           API.post(
-            "ToiToyApi",
-            `/classroom/${classroomId}/work`,
-            {
-              body: {
-                "question_id": question.question_id,
-                "title": title,
-                "caption": caption
-              }
-		    })
+              "ToiToyApi",
+              `/classroom/${classroomId}/work`, {
+                body: {
+                  "question_id": question.question_id,
+                  "title": title,
+                  "caption": caption
+                }
+              })
             .then(result => {
               resolve(result);
             })
@@ -147,4 +178,3 @@ export default {
     },
   }
 }
-

@@ -27,7 +27,7 @@
             </v-chip>
             <div
               class="px-4 pb-4"
-              style="display: flex; justify-content: letf"
+              style="display: flex;"
             >
               <v-chip
                 v-for="tag in question.sort_tag_list"

@@ -65,8 +65,7 @@ class QuestionTest(TestCase):
             'question_sentence': {
                 'contents':
                 '<a>\n Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
-                'summary':
-                'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'
+                'summary': 'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'
             },
             'register_user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
             'register_user_name': 'Naoki',

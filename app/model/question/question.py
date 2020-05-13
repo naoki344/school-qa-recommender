@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from urllib.parse import urlparse
-
 from enum import Enum
 from enum import auto
 from typing import Dict
 from typing import List
 from typing import Optional
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
