@@ -24,7 +24,7 @@ export default {
       return new Promise((resolve, reject) => {
         API.get(
           "ToiToyApi",
-          `/question${questionId}`)
+          `/question/${questionId}`)
           .then(result => {
             resolve(result);
           })

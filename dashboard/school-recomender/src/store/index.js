@@ -35,7 +35,7 @@ export default new Vuex.Store({
         Storage.configure({ level: "public" });
         Storage.put("" + filePath, file)
           .then((result) => {
-            resolve(result);
+            resolve(result.key);
           })
           .catch(err => {
             alert("画像アップロードに失敗しました", err);

@@ -79,8 +79,11 @@
                 <v-divider />
               </div>
             </v-list>
-            <v-subheader class="create-approve-join-request-header">クラスメイト一覧
-              <div class="create-approve-join-request-link"><a>招待用リンクを取得</a></div>
+            <v-subheader class="create-approve-join-request-header">
+              クラスメイト一覧
+              <div class="create-approve-join-request-link">
+                <a>招待用リンクを取得</a>
+              </div>
             </v-subheader>
             <v-divider />
             <v-list

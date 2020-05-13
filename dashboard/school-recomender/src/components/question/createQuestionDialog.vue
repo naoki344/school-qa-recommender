@@ -44,14 +44,19 @@
               v-model="valid"
               lazy-validation
             >
-              <v-row align="center" class="toi-create-card-item-list">
+              <v-row
+                align="center"
+                class="toi-create-card-item-list"
+              >
                 <v-col
                   class="pa-0"
                   cols="3"
                   md="2"
                   lg="1"
                 >
-                  <v-subheader class="pl-2">教科</v-subheader>
+                  <v-subheader class="pl-2">
+                    教科
+                  </v-subheader>
                 </v-col>
                 <v-col
                   class="pa-0"
@@ -75,7 +80,9 @@
                   md="2"
                   lg="1"
                 >
-                  <v-subheader class="pl-2">タグ</v-subheader>
+                  <v-subheader class="pl-2">
+                    タグ
+                  </v-subheader>
                 </v-col>
                 <v-col
                   class="pa-0"
@@ -99,22 +106,40 @@
                   class="pa-0 pt-4 mb-12"
                   cols="12"
                 >
-                  <div class="switch-custom-toolbar-text" v-if="customToolbarType === 'min'" @click="showMaxCustomToolbar"><a>ツールバーを全て表示</a></div>
-                  <div class="switch-custom-toolbar-text" v-else @click="showMinCustomToolbar"><a>ツールバーを閉じる</a></div>
+                  <div
+                    v-if="customToolbarType === 'min'"
+                    class="switch-custom-toolbar-text"
+                    @click="showMaxCustomToolbar"
+                  >
+                    <a>ツールバーを全て表示</a>
+                  </div>
+                  <div
+                    v-else
+                    class="switch-custom-toolbar-text"
+                    @click="showMinCustomToolbar"
+                  >
+                    <a>ツールバーを閉じる</a>
+                  </div>
                   <div class="custom-toolbar-min">
                     <vue-editor
-                      v-model="question.sentence.text"
+                      id="editor-min"
+                      v-model="question.contents"
                       :editor-toolbar="customToolbarMin"
                       class="question-sentence-editor"
                       align="left"
+                      use-custom-image-handler
+                      @image-added="handleImageAdded"
                     />
                   </div>
                   <div class="custom-toolbar-max">
                     <vue-editor
-                      v-model="question.sentence.text"
+                      id="editor-max"
+                      v-model="question.contents"
                       class="question-sentence-editor"
                       :editor-toolbar="customToolbarMax"
                       align="left"
+                      use-custom-image-handler
+                      @image-added="handleImageAdded"
                     />
                   </div>
                 </v-col>
@@ -148,18 +173,13 @@ export default {
     },
     dialog: false,
     subjectList: schoolApiQuesionTransfer.getSubjectNameList(),
-    sentenceImage: null,
-    tagItems: ["初級"],
+    tagItems: [],
     timeList: [1, 3, 5, 15, 30, 60],
     subjectNameRules: [v => !!v || "教科を選択してください"],
-    estimatedTimeRules: [v => !!v || "目安時間を選択してください"],
     question: {
       subjectName: "",
       questionType: "describing",
-      estimatedTime: "",
-      sentence: { text: "", imageUrl: null },
-      answer: { text: "", imageUrl: null },
-      commentary: { text: "", imageUrl: null },
+      contents: "",
       sortTagList: []
     },
     select: [],
@@ -190,49 +210,35 @@ export default {
     this.customToolbarType = "min"
   },
   methods: {
-    createQuestion() {
-      const uploadQuestionImage = () => {
-        return new Promise((resolve, reject) => {
-          if (this.$refs.form.validate()) {
-            this.snackbar = true;
-          } else {
-            this.valid = false;
-            reject();
-          }
-          if (this.sentenceImage != null) {
-            this.$store
-              .dispatch("putS3PublicFile", {
-                file: this.sentenceImage
-              })
-              .then(data => {
-                this.question.sentence.imageUrl = data.key;
-              })
-              .catch(err => {
-                console.log(err);
-                reject();
-              });
-          } else {
-            resolve();
-          }
+    async createQuestion() {
+       this.$store
+         .dispatch("question/createQuestion", {
+           questionInput: this.question
+         })
+         .then(() => {
+           this.$store.dispatch("question/fetchQuestionList");
+           this.dialog = false;
+         });
+    },
+    handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+      console.log(cursorLocation);
+      this.$store
+        .dispatch("putS3PublicFile", {
+          file: file
+        })
+        .then(s3_key => {
+          this.$store.dispatch("getS3PublicFile", s3_key)
+            .then(url => {
+              Editor.insertEmbed(cursorLocation, "image", url);
+              resetUploader();
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      };
-      const main = async () => {
-        await uploadQuestionImage()
-          .then(() => {
-            this.$store
-              .dispatch("question/createQuestion", {
-                questionInput: this.question
-              })
-              .then(() => {
-                this.$store.dispatch("question/fetchQuestionList");
-                this.dialog = false;
-              });
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      };
-      main();
     },
     showMaxCustomToolbar() {
       this.customToolbarType = "max"
