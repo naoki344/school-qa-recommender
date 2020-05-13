@@ -73,12 +73,6 @@
         </div>
       </swiper-slide>
     </swiper>
-    <classroom-work-detail-dialog
-      :work="selectedWork"
-      :classroom="selectedClass"
-      :dialog-visible="workDialogVisible"
-      @closeDialog="closeWorkDetailDialog()"
-    />
   </v-content>
 </template>
 
@@ -87,13 +81,12 @@ import { mapState } from "vuex";
 import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { components } from "aws-amplify-vue";
-import classroomWorkDetailDialog from "@/components/classroom/classroomWorkDetailDialog.vue";
+
 export default {
   name: "ClassroomSwiper",
   components: {
     swiper,
     swiperSlide,
-    classroomWorkDetailDialog,
     ...components
   },
   data() {
@@ -105,8 +98,8 @@ export default {
         centeredSlides: true
       },
       imageList: [],
-      selectedWork: "",
-      selectedClass: "",
+      selectedWorkId: "",
+      selectedClassId: "",
       swiperOptionThumbs: {
         speed: 500,
         slidesPerView: "auto",
@@ -138,9 +131,17 @@ export default {
       return false;
     },
     openWorkDetail(work, myClass) {
-      this.selectedWork = work;
-      this.selectedClass = myClass.classroom;
-      this.workDialogVisible = true;
+      this.selectedWorkId = work.work_id;
+      this.selectedClassId = myClass.classroom.classroom_id;
+      console.log(this.selectedWorkId);
+      console.log(this.selectedClassId);
+      this.$router.push({
+        name: "classroomWorkDetailPage",
+        query: {
+          work_id: this.selectedWorkId,
+          classroom_id: this.selectedClassId
+        }
+      });
     },
     closeWorkDetailDialog() {
       this.workDialogVisible = false;

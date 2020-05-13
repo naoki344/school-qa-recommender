@@ -7,12 +7,14 @@ import userVerifyPage from "../views/userVerifyPage.vue";
 import classroomCreatePage from "../views/classroomCreatePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
 import topPage from "../views/topPage.vue";
-import { Auth } from "aws-amplify";
+import classroomWorkDetailPage from "../views/classroomWorkDetailPage.vue";
+import {
+  Auth
+} from "aws-amplify";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     name: "topPage",
     component: topPage
@@ -46,6 +48,11 @@ const routes = [
     path: "/classroomCreate",
     name: "classroomCreatePage",
     component: classroomCreatePage
+  },
+  {
+    path: "/classroomWorkDetail",
+    name: "classroomWorkDetailPage",
+    component: classroomWorkDetailPage,
   }
 ];
 
