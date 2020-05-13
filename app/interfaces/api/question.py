@@ -40,7 +40,7 @@ def get_question_list_handler(event, context):
     service: GetQuestionList = get_question_list(logger=logger)
     question_list, paging_key = service.run(register_user_id=register_user_id)
     data = {
-        "question_card_list": [d.to_dict() for d in question_list],
+        "question_card_list": [d.to_response() for d in question_list],
         "paging_key": paging_key
     }
     return APIGatewayResponse.to_response(data)

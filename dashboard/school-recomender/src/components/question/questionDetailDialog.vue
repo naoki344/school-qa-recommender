@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-content id="question-detail-dialog">
     <v-row justify="center">
       <v-dialog
         v-model="dialogVisible"
@@ -8,101 +8,44 @@
         @keydown.esc="closeDialog()"
       >
         <v-card>
+          <v-card-title
+            class="pb-2 px-4 title"
+            style="text-align: center;"
+          >
+            Toi
+          </v-card-title>
           <div
             class="px-4 pt-3 pb-2"
             style="display: flex; justify-content: space-between"
           >
-            <v-card-title
-              class="headline font-weight-bold"
-              style="padding: 0;"
-            >
-              {{ question.subject_type | subjectTypeFilter }}
-            </v-card-title>
             <v-chip
               class
-              small
               :color="question.estimated_time | estimatedColorFilter"
               text-color="white"
-              style="padding-left: 6px;"
             >
-              <v-avatar
-                left
-                :class="question.estimated_time | estimatedColorFilter"
-                class="darken-4"
+              {{ question.subject_name }}
+            </v-chip>
+            <div
+              class="px-4 pb-4"
+              style="display: flex;"
+            >
+              <v-chip
+                v-for="tag in question.sort_tag_list"
+                :key="tag"
+                style="margin-right:5px;"
               >
-                {{ question.estimated_time }}
-              </v-avatar>Min
-            </v-chip>
+                {{ tag }}
+              </v-chip>
+            </div>
           </div>
-          <div
-            class="px-4 pb-4"
-            style="display: flex; justify-content: letf"
-          >
-            <v-chip
-              v-for="tag in question.sort_tag_list"
-              :key="tag"
-              style="margin-right:5px;"
-            >
-              {{ tag }}
-            </v-chip>
-          </div>
-          <v-divider class="pb-4" />
           <v-card-text
-            class="pb-2 px-4 title"
+            id="question-detail-dialog-contents"
+            class="px-4 pt-0 pb-6 body-1 question-sentence-contents"
             style="text-align: left;"
           >
-            ＜問い＞
-          </v-card-text>
-          <v-img
-            v-if="getImageUrl(question.question_sentence)"
-            class="mb-2"
-            :src="imageList[question.question_sentence.image_url]"
-            style="width: 100%;"
-          />
-          <v-card-text
-            class="px-4 pt-0 pb-6 body-1"
-            style="text-align: left;"
-          >
-            {{ question.question_sentence.text }}
+            <div v-html="question.question_sentence.contents" />
           </v-card-text>
 
-          <v-card-text
-            class="pb-2 px-4 title"
-            style="text-align: left;"
-          >
-            ＜解答＞
-          </v-card-text>
-          <v-img
-            v-if="getImageUrl(question.question_answer)"
-            class="pb-2"
-            :src="imageList[question.question_answer.image_url]"
-            style="width: 100%;"
-          />
-          <v-card-text
-            class="px-4 pt-0 pb-6 body-1"
-            style="text-align: left;"
-          >
-            {{ question.question_answer.text }}
-          </v-card-text>
-
-          <v-card-text
-            class="pb-2 px-4 title"
-            style="text-align: left;"
-          >
-            ＜解説＞
-          </v-card-text>
-          <v-img
-            v-if="getImageUrl(question.question_answer)"
-            class="pb-2"
-            :src="imageList[question.question_answer.image_url]"
-            style="width: 100%;"
-          />
-          <v-card-text
-            class="px-4 pt-0 pb-6 body-1"
-            style="text-align: left;"
-          >
-            {{ question.question_answer.text }}
-          </v-card-text>
           <v-divider class="pb-4" />
           <v-card-text
             class="pb-2 px-4 title"
@@ -177,10 +120,6 @@ import moment from "moment";
 export default {
   name: "QuestionDetailDialog",
   filters: {
-    subjectTypeFilter: function(value) {
-      if (!value) return "";
-      return schoolApiQuesionTransfer.getSubjectNameFromType(value);
-    },
     questionTypeFilter: function(value) {
       if (!value) return "";
       if (value === "describing") return "記述式";
@@ -214,6 +153,7 @@ export default {
     selectedClassroom: [],
     workCaption: '',
     workTitle: '',
+    contents: '',
   }),
   computed: {
     ...mapState({
@@ -222,28 +162,37 @@ export default {
   },
   mounted() {
     this.fetchClassroomList();
+    this.$nextTick(function () {
+      const contents = document.getElementById('question-detail-dialog-contents');
+      const imgList = contents.getElementsByTagName('img');
+      imgList.forEach(async img => {
+        const url = await this.getImageUrl(img.getAttribute('s3-key'))
+        console.log(url);
+        img.setAttribute('src', url);
+      })
+      console.log(imgList);
+    })
   },
   methods: {
     closeDialog() {
       this.selectedClassroom = [];
       this.$emit('closeDialog');
     },
-    getImageUrl(obj) {
-      if (obj["image_url"] == null) { return false }
-      const path = obj["image_url"];
-      if (this.imageList[path] != null) { return true }
-      this.$store.dispatch("getS3PublicFile", path)
-        .then((url) => {
-          this.$set(this.imageList, path, url);
+    async getImageUrl(s3Key) {
+      if (s3Key == null) { return null }
+      if (this.imageList[s3Key] != null) { return this.imageList[s3Key] }
+      const url = await this.$store.dispatch("getS3PublicFile", s3Key)
+        .then(async (url) => {
+          await this.$set(this.imageList, s3Key, url);
+          return this.imageList[s3Key];
         })
         .catch(() => {
-          return false;
+          return null;
         });
-      return true;
+      return url;
     },
     fetchClassroomList() {
       this.$store.dispatch("classroom/fetchMyClassroomList");
-      console.log(this.classroomList[0]);
     },
     registerWorkSelectedClassroom() {
       this.$store.dispatch("classroom/registerWork",
@@ -258,3 +207,11 @@ export default {
 };
 </script>
 
+
+<style lang="scss">
+.question-sentence-contents {
+  img {
+    width: 100%;
+  }
+}
+</style>

@@ -13,9 +13,6 @@ Resources:
         -
           AttributeName: "register_date"
           AttributeType: "S"
-        -
-          AttributeName: "subject_type"
-          AttributeType: "S"
       KeySchema:
         -
           AttributeName: "question_id"
@@ -25,7 +22,7 @@ Resources:
         WriteCapacityUnits: "5"
       GlobalSecondaryIndexes:
         -
-          IndexName: "RegisterUser-Index"
+          IndexName: "RegisterUserId-Index"
           KeySchema:
             -
               AttributeName: "register_user_id"
@@ -34,38 +31,7 @@ Resources:
               AttributeName: "register_date"
               KeyType: "RANGE"
           Projection:
-            NonKeyAttributes:
-              - "question_id"
-              - "estimated_time"
-              - "register_user_name"
-              - "register_date"
-              - "subject_type"
-              - "sort_tag_list"
-              - "question_sentence"
-              - "question_type"
-            ProjectionType: "INCLUDE"
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"
-        -
-          IndexName: "SubjectType-Index"
-          KeySchema:
-            -
-              AttributeName: "subject_type"
-              KeyType: "HASH"
-            -
-              AttributeName: "register_date"
-              KeyType: "RANGE"
-          Projection:
-            NonKeyAttributes:
-              - "question_id"
-              - "register_user_id"
-              - "register_user_name"
-              - "estimated_time"
-              - "sort_tag_list"
-              - "question_sentence"
-              - "question_type"
-            ProjectionType: "INCLUDE"
+            ProjectionType: "ALL"
           ProvisionedThroughput:
             ReadCapacityUnits: "5"
             WriteCapacityUnits: "5"
@@ -209,6 +175,37 @@ Resources:
             -
               AttributeName: "register_date"
               KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+
+  ToiToyClassroomInviteTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "${self:custom.resourcePrefix}-ClassmateInvite"
+      AttributeDefinitions:
+        -
+          AttributeName: "classroom_id"
+          AttributeType: "N"
+        -
+          AttributeName: "invite_key"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "classroom_id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "InviteKey-Index"
+          KeySchema:
+            -
+              AttributeName: "invite_key"
+              KeyType: "HASH"
           Projection:
             ProjectionType: "ALL"
           ProvisionedThroughput:

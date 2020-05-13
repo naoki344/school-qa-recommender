@@ -23,7 +23,6 @@
       </v-toolbar>
       <v-card-text class="pa-2">
         <v-container
-          v-if="question != null"
           class="pa-0"
         >
           <div class="split">
@@ -39,28 +38,32 @@
                   {{ workDetail.title }}
                 </v-card-title>
                 <v-chip
-                  small
-                  :color="question.estimated_time | estimatedColorFilter"
+                  color="green"
                   text-color="white"
-                  style="padding-left: 6px;"
                 >
-                  {{ question.subject_type | subjectTypeFilter }}
+                  {{ question.subject_name }}
                 </v-chip>
               </div>
-              <!-- <div class="px-4 pb-4" style="display: flex; justify-content: letf">{{ tag }}</div> -->
+              <div
+                class="px-4 pb-4"
+                style="display: flex; justify-content: flex-start;"
+              >
+                <v-chip
+                  v-for="tag in question.sort_tag_list"
+                  :key="tag"
+                  style="margin-right:5px;"
+                >
+                  {{ tag }}
+                </v-chip>
+              </div>
               <v-divider class="pb-4" />
               <v-card-text
+                id="work-detail-dialog-contents"
                 class="px-4 pt-0 pb-6 body-1"
                 style="text-align: left;"
               >
-                {{ question.question_sentence.text }}
+                <div v-html="question.question_sentence.contents" />
               </v-card-text>
-              <v-img
-                v-if="getImageUrl(question.question_sentence)"
-                class="mb-2"
-                :src="imageList[question.question_sentence.image_url]"
-                style="width: 100%;"
-              />
               <v-divider />
               <v-row style="justify-content: space-around; ">
                 <v-col
@@ -214,7 +217,7 @@
     >
       <v-card>
         <v-card-actions>
-          <v-btn icon　@click="topicCreateDialog = false">
+          <v-btn icon @click="topicCreateDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
           <v-spacer />
@@ -262,14 +265,6 @@ export default {
       if (value == null) return "";
       if (!value) return "";
       return moment(value).format("MM月DD日 hh:mm");
-    },
-    estimatedColorFilter: function(value) {
-      if (value == null) return "";
-      if (!value) return "green";
-      if (value <= 1) return "blue";
-      if (value <= 5) return "green";
-      if (value <= 15) return "orange";
-      if (value > 15) return "red";
     },
     messageTimeSortFilter: function(value) {
       if (!value) return "";
@@ -320,6 +315,16 @@ export default {
       });
       return msgList;
     }
+  },
+  mounted() {
+    this.$nextTick(function () {
+      const contents = document.getElementById('work-detail-dialog-contents');
+      const imgList = contents.getElementsByTagName('img');
+      imgList.forEach(async img => {
+        const url = await this.getImageUrl(img.getAttribute('s3-key'))
+        img.setAttribute('src', url);
+      })
+    })
   },
   beforeMount() {
     this.findClassroomWork();
@@ -469,24 +474,19 @@ export default {
         this.topicCreateDialog = false;
       });
     },
-    getImageUrl(obj) {
-      if (obj["image_url"] == null) {
-        return false;
-      }
-      const path = obj["image_url"];
-      if (this.imageList[path] != null) {
-        return true;
-      }
-      this.$store
-        .dispatch("getS3PublicFile", path)
-        .then(url => {
-          this.$set(this.imageList, path, url);
+    async getImageUrl(s3Key) {
+      if (s3Key == null) { return null }
+      if (this.imageList[s3Key] != null) { return this.imageList[s3Key] }
+      const url = await this.$store.dispatch("getS3PublicFile", s3Key)
+        .then(async (url) => {
+          await this.$set(this.imageList, s3Key, url);
+          return this.imageList[s3Key];
         })
         .catch(() => {
-          return false;
+          return null;
         });
-      return true;
-    }
+      return url;
+    },
   }
 };
 </script>

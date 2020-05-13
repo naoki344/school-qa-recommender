@@ -1,78 +1,159 @@
 <!-- The ref attr used to find the swiper instance -->
 <template>
   <v-content>
-    <swiper
-      ref="swiperThumbs"
-      class="classroom-swiper-thumbs"
-      :options="swiperOptionThumbs"
+    <div
+      v-if="existsJoinClassroom"
     >
-      <swiper-slide
-        v-for="myClass in classroomList"
-        :key="myClass.classroom.classroom_id"
+      <swiper
+        ref="swiperThumbs"
+        class="classroom-swiper-thumbs"
+        :options="swiperOptionThumbs"
       >
-        <div class="classroom-swiper-thumbs-box">
-          <v-card shaped>
-            <v-img
-              v-if="getImageUrl(myClass.classroom)"
-              class="white--text align-end classroom-swiper-thumbs-image"
-              :src="imageList[myClass.classroom.image_url]"
-            >
-              <v-card-title>
-                <h3>{{ myClass.classroom.name }}</h3>
-              </v-card-title>
-            </v-img>
-          </v-card>
-        </div>
-      </swiper-slide>
-    </swiper>
-    <swiper
-      ref="swiperTop"
-      :options="swiperOptionTop"
-      class="pa-0 classroom-swiper-content"
-    >
-      <swiper-slide
-        v-for="myClass in classroomList"
-        :key="myClass.classroom.classroom_id"
-        style="text-align: left;"
+        <swiper-slide
+          v-for="myClass in classroomList"
+          :key="myClass.classroom.classroom_id"
+        >
+          <div class="classroom-swiper-thumbs-box">
+            <v-card shaped>
+              <v-img
+                v-if="getImageUrl(myClass.classroom)"
+                class="white--text align-end classroom-swiper-thumbs-image"
+                :src="imageList[myClass.classroom.image_url]"
+              >
+                <v-card-title>
+                  <h3>{{ myClass.classroom.name }}</h3>
+                </v-card-title>
+              </v-img>
+              <v-img
+                v-else
+                class="white--text align-end classroom-swiper-thumbs-image"
+                src="@/assets/classroom-top_small.png"
+              />
+            </v-card>
+          </div>
+        </swiper-slide>
+      </swiper>
+      <swiper
+        ref="swiperTop"
+        :options="swiperOptionTop"
+        class="pa-0 classroom-swiper-content"
       >
-        <div v-if="isShowClassroomContent(myClass)">
-          <v-subheader>ワーク一覧</v-subheader>
-          <v-divider />
-          <v-list
-            subheader
-            two-line
-          >
-            <div
-              v-for="item in classroomWorkList[myClass.classroom.classroom_id]"
-              :key="item.work_id"
+        <swiper-slide
+          v-for="myClass in classroomList"
+          :key="myClass.classroom.classroom_id"
+          style="text-align: left;"
+        >
+          <div v-if="isShowClassroomContent(myClass)">
+            <v-subheader>ワーク一覧</v-subheader>
+            <v-divider />
+            <v-list
               subheader
               two-line
+              style="margin-bottom: 50px;"
             >
-              <v-list-item
-                link
-                class="classroom-work-list-item"
-                @click="openWorkDetail(item, myClass)"
+              <div
+                v-for="item in classroomWorkList[myClass.classroom.classroom_id]"
+                :key="item.work_id"
+                subheader
+                two-line
               >
-                <div class="classroom-work-list-item-image">
-                  <v-img
-                    v-if="getImageUrl(item)"
-                    class
-                    width="80"
-                    min-height="60"
-                    :src="imageList[item.image_url]"
-                  />
-                </div>
-                <v-list-item-content class="pa-0">
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-divider />
-            </div>
-          </v-list>
-        </div>
-      </swiper-slide>
-    </swiper>
+                <v-list-item
+                  link
+                  class="classroom-work-list-item"
+                  @click="openWorkDetail(item, myClass)"
+                >
+                  <div class="classroom-work-list-item-image">
+                    <v-img
+                      v-if="getImageUrl(item)"
+                      class
+                      width="80"
+                      min-height="60"
+                      :src="imageList[item.image_url]"
+                    />
+                  </div>
+                  <v-list-item-content class="pa-0">
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-divider />
+              </div>
+            </v-list>
+            <v-subheader class="create-approve-join-request-header">
+              クラスメイト一覧
+              <div class="create-approve-join-request-link">
+                <a>招待用リンクを取得</a>
+              </div>
+            </v-subheader>
+            <v-divider />
+            <v-list
+              subheader
+              two-line
+              style="margin-bottom: 50px;"
+            >
+              <div
+                v-for="classmate in myClass.classmate_list"
+                :key="classmate.user_id"
+                subheader
+                two-line
+              >
+                <v-list-item
+                  link
+                  class="classmate-list-item"
+                >
+                  <v-avatar
+                    tile
+                    size="40"
+                  >
+                    <v-img
+                      :src="getUserAvatarImageUrl(classmate.user_id)"
+                    />
+                  </v-avatar>
+                  <v-list-item-content class="pa-0">
+                    <div>{{ classmate.nickname }} <span>{{ classmate.join_status | joinStatusFilter }}</span></div>
+                  </v-list-item-content>
+                  <v-list-item-content
+                    v-if="classmate.join_status === 'requested'"
+                    class="pa-0"
+                  >
+                    <div class="approve-join-request-text">
+                      <a
+                        @click="approveJoinRequest(myClass.classroom.classroom_id, classmate.user_id, classmate.nickname)"
+                      >
+                        参加を承認する
+                      </a>
+                    </div>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-divider />
+              </div>
+            </v-list>
+          </div>
+        </swiper-slide>
+      </swiper>
+    </div>
+    <div
+      v-else
+    >
+      <div class="classroom-swiper-thumbs-box join-classroom-nothing-image">
+        <v-card shaped>
+          <v-img
+            class="white--text align-end classroom-swiper-thumbs-image"
+            src="@/assets/classroom-top_small.png"
+          />
+        </v-card>
+      </div>
+      <v-divider />
+      <p class="ma-4">
+        現在参加中のクラスはありません。
+      </p>
+    </div>
+    <classroom-work-detail-dialog
+      :work="selectedWork"
+      :classroom="selectedClass"
+      :dialog-visible="workDialogVisible"
+      @closeDialog="closeWorkDetailDialog()"
+    />
   </v-content>
 </template>
 
@@ -88,6 +169,14 @@ export default {
     swiper,
     swiperSlide,
     ...components
+  },
+  filters: {
+    joinStatusFilter(value) {
+      if (value === "") return "";
+      if (value === "approved") return "参加中";
+      if (value === "owner") return "オーナー";
+      if (value === "requested") return "承認待ち";
+    },
   },
   data() {
     return {
@@ -106,7 +195,8 @@ export default {
         spaceBetween: 20,
         centeredSlides: true
       },
-      workDialogVisible: false
+      workDialogVisible: false,
+      existsJoinClassroom: true,
     };
   },
   computed: {
@@ -116,19 +206,22 @@ export default {
     })
   },
   mounted() {
+    this.fetchClassroomList();
     this.$nextTick(() => {
       const swiperTop = this.$refs.swiperTop.swiper;
       const swiperThumbs = this.$refs.swiperThumbs.swiper;
       swiperTop.controller.control = swiperThumbs;
       swiperThumbs.controller.control = swiperTop;
     });
-    this.fetchClassroomList();
   },
   methods: {
     isShowClassroomContent(classroom) {
       if (classroom.classmate.join_status == "approved") return true;
       if (classroom.classmate.join_status == "owner") return true;
       return false;
+    },
+    getUserAvatarImageUrl(userId) {
+      return this.$store.getters["user/userAvatarImageUrl"](userId);
     },
     openWorkDetail(work, myClass) {
       this.selectedWorkId = work.work_id;
@@ -146,8 +239,26 @@ export default {
     closeWorkDetailDialog() {
       this.workDialogVisible = false;
     },
-    fetchClassroomList() {
-      this.$store.dispatch("classroom/fetchMyClassroomList");
+    async fetchClassroomList() {
+      this.$store.dispatch("classroom/fetchMyClassroomList")
+        .then(() => {
+          if (this.classroomList.length == 0) {
+            this.existsJoinClassroom = false;
+          } else {
+            this.existsJoinClassroom = true;
+          }
+        })
+    },
+    approveJoinRequest(classroomId, userId, nickName) {
+      this.$store
+        .dispatch("classroom/approveClassroomJoinRequest", { classroomId, userId } )
+        .then(data => {
+          this.$store.dispatch("classroom/fetchMyClassroomList");
+          alert(`${nickName} をクラスに追加しました。`);
+        })
+        .catch(err => {
+          alert(`${nickName} のクラスに追加に失敗しました。(再度実行してくだください)`);
+        });
     },
     fetchS3Object(path) {
       this.$store
@@ -213,24 +324,29 @@ export default {
   .swiper-slide {
     width: 80%;
   }
-  .classroom-swiper-thumbs-image {
-    width: 100%;
-    max-height: 180px;
-    margin: auto;
-    margin-bottom: 15px;
-  }
-  .v-card {
-    border-radius: 12px;
-  }
-  .v-card__title {
-    padding: 12px;
-    display: flex;
-    justify-content: flex-end;
-    background-color: rgb(0, 0, 0, 0.5);
-    h3 {
-      font-weight: 300;
-      line-height: 1;
-    }
+}
+
+.join-classroom-nothing-image {
+  width: 80%;
+  margin: 0 auto 20px auto;
+}
+.classroom-swiper-thumbs-image {
+  width: 100%;
+  max-height: 180px;
+  margin: auto;
+  margin-bottom: 15px;
+}
+.v-card {
+  border-radius: 12px;
+}
+.v-card__title {
+  padding: 12px;
+  display: flex;
+  justify-content: flex-end;
+  background-color: rgb(0, 0, 0, 0.5);
+  h3 {
+    font-weight: 300;
+    line-height: 1;
   }
 }
 .swiper-slide-next,
@@ -250,7 +366,6 @@ export default {
     height: 100%;
   }
   .v-list-item__title {
-    font-size: 1.4;
     font-weight: 600;
     margin-bottom: 5px;
   }
@@ -261,6 +376,39 @@ export default {
     white-space: pre-line;
     max-height: 2rem;
     overflow: hidden;
+  }
+}
+
+.classmate-list-item {
+  font-weight: 600;
+  margin: 0;
+  span {
+    font-size: 0.8rem;
+    margin-left: 5px;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .v-list-item__content {
+    margin-left: 10px;
+  }
+  .approve-join-request-text {
+    text-align: right;
+	a {
+      text-decoration: underline;
+      color: #35A7FF;
+	}
+  }
+}
+
+.create-approve-join-request-header {
+  display: flex;
+  justify-content: space-between;
+	a {
+      text-decoration: underline;
+      color: #35A7FF;
+	}
+  .create-approve-join-request-link {
+    margin-top: 10px;
   }
 }
 </style>
