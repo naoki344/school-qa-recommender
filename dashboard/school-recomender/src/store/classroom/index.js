@@ -29,7 +29,8 @@ export default {
                 .catch((err) => {
                   console.log(err);
                 });
-            })
+            });
+            resolve();
           })
           .catch((err) => {
             console.log(err);
@@ -73,6 +74,26 @@ export default {
           "ToiToyApi",
           `/classroom/${classroomId}/work/${workId}/comment`
           )
+          .then(result => {
+            resolve(result);
+          })
+          .catch((e) => {
+            reject(e);
+          });
+      });
+    },
+    approveClassroomJoinRequest({ rootState }, { classroomId, userId }) {
+      console.log(classroomId)
+      console.log({ approve_user_list: [ userId, ] })
+      return new Promise((resolve, reject) => {
+        API.put(
+          "ToiToyApi",
+          `/classroom/${classroomId}/approve_request`,
+          {
+            body: {
+              approve_user_list: [ userId ]
+            }
+          })
           .then(result => {
             resolve(result);
           })

@@ -125,6 +125,45 @@ functions:
       TYPE: API
       SERVICE: Classroom
 
+  LambdaApiCreateClassmateInviteLink:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.create_classmate_invite_link_handler
+    name: ${self:custom.resourcePrefix}-create-classmate-invite-link
+    events:
+      - http:
+          path: classroom/{classroom_id}/invite_key
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiFindClassroomByInviteKey:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_by_invite_key_handler
+    name: ${self:custom.resourcePrefix}-find-classroom-by-invite-key
+    events:
+      - http:
+          path: invite_key/{invite_key}/classroom
+          method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiRequestJoinClassroomByInviteKey:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.request_join_classroom_by_invite_key_handler
+    name: ${self:custom.resourcePrefix}-request-join-classroom-by-invite-key
+    events:
+      - http:
+          path: invite_key/{invite_key}/join_request
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
   LambdaApiApproveJoinClassroomRequest:
     handler: ${self:custom.lambdaHandlerPrefix}api/classroom.approve_join_classroom_request_handler
     name: ${self:custom.resourcePrefix}-approve-join-class-room-request

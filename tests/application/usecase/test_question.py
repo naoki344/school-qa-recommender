@@ -20,22 +20,12 @@ class CreateQuestionTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
-                'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+                'contents':
+                '<a>\nQuestion1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a><img s3-key="" src="./image_url.png"/>\n',
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': 'math',
             'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
@@ -74,6 +64,12 @@ class CreateQuestionTest(TestCase):
 
         expect = {
             **self.question_dict, 'question_id': 1,
+            'question_sentence': {
+                'contents':
+                '<a>\n Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自動的に作成します。\n</a>\n<img s3-key="./image_url.png" src=""/>\n',
+                'summary':
+                'Question1 XXXX is ??? テスト問題です。50文字で切り取られたsummaryを自'
+            },
             'register_user_id': user_id.value,
             'register_user_name': 'Naoki'
         }
@@ -91,22 +87,12 @@ class UpdateQuestionTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
-                'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
+                'contents': 'Question1 XXXX is ???',
+                'summary': 'Question1 XXXX is ???'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': 'math',
             'question_type': 'describing',
             'sort_tag_list': ['数学I', '初級']
         }
@@ -136,22 +122,12 @@ class FindQuestionTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
+                'contents': 'Question1 XXXX is ???',
                 'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': 'math',
             'question_type': 'describing',
             'sort_tag_list': ['数学I', '初級']
         }

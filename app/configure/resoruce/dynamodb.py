@@ -4,6 +4,7 @@ from logging import Logger
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.aws.dynamodb import TableResource
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
+from app.dataaccess.dynamodb.classroom import ClassmateInviteDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.dataaccess.dynamodb.question import QuestionDatasource
@@ -35,6 +36,12 @@ def classroom_datasource(logger: Logger) -> ClassroomDatasource:
         f'{stage_name}-tt-Classroom', logger),
                                sequenses_table=sequences_datasource(logger),
                                logger=logger)
+
+
+def classmate_invite_datasource(logger: Logger) -> ClassmateInviteDatasource:
+    return ClassmateInviteDatasource(client=create_dynamodb_client(
+        f'{stage_name}-tt-ClassmateInvite', logger),
+                                     logger=logger)
 
 
 def classmate_datasource(logger: Logger) -> ClassmateDatasource:

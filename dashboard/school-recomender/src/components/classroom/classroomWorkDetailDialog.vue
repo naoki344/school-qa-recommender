@@ -45,11 +45,10 @@
               </v-card-title>
               <v-chip
                 small
-                :color="question.estimated_time | estimatedColorFilter"
+                color="green"
                 text-color="white"
-                style="padding-left: 6px;"
               >
-                {{ question.subject_type | subjectTypeFilter }}
+                {{ question.subject_name }}
               </v-chip>
             </div>
             <div
@@ -63,7 +62,7 @@
               class="px-4 pt-0 pb-6 body-1"
               style="text-align: left;"
             >
-              {{ question.question_sentence.text }}
+              <div v-html="question.question_sentence.contents" />
             </v-card-text>
             <v-img
               v-if="getImageUrl(question.question_sentence)"
@@ -181,11 +180,6 @@ export default {
   name: "ClassroomWorkDetail",
   components: {},
   filters: {
-    subjectTypeFilter: function(value) {
-      if (value == null) return "";
-      if (!value) return "";
-      return schoolApiQuesionTransfer.getSubjectNameFromType(value);
-    },
     questionTypeFilter: function(value) {
       if (value == null) return "";
       if (!value) return "";
@@ -200,7 +194,7 @@ export default {
     },
     estimatedColorFilter: function(value) {
       if (value == null) return "";
-      if (!value) return "green";
+      if (!value) return "";
       if (value <= 1) return "blue";
       if (value <= 5) return "green";
       if (value <= 15) return "orange";

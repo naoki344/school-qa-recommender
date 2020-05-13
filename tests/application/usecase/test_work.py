@@ -26,22 +26,12 @@ class CreateWorkFromQuestionTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
+                'contents': 'Question1 XXXX is ???',
                 'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx1.jpg'
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': 'math',
             'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
@@ -123,7 +113,7 @@ class CreateWorkFromQuestionTest(TestCase):
             'classroom_id': 20,
             'title': 'work title test',
             'caption': 'caption test',
-            'image_url': 'https://xxxxxxxxxxxxxxx1.jpg',
+            'image_url': None,
             'origin_id': 1,
             'origin_type': 'question',
             'register_date': '2020-02-26T00:18:16.874000+09:00',
@@ -144,22 +134,12 @@ class FindClassroomWorkTest(TestCase):
             'question_id': 1,
             'register_user_id': "fjeiwo0g-rfar-fae",
             'register_user_name': '三好直紀',
-            'estimated_time': 15,
             'question_sentence': {
-                'text': 'Question1 XXXX is ???',
+                'contents': 'Question1 XXXX is ???',
                 'summary': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx1.jpg'
-            },
-            'question_answer': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
-            },
-            'question_commentary': {
-                'text': 'Question1 XXXX is ???',
-                'image_url': 'https://xxxxxxxxxxxxxxx.jpg'
             },
             'register_date': '2020-02-11T20:20:18.033712+09:00',
-            'subject_type': 'math',
+            'subject_name': 'math',
             'question_type': 'selectable',
             'sort_tag_list': ['数学I', '初級']
         }
@@ -184,7 +164,7 @@ class FindClassroomWorkTest(TestCase):
             'classroom_id': 20,
             'title': 'work title test',
             'caption': 'caption test',
-            'image_url': 'https://xxxxxxxxxxxxxxx1.jpg',
+            'image_url': None,
             'origin_id': 1,
             'origin_type': 'question',
             'register_date': '2020-02-26T00:18:16.874000+09:00',

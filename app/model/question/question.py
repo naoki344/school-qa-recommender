@@ -1,14 +1,17 @@
 from dataclasses import dataclass
+from urllib.parse import urlparse
+
 from enum import Enum
 from enum import auto
 from typing import Dict
 from typing import List
 from typing import Optional
 
+from bs4 import BeautifulSoup
+
 from app.model.register import RegisterDate
 from app.model.register import RegisterUserId
 from app.model.register import RegisterUserName
-from app.model.subject import SubjectType
 from app.model.user.user import User
 
 
@@ -21,15 +24,45 @@ class QuestionId:
 class QuestionType(Enum):
     describing = auto()
     selectable = auto()
+    discussion = auto()
 
 
 @dataclass(frozen=True)
-class Text:
+class SubjectName:
     value: str
 
 
 @dataclass(frozen=True)
-class ImageUrl:
+class SentenceContents:
+    value: str
+
+    def get_top_image_url(self) -> Optional[str]:
+        soup = BeautifulSoup(self.value, features='html.parser')
+        img = soup.find('img')
+        if img is not None:
+            return img.get('s3-key')
+        return None
+
+    def get_text(self):
+        soup = BeautifulSoup(self.value, features='html.parser')
+        return soup.get_text(strip=True)
+
+    @staticmethod
+    def create(data: str):
+        soup = BeautifulSoup(data, features='html.parser')
+        for img in soup.find_all('img'):
+            img["s3-key"] = SentenceContents.parse_src(img['src'])
+            img["src"] = ""
+        return SentenceContents(soup.prettify())
+
+    @staticmethod
+    def parse_src(src: str):
+        url = urlparse(src)
+        return url.path.replace('/public/', '')
+
+
+@dataclass(frozen=True)
+class QuestionImageUrl:
     value: str
 
 
@@ -40,72 +73,26 @@ class SentenceSummary:
 
 @dataclass(frozen=True)
 class QuestionSentence:
-    text: Text
+    contents: SentenceContents
     summary: SentenceSummary
-    image_url: Optional[ImageUrl]
 
     @staticmethod
     def from_dict(data):
-        return QuestionSentence(text=Text(data['text']),
-                                summary=SentenceSummary(data['summary']),
-                                image_url=ImageUrl(data['image_url'])
-                                if data.get('image_url') else None)
+        return QuestionSentence(contents=SentenceContents(data['contents']),
+                                summary=SentenceSummary(data['summary']))
 
     def to_dict(self) -> Dict[str, any]:
-        return {
-            'text': self.text.value,
-            'summary': self.summary.value,
-            'image_url': self.image_url.value if self.image_url else None
-        }
+        return {'contents': self.contents.value, 'summary': self.summary.value}
 
     @staticmethod
     def create(data):
-        return QuestionSentence(text=Text(data['text']),
-                                summary=SentenceSummary(data['text'][:50]),
-                                image_url=ImageUrl(data['image_url'])
-                                if data.get('image_url') else None)
+        contents = SentenceContents.create(data['contents'])
+        return QuestionSentence(contents=contents,
+                                summary=SentenceSummary(
+                                    contents.get_text()[:50].strip()))
 
-
-@dataclass(frozen=True)
-class QuestionAnswer:
-    text: Text
-    image_url: Optional[ImageUrl]
-
-    @staticmethod
-    def from_dict(data):
-        return QuestionAnswer(
-            text=Text(data['text']),
-            image_url=ImageUrl(
-                data['image_url'] if data.get('image_url') else None))
-
-    def to_dict(self) -> Dict[str, any]:
-        return {
-            'text': self.text.value,
-            'image_url': self.image_url.value if self.image_url else None
-        }
-
-
-@dataclass(frozen=True)
-class QuestionCommentary:
-    text: Text
-    image_url: Optional[ImageUrl]
-
-    @staticmethod
-    def from_dict(data):
-        return QuestionCommentary(text=Text(data['text']),
-                                  image_url=ImageUrl(data['image_url'])
-                                  if data.get('image_url') else None)
-
-    def to_dict(self) -> Dict[str, any]:
-        return {
-            'text': self.text.value,
-            'image_url': self.image_url.value if self.image_url else None
-        }
-
-
-@dataclass(frozen=True)
-class EstimatedTime:
-    value: int
+    def get_top_image_url(self) -> Optional[str]:
+        return self.contents.get_top_image_url()
 
 
 @dataclass(frozen=True)
@@ -130,12 +117,9 @@ class Question:
     question_id: QuestionId
     register_user_id: RegisterUserId
     register_user_name: RegisterUserName
-    estimated_time: EstimatedTime
     question_sentence: QuestionSentence
-    question_answer: QuestionAnswer
-    question_commentary: QuestionCommentary
     register_date: RegisterDate
-    subject_type: SubjectType
+    subject_name: SubjectName
     question_type: QuestionType
     sort_tag_list: SortTagList
 
@@ -146,14 +130,10 @@ class Question:
             register_user_id=RegisterUserId(str(data['register_user_id'])),
             register_user_name=RegisterUserName(str(
                 data['register_user_name'])),
-            estimated_time=EstimatedTime(int(data['estimated_time'])),
             question_sentence=QuestionSentence.from_dict(
                 data['question_sentence']),
-            question_answer=QuestionAnswer.from_dict(data['question_answer']),
-            question_commentary=QuestionCommentary.from_dict(
-                data['question_commentary']),
             register_date=RegisterDate.from_string(data['register_date']),
-            subject_type=SubjectType[data['subject_type']],
+            subject_name=SubjectName(data['subject_name']),
             question_type=QuestionType[data['question_type']],
             sort_tag_list=SortTagList.from_list(data['sort_tag_list']))
 
@@ -162,12 +142,9 @@ class Question:
             'question_id': self.question_id.value,
             'register_user_id': self.register_user_id.value,
             'register_user_name': self.register_user_name.value,
-            'estimated_time': self.estimated_time.value,
             'question_sentence': self.question_sentence.to_dict(),
-            'question_answer': self.question_answer.to_dict(),
-            'question_commentary': self.question_commentary.to_dict(),
             'register_date': self.register_date.to_string(),
-            'subject_type': self.subject_type.name,
+            'subject_name': self.subject_name.value,
             'question_type': self.question_type.name,
             'sort_tag_list': self.sort_tag_list.to_list()
         }
@@ -179,14 +156,10 @@ class Question:
             question_id=QuestionId(int(question_id)),
             register_user_id=RegisterUserId(user.user_id.value),
             register_user_name=RegisterUserName(user.nickname.value),
-            estimated_time=EstimatedTime(int(data['estimated_time'])),
             question_sentence=QuestionSentence.create(
                 data['question_sentence']),
-            question_answer=QuestionAnswer.from_dict(data['question_answer']),
-            question_commentary=QuestionCommentary.from_dict(
-                data['question_commentary']),
             register_date=RegisterDate.create(),
-            subject_type=SubjectType[data['subject_type']],
+            subject_name=SubjectName(data['subject_name']),
             question_type=QuestionType[data['question_type']],
             sort_tag_list=SortTagList.from_list(data['sort_tag_list']))
 
@@ -197,9 +170,8 @@ class QuestionCard:
     question_sentence: QuestionSentence
     register_user_id: RegisterUserId
     register_user_name: RegisterUserName
-    estimated_time: EstimatedTime
     register_date: RegisterDate
-    subject_type: SubjectType
+    subject_name: SubjectName
     question_type: QuestionType
     sort_tag_list: SortTagList
 
@@ -210,23 +182,22 @@ class QuestionCard:
             register_user_id=RegisterUserId(str(data['register_user_id'])),
             register_user_name=RegisterUserName(str(
                 data['register_user_name'])),
-            question_sentence=QuestionSentence.create(
+            question_sentence=QuestionSentence.from_dict(
                 data['question_sentence']),
-            estimated_time=EstimatedTime(int(data['estimated_time'])),
             register_date=RegisterDate.from_string(data['register_date']),
-            subject_type=SubjectType[data['subject_type']],
+            subject_name=SubjectName(data['subject_name']),
             question_type=QuestionType[data['question_type']],
             sort_tag_list=SortTagList.from_list(data['sort_tag_list']))
 
-    def to_dict(self) -> Dict[str, any]:
+    def to_response(self) -> Dict[str, any]:
         return {
             'question_id': self.question_id.value,
             'question_sentence': self.question_sentence.to_dict(),
+            'image_url': self.question_sentence.get_top_image_url(),
             'register_user_id': self.register_user_id.value,
             'register_user_name': self.register_user_name.value,
-            'estimated_time': self.estimated_time.value,
             'register_date': self.register_date.to_string(),
-            'subject_type': self.subject_type.name,
+            'subject_name': self.subject_name.value,
             'question_type': self.question_type.name,
             'sort_tag_list': self.sort_tag_list.to_list()
         }

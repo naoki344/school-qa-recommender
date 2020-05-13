@@ -4,11 +4,14 @@ from typing import Tuple
 
 from app.application.query.user import UserQueryService
 from app.dataaccess.dynamodb.classroom import ClassmateDatasource
+from app.dataaccess.dynamodb.classroom import ClassmateInviteDatasource
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
 from app.model.classroom.classmate import Classmate
 from app.model.classroom.classmate import ClassmateList
 from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
+from app.model.classroom.invite import ClassmateInvite
+from app.model.classroom.invite import InviteKey
 from app.model.classroom.my_classroom import MyClassroom
 from app.model.classroom.my_classroom import MyClassroomList
 from app.model.user.user import UserId
@@ -44,13 +47,68 @@ class FindClassroom:
 
     def run(self, user_id: UserId,
             classroom_id: ClassroomId) -> Tuple[Classroom, ClassmateList]:
-        owner = self.user_service.find(user_id)
+        user = self.user_service.find(user_id)
         classroom = self.datasource.find_by_id(classroom_id)
         classmate_list = self.classmate_datasource.get_classmate_list(
             classroom_id)
-        if not classroom.is_owner(owner.user_id):
+        if not classroom.is_owner(user.user_id):
             classmate_list = classmate_list.approved_only()
         return classroom, classmate_list
+
+
+class CreateClassmateInviteLink:
+    def __init__(self, datasource: ClassroomDatasource,
+                 invite_datasource: ClassmateInviteDatasource,
+                 user_service: UserQueryService, logger: Logger) -> None:
+        self.datasource = datasource
+        self.invite_datasource = invite_datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId,
+            classroom_id: ClassroomId) -> ClassmateInvite:
+        user = self.user_service.find(user_id)
+        classroom = self.datasource.find_by_id(classroom_id)
+        if not classroom.is_owner(user.user_id):
+            raise Exception('Can not create classroom invite link')
+        classmate_invite = ClassmateInvite.create(classroom_id)
+        self.invite_datasource.put_item(classmate_invite)
+        return classmate_invite
+
+
+class FindClassroomByInviteKey:
+    def __init__(self, datasource: ClassroomDatasource,
+                 invite_datasource: ClassmateInviteDatasource,
+                 user_service: UserQueryService, logger: Logger) -> Classroom:
+        self.datasource = datasource
+        self.invite_datasource = invite_datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId, invite_key: InviteKey) -> Classroom:
+        classmate_invite = self.invite_datasource.find_by_invite_key(
+            invite_key=invite_key)
+        classroom = self.datasource.find_by_id(classmate_invite.classroom_id)
+        return classroom
+
+
+class RequestJoinClassroomByInviteKey:
+    def __init__(self, datasource: ClassroomDatasource,
+                 classmate_datasource: ClassmateDatasource,
+                 invite_datasource: ClassmateInviteDatasource,
+                 user_service: UserQueryService, logger: Logger) -> None:
+        self.datasource = datasource
+        self.classmate_datasource = classmate_datasource
+        self.invite_datasource = invite_datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId, invite_key: InviteKey) -> Classmate:
+        user = self.user_service.find(user_id)
+        classmate_invite = self.invite_datasource.find_by_invite_key(
+            invite_key=invite_key)
+        classmate = Classmate.create(user)
+        # TODO: 既に登録済みのユーザーの場合エラー文言を分ける
+        self.classmate_datasource.insert_item(classmate_invite.classroom_id,
+                                              classmate)
+        return classmate
 
 
 class RequestJoinClassroom:
@@ -108,10 +166,17 @@ class GetMyClassroomList:
 
     def run(self, user_id: UserId) -> MyClassroomList:
         user = self.user_service.find(user_id)
-        classmate_list = self.classmate_datasource.find_by_user_id(
+        my_classmate_list = self.classmate_datasource.find_by_user_id(
             user.user_id)
         items = []
-        for classroom_id, classmate in classmate_list:
+        for classroom_id, my_classmate_info in my_classmate_list:
             classroom = self.datasource.find_by_id(classroom_id)
-            items.append(MyClassroom(classroom=classroom, classmate=classmate))
+            classmate_list = self.classmate_datasource.get_classmate_list(
+                classroom_id)
+            if not classroom.is_owner(user_id):
+                classmate_list = classmate_list.approved_only()
+            items.append(
+                MyClassroom(classroom=classroom,
+                            classmate=my_classmate_info,
+                            classmate_list=classmate_list))
         return MyClassroomList(items)
