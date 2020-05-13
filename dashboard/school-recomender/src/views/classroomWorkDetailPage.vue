@@ -217,7 +217,10 @@
     >
       <v-card>
         <v-card-actions>
-          <v-btn icon @click="topicCreateDialog = false">
+          <v-btn
+            icon
+            @click="topicCreateDialog = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
           <v-spacer />
