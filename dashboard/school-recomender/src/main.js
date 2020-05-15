@@ -4,7 +4,9 @@ import vuetify from './plugins/vuetify';
 import store from './store'
 import router from './router'
 import Amplify, * as AmplifyModules from 'aws-amplify';
-import { AmplifyPlugin } from 'aws-amplify-vue'
+import {
+  AmplifyPlugin
+} from 'aws-amplify-vue'
 
 var cognitoConfig = {
   region: process.env.VUE_APP_REGION,
@@ -15,19 +17,17 @@ var cognitoConfig = {
 }
 Amplify.configure({
   Auth: {
-      identityPoolId: cognitoConfig.identifyPoolId,
-      region: cognitoConfig.region,
-      userPoolId: cognitoConfig.userPoolId,
-      userPoolWebClientId: cognitoConfig.appClientId
+    identityPoolId: cognitoConfig.identifyPoolId,
+    region: cognitoConfig.region,
+    userPoolId: cognitoConfig.userPoolId,
+    userPoolWebClientId: cognitoConfig.appClientId
   },
   API: {
-    endpoints: [
-      {
-          name: "ToiToyApi",
-          endpoint: process.env.VUE_APP_TOITOY_API_URL,
-          region: "ap-northeast-1",
-      }
-    ]
+    endpoints: [{
+      name: "ToiToyApi",
+      endpoint: process.env.VUE_APP_TOITOY_API_URL,
+      region: "ap-northeast-1",
+    }]
   },
   Storage: {
     bucket: process.env.VUE_APP_TOITOY_PRIVATE_IMAGE_STORAGE,

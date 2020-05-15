@@ -1,9 +1,7 @@
 <!-- The ref attr used to find the swiper instance -->
 <template>
   <v-content>
-    <div
-      v-if="existsJoinClassroom"
-    >
+    <div v-if="existsJoinClassroom">
       <swiper
         ref="swiperThumbs"
         class="classroom-swiper-thumbs"
@@ -52,7 +50,9 @@
               style="margin-bottom: 50px;"
             >
               <div
-                v-for="item in classroomWorkList[myClass.classroom.classroom_id]"
+                v-for="item in classroomWorkList[
+                  myClass.classroom.classroom_id
+                ]"
                 :key="item.work_id"
                 subheader
                 two-line
@@ -73,7 +73,11 @@
                   </div>
                   <v-list-item-content class="pa-0">
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ item.caption }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      {{
+                        item.caption
+                      }}
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
                 <v-divider />
@@ -105,12 +109,17 @@
                     tile
                     size="40"
                   >
-                    <v-img
-                      :src="getUserAvatarImageUrl(classmate.user_id)"
-                    />
+                    <v-img :src="getUserAvatarImageUrl(classmate.user_id)" />
                   </v-avatar>
                   <v-list-item-content class="pa-0">
-                    <div>{{ classmate.nickname }} <span>{{ classmate.join_status | joinStatusFilter }}</span></div>
+                    <div>
+                      {{ classmate.nickname }}
+                      <span>
+                        {{
+                          classmate.join_status | joinStatusFilter
+                        }}
+                      </span>
+                    </div>
                   </v-list-item-content>
                   <v-list-item-content
                     v-if="classmate.join_status === 'requested'"
@@ -118,10 +127,14 @@
                   >
                     <div class="approve-join-request-text">
                       <a
-                        @click="approveJoinRequest(myClass.classroom.classroom_id, classmate.user_id, classmate.nickname)"
-                      >
-                        参加を承認する
-                      </a>
+                        @click="
+                          approveJoinRequest(
+                            myClass.classroom.classroom_id,
+                            classmate.user_id,
+                            classmate.nickname
+                          )
+                        "
+                      >参加を承認する</a>
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -132,9 +145,7 @@
         </swiper-slide>
       </swiper>
     </div>
-    <div
-      v-else
-    >
+    <div v-else>
       <div class="classroom-swiper-thumbs-box join-classroom-nothing-image">
         <v-card shaped>
           <v-img
@@ -148,12 +159,6 @@
         現在参加中のクラスはありません。
       </p>
     </div>
-    <classroom-work-detail-dialog
-      :work="selectedWork"
-      :classroom="selectedClass"
-      :dialog-visible="workDialogVisible"
-      @closeDialog="closeWorkDetailDialog()"
-    />
   </v-content>
 </template>
 
@@ -176,7 +181,7 @@ export default {
       if (value === "approved") return "参加中";
       if (value === "owner") return "オーナー";
       if (value === "requested") return "承認待ち";
-    },
+    }
   },
   data() {
     return {
@@ -196,7 +201,7 @@ export default {
         centeredSlides: true
       },
       workDialogVisible: false,
-      existsJoinClassroom: true,
+      existsJoinClassroom: true
     };
   },
   computed: {
@@ -240,24 +245,28 @@ export default {
       this.workDialogVisible = false;
     },
     async fetchClassroomList() {
-      this.$store.dispatch("classroom/fetchMyClassroomList")
-        .then(() => {
-          if (this.classroomList.length == 0) {
-            this.existsJoinClassroom = false;
-          } else {
-            this.existsJoinClassroom = true;
-          }
-        })
+      this.$store.dispatch("classroom/fetchMyClassroomList").then(() => {
+        if (this.classroomList.length == 0) {
+          this.existsJoinClassroom = false;
+        } else {
+          this.existsJoinClassroom = true;
+        }
+      });
     },
     approveJoinRequest(classroomId, userId, nickName) {
       this.$store
-        .dispatch("classroom/approveClassroomJoinRequest", { classroomId, userId } )
+        .dispatch("classroom/approveClassroomJoinRequest", {
+          classroomId,
+          userId
+        })
         .then(data => {
           this.$store.dispatch("classroom/fetchMyClassroomList");
           alert(`${nickName} をクラスに追加しました。`);
         })
         .catch(err => {
-          alert(`${nickName} のクラスに追加に失敗しました。(再度実行してくだください)`);
+          alert(
+            `${nickName} のクラスに追加に失敗しました。(再度実行してくだください)`
+          );
         });
     },
     fetchS3Object(path) {
@@ -393,20 +402,20 @@ export default {
   }
   .approve-join-request-text {
     text-align: right;
-	a {
+    a {
       text-decoration: underline;
-      color: #35A7FF;
-	}
+      color: #35a7ff;
+    }
   }
 }
 
 .create-approve-join-request-header {
   display: flex;
   justify-content: space-between;
-	a {
-      text-decoration: underline;
-      color: #35A7FF;
-	}
+  a {
+    text-decoration: underline;
+    color: #35a7ff;
+  }
   .create-approve-join-request-link {
     margin-top: 10px;
   }
