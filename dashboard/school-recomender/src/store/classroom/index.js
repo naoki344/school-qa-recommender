@@ -7,7 +7,7 @@ export default {
   namespaced: true,
   state: {
     myClassroomList: [],
-    classroomWorkList: {},
+    classroomWorkList: {}
   },
   mutations: {
     setMyClassroomList(state, data) {
@@ -107,18 +107,24 @@ export default {
           });
       });
     },
-    approveClassroomJoinRequest({ rootState }, { classroomId, userId }) {
+    approveClassroomJoinRequest({
+      rootState
+    }, {
+      classroomId,
+      userId
+    }) {
       console.log(classroomId)
-      console.log({ approve_user_list: [ userId, ] })
+      console.log({
+        approve_user_list: [userId, ]
+      })
       return new Promise((resolve, reject) => {
         API.put(
-          "ToiToyApi",
-          `/classroom/${classroomId}/approve_request`,
-          {
-            body: {
-              approve_user_list: [ userId ]
-            }
-          })
+            "ToiToyApi",
+            `/classroom/${classroomId}/approve_request`, {
+              body: {
+                approve_user_list: [userId]
+              }
+            })
           .then(result => {
             resolve(result);
           })
@@ -127,7 +133,15 @@ export default {
           });
       });
     },
-    postWorkComment({ rootState }, { classroomId, workId, commentType, parentCommentId, body }) {
+    postWorkComment({
+      rootState
+    }, {
+      classroomId,
+      workId,
+      commentType,
+      parentCommentId,
+      body
+    }) {
       return new Promise((resolve, reject) => {
         const trimmedBody = body.trim();
         API.post(
