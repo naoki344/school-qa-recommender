@@ -12,7 +12,7 @@
       >
         <v-icon>mdi-close</v-icon>
       </v-btn>
-      <v-toolbar-title>{{ classroomId }}</v-toolbar-title>
+      <v-toolbar-title>{{ classroomName }}</v-toolbar-title>
       <v-spacer />
       <v-btn
         icon
@@ -47,10 +47,19 @@ export default {
     workId: null,
     classroomId: null,
     workExisted: false,
+    classroomName: '',
   }),
   async created() {
     this.workId = Number(this.$route.query.work_id);
     this.classroomId = Number(this.$route.query.classroom_id);
+    this.classroom = this.$store
+	  .dispatch("classroom/fetchClassroom", this.classroomId)
+      .then(data => {
+        this.classroomName = data.name;
+      })
+      .catch(err => {
+        console.log(err);
+      });
     await this.findClassroomWork();
   },
   methods: {

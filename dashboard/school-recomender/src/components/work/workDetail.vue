@@ -13,7 +13,7 @@
                 class="headline font-weight-bold"
                 style="padding: 0;"
               >
-                {{ workDetail.title }}
+                {{ work.title }}
               </v-card-title>
               <v-chip
                 color="green"
@@ -289,7 +289,6 @@ export default {
   },
   data() {
     return {
-      workDetail: { title: "" },
       imageList: [],
       rootMessageList: [],
       topicList: [],
