@@ -6,7 +6,7 @@ import Vue from "vue";
 export default {
   namespaced: true,
   state: {
-    myClassroomList: [],
+    myClassroomList: null,
     classroomWorkList: {}
   },
   mutations: {
@@ -23,10 +23,13 @@ export default {
   actions: {
     fetchMyClassroomList({
       commit,
-      rootState,
+      state,
       dispatch
     }) {
       return new Promise((resolve, reject) => {
+        if (state.myClassroomList !== null) {
+	      resolve();
+        }
         API.get(
             "ToiToyApi",
             "/classroom/my_classroom")
@@ -45,6 +48,27 @@ export default {
             console.log(err);
             reject(err);
           });
+      });
+    },
+    fetchClassroom({ dispatch, state }, classroomId) {
+      return new Promise(async (resolve, reject) => {
+        if (state.myClassroomList === null) {
+          await dispatch("fetchMyClassroomList")
+            .then(result => {
+              const classroom = state.myClassroomList.find(classroom => {
+                return classroom.classroom.classroom_id == classroomId
+	          })
+              resolve(classroom.classroom)
+            })
+            .catch((err) => {
+              reject(err)
+            });
+        } else {
+          const classroom = state.myClassroomList.find(classroom => {
+            return classroom.classroom.classroom_id == classroomId
+	      })
+          resolve(classroom.classroom)
+		}
       });
     },
     fetchClassroomWorkList({
