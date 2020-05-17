@@ -114,7 +114,6 @@
 
 <script>
 import { mapState } from "vuex";
-import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 import moment from "moment";
 
 export default {
