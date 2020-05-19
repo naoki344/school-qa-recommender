@@ -9,6 +9,7 @@ from app.application.query.question import QuestionQueryService
 from app.application.query.user import UserQueryService
 from app.application.usecase.work import CreateWorkFromQuestion
 from app.application.usecase.work import FindClassroomWork
+from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.dataaccess.dynamodb.work import WorkDatasource
 from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
@@ -93,11 +94,13 @@ class CreateWorkFromQuestionTest(TestCase):
         classroom_service = MagicMock(spec=ClassroomQueryService)
         classroom_service.find = MagicMock(return_value=self.classroom)
 
-        usecase = CreateWorkFromQuestion(work_datasource=datasource,
-                                         question_service=question_service,
-                                         classroom_service=classroom_service,
-                                         user_service=user_service,
-                                         logger=MagicMock())
+        usecase = CreateWorkFromQuestion(
+            work_datasource=datasource,
+            comment_datasource=MagicMock(spec=WorkCommentDatasource),
+            question_service=question_service,
+            classroom_service=classroom_service,
+            user_service=user_service,
+            logger=MagicMock())
         user_id = UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39')
         result = usecase.run(user_id=user_id,
                              classroom_id=ClassroomId(20),
@@ -126,6 +129,8 @@ class CreateWorkFromQuestionTest(TestCase):
         classroom_service.find.assert_called_once_with(ClassroomId(20))
         question_service.find.assert_called_once_with(QuestionId(1))
         self.assertEqual(result.to_dict(), expect)
+        usecase.comment_datasource.fetch_sequense_id.assert_called_once()
+        usecase.comment_datasource.insert_item.assert_called_once()
 
 
 class FindClassroomWorkTest(TestCase):

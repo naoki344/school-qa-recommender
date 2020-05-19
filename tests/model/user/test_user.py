@@ -12,10 +12,6 @@ class UserTest(TestCase):
                 'first_name': '直紀',
                 'last_name': '三好'
             },
-            'user_name_kana': {
-                'first_name_kana': 'ナオキ',
-                'last_name_kana': 'ミヨシ'
-            },
             'email': 'trombone344@gmail.com',
             'register_date': '2020-02-26T00:18:16.874000+09:00',
             'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
