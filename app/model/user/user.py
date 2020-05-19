@@ -57,24 +57,6 @@ class UserName:
 
 
 @dataclass(frozen=True)
-class UserNameKana:
-    first_name_kana: FirstNameKana
-    last_name_kana: LastNameKana
-
-    @staticmethod
-    def from_dict(data: dict) -> 'UserNameKana':
-        return UserNameKana(
-            first_name_kana=FirstNameKana(data['first_name_kana']),
-            last_name_kana=LastNameKana(data['last_name_kana']))
-
-    def to_dict(self) -> dict:
-        return {
-            'first_name_kana': self.first_name_kana.value,
-            'last_name_kana': self.last_name_kana.value
-        }
-
-
-@dataclass(frozen=True)
 class CognitoUserSub:
     value: str
 
@@ -101,28 +83,25 @@ class User:
     user_id: UserId
     nickname: Nickname
     user_name: UserName
-    user_name_kana: UserNameKana
     email: Email
     register_date: RegisterDate
     cognito_user_sub: CognitoUserSub
 
     @staticmethod
     def from_dict(data: dict):
-        return User(
-            user_id=UserId(data['user_id']),
-            nickname=Nickname(data['nickname']),
-            user_name=UserName.from_dict(data['user_name']),
-            user_name_kana=UserNameKana.from_dict(data['user_name_kana']),
-            email=Email(data['email']),
-            register_date=RegisterDate.from_string(data['register_date']),
-            cognito_user_sub=CognitoUserSub(data['cognito_user_sub']))
+        return User(user_id=UserId(data['user_id']),
+                    nickname=Nickname(data['nickname']),
+                    user_name=UserName.from_dict(data['user_name']),
+                    email=Email(data['email']),
+                    register_date=RegisterDate.from_string(
+                        data['register_date']),
+                    cognito_user_sub=CognitoUserSub(data['cognito_user_sub']))
 
     def to_dict(self):
         return {
             'user_id': self.user_id.value,
             'nickname': self.nickname.value,
             'user_name': self.user_name.to_dict(),
-            'user_name_kana': self.user_name_kana.to_dict(),
             'email': self.email.value,
             'register_date': self.register_date.to_string(),
             'cognito_user_sub': self.cognito_user_sub.value

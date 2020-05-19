@@ -48,20 +48,6 @@ Resources:
           StringAttributeConstraints:
             MinLength: 1
             MaxLength: 256
-        - Name: first_name_kana
-          AttributeDataType: String
-          Mutable: false
-          Required: false
-          StringAttributeConstraints:
-            MinLength: 1
-            MaxLength: 256
-        - Name: last_name_kana
-          AttributeDataType: String
-          Mutable: false
-          Required: false
-          StringAttributeConstraints:
-            MinLength: 1
-            MaxLength: 256
         - Name: avatar_url
           AttributeDataType: String
           Mutable: false

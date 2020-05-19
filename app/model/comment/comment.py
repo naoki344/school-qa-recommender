@@ -101,6 +101,18 @@ class WorkComment:
                            register_user_name=RegisterUserName(
                                user.nickname.value))
 
+    @staticmethod
+    def create_main_topic(work_id: WorkId, user: User, _id: int):
+        return WorkComment(comment_id=CommentId(int(_id)),
+                           comment_type=CommentType.topic,
+                           parent_comment_id=None,
+                           body=CommentBody('メイン'),
+                           work_id=work_id,
+                           register_date=RegisterDate.create(),
+                           register_user_id=RegisterUserId(user.user_id.value),
+                           register_user_name=RegisterUserName(
+                               user.nickname.value))
+
 
 @dataclass(frozen=True)
 class WorkCommentList:
