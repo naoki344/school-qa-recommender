@@ -116,6 +116,7 @@
                       </span>
                     </div>
                   </v-col>
+
                   <v-spacer />
                 </v-row>
                 <v-divider />
@@ -165,6 +166,7 @@
                     @keydown.enter.shift.exact="postTopicCommentBody"
                   />
                   <v-btn
+                    :loading="loading"
                     block
                     color="yellow darken-1"
                     @click="postTopicCommentBody"
@@ -192,7 +194,6 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-card-text>
-
         <v-dialog v-model="postCommentDialog">
           <v-card class="pa-0">
             <v-card-actions>
@@ -205,7 +206,8 @@
               </v-btn>
               <v-spacer />
               <v-btn
-                :disabled="!editingComment"
+                :loading="loading"
+                :disabled="loading"
                 color="yellow darken-1"
                 @click="postTopicCommentBody"
               >
@@ -227,6 +229,7 @@
         <v-dialog
           v-model="topicCreateDialog"
           transition="dialog-bottom-transition"
+          width="400px"
         >
           <v-card>
             <v-card-actions>
@@ -238,7 +241,8 @@
               </v-btn>
               <v-spacer />
               <v-btn
-                :disabled="!topicBody"
+                :loading="loading"
+                :disabled="loading"
                 color="yellow darken-1"
                 @click="postTopic"
               >
@@ -305,18 +309,19 @@ export default {
       imageList: [],
       rootMessageList: [],
       topicList: [],
+      selectedTopicId: "",
       selectedTopic: { body: "", register_user_name: "", register_user_id: "" },
       topicMessageList: [],
       topicMessageDict: {},
       topicCreateDialog: false,
       rootCommentBody: "",
       topicBody: "",
-      selectedTopicId: null,
       postCommentDialog: false,
       editingComment: "",
       editingCommentDict: {},
       workId: this.$route.query.work_id,
-      classroomId: this.$route.query.classroom_id
+      classroomId: this.$route.query.classroom_id,
+      loading: false
     };
   },
   computed: {
@@ -334,6 +339,7 @@ export default {
       return msgList;
     }
   },
+
   mounted() {
     this.$nextTick(function() {
       const contents = document.getElementById("work-detail-dialog-contents");
@@ -359,22 +365,28 @@ export default {
       this.findClassroomWork();
       this.getWorkCommentList();
     },
-    setDisplayMessageList(comment_id) {
+    setDisplayMessageList(newCommentId) {
+      // 編集中のコメントを保存
       const beforeCommentId = this.selectedTopic.comment_id;
+      console.log("関数内" + beforeCommentId);
       if (beforeCommentId !== undefined) {
         this.editingCommentDict[beforeCommentId] = this.editingComment;
       }
-      const editingComment = this.editingCommentDict[comment_id];
+      // 選択したトピックのコメントをテキストエリアに表示
+      const editingComment = this.editingCommentDict[newCommentId];
       if (editingComment !== undefined) {
         this.editingComment = editingComment;
       } else {
         this.editingComment = "";
       }
+
       this.selectedTopic = this.topicList.find(
-        item => item.comment_id === comment_id
+        item => item.comment_id === newCommentId
       );
-      console.log(this.selectedTopic);
-      const l = this.topicMessageDict[comment_id];
+      console.log(
+        "変更後のselectedTopic(object)は" + this.selectedTopic.comment_id
+      );
+      const l = this.topicMessageDict[newCommentId];
       if (l != undefined) {
         this.topicMessageList = l;
       } else {
@@ -462,6 +474,7 @@ export default {
     },
     postTopicCommentBody() {
       if (!(this.editingComment && this.editingComment.match(/\S/g))) return;
+      this.loading = true;
       this.goToBottom();
       this.postWorkComment(
         "message",
@@ -483,15 +496,22 @@ export default {
         } else {
           this.topicMessageList.splice(0, this.topicMessageList.length, [data]);
         }
+        this.loading = false;
         this.editingComment = "";
         this.postCommentDialog = false;
       });
     },
     postTopic() {
+      if (!(this.topicBody && this.topicBody.match(/\S/g))) return;
+      this.loading = true;
       this.postWorkComment("topic", null, this.topicBody).then(data => {
         this.topicBody = "";
         this.topicCreateDialog = false;
+        this.selectedTopicId = this.topicSelectList.slice(-1)[0];
+        this.setDisplayMessageList(this.selectedTopicId.value);
+        this.loading = false;
       });
+      // セレクトボックスでのトピック切り替えをシミュレーション
     },
     async getImageUrl(s3Key) {
       if (s3Key == null) {

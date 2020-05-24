@@ -2,7 +2,6 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import userLoginPage from "../views/userLoginPage.vue";
 import userLogoutPage from "../views/userLogoutPage.vue";
-import userSignUpPage from "../views/userSignUpPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
 import classroomCreatePage from "../views/classroomCreatePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
@@ -30,11 +29,6 @@ const routes = [{
     component: userLoginPage
   },
   {
-    path: "/userSignUp",
-    name: "userSignUpPage",
-    component: userSignUpPage
-  },
-  {
     path: "/userVerify",
     name: "userVerifyPage",
     component: userVerifyPage
@@ -52,8 +46,9 @@ const routes = [{
   {
     path: "/classroomWorkDetail",
     name: "classroomWorkDetailPage",
-    component: classroomWorkDetailPage,
-  }
+    component: classroomWorkDetailPage
+  },
+
 ];
 
 const router = new VueRouter({
