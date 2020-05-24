@@ -15,7 +15,6 @@ from app.model.user.user import RegisterDate
 from app.model.user.user import User
 from app.model.user.user import UserId
 from app.model.user.user import UserName
-from app.model.user.user import UserNameKana
 
 
 class AuthenticationEventPerser:
@@ -45,11 +44,6 @@ class CognitoUserParser:
                     user_name=UserName(
                         first_name=get_att('custom:first_name', FirstName),
                         last_name=get_att('custom:last_name', LastName)),
-                    user_name_kana=UserNameKana(
-                        first_name_kana=get_att('custom:first_name_kana',
-                                                FirstNameKana),
-                        last_name_kana=get_att('custom:last_name_kana',
-                                               LastNameKana)),
                     email=get_att('email', Email),
                     register_date=RegisterDate(get_date('UserCreateDate')),
                     cognito_user_sub=get_att('sub', CognitoUserSub))
