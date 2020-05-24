@@ -144,6 +144,7 @@
               />
               <v-btn
                 :loading="loading"
+                :disabled="loading"
                 block
                 color="yellow darken-1"
                 @click="postTopicCommentBody"
@@ -345,10 +346,9 @@ export default {
     getLatest() {
       this.getWorkCommentList();
     },
-    setDisplayMessageList(comment_id) {
+    setDisplayMessageList(newCommentId) {
       // 編集中のコメントを保存
       const beforeCommentId = this.selectedTopic.comment_id;
-      console.log("関数内" + beforeCommentId);
       if (beforeCommentId !== undefined) {
         this.editingCommentDict[beforeCommentId] = this.editingComment;
       }
@@ -362,9 +362,6 @@ export default {
 
       this.selectedTopic = this.topicList.find(
         item => item.comment_id === newCommentId
-      );
-      console.log(
-        "変更後のselectedTopic(object)は" + this.selectedTopic.comment_id
       );
       const l = this.topicMessageDict[newCommentId];
       if (l != undefined) {
@@ -433,7 +430,7 @@ export default {
     },
     postTopicCommentBody() {
       if (!(this.editingComment && this.editingComment.match(/\S/g))) return;
-      this.loading = false;
+      this.loading = true;
       this.goToBottom();
       this.postWorkComment(
         "message",
@@ -444,7 +441,6 @@ export default {
           this.selectedTopic.comment_id
         ];
         if (topicMessage instanceof Array) {
-          console.log(this.topicMessageList);
           this.topicMessageList.splice(
             0,
             this.topicMessageList.length,
