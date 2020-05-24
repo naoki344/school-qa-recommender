@@ -23,8 +23,7 @@ def register_work_comment_handler(event, context):
                           classroom_id=classroom_id,
                           work_id=work_id,
                           data=data)
-    return APIGatewayResponse.to_response(
-        comment.to_dict())
+    return APIGatewayResponse.to_response({"comment": comment.to_dict()})
 
 
 def get_work_comment_list_handler(event, context):
