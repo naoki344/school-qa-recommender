@@ -19,11 +19,11 @@ def register_work_comment_handler(event, context):
     service: RegisterWorkComment = \
         register_work_comment(logger=getLogger())
     user_id = AuthenticationEventPerser.parse(event)
-    _ = service.run(user_id,
-                    classroom_id=classroom_id,
-                    work_id=work_id,
-                    data=data)
-    return APIGatewayResponse.to_response({})
+    comment = service.run(user_id,
+                          classroom_id=classroom_id,
+                          work_id=work_id,
+                          data=data)
+    return APIGatewayResponse.to_response({"comment": comment.to_dict()})
 
 
 def get_work_comment_list_handler(event, context):

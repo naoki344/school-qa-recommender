@@ -1,62 +1,59 @@
 <template>
-  <v-card class="elevation-6">
-    <v-toolbar
-      color="yellow darken-1"
-      flat
+  <v-content class="pt-0">
+    <h1 align="center">
+      ログイン
+    </h1>
+    <h5 align="center">
+      または
+      <a @click="switchComponent">アカウントを作る</a>
+    </h5>
+
+    <p
+      v-if="error"
+      class="alert"
     >
-      <v-spacer />
-      <v-toolbar-title>
-        <strong>Toi-Toyにログイン</strong>
-      </v-toolbar-title>
-      <v-spacer />
-    </v-toolbar>
-    <v-card-text>
-      <p
-        v-if="error"
-        class="alert"
-      >
-        メールアドレス または パスワードが間違っています
-      </p>
-      <v-form>
-        <v-text-field
-          v-model="username"
-          class="user-login-input-form"
-          prepend-icon="mdi-email"
-          counter="25"
-          hint="ユーザー作成時のメールアドレスを入力"
-          label="メールアドレス"
-          autofocus
-          required
-          @keydown.prevent.enter="moveNext"
-        />
-        <v-text-field
-          v-model="password"
-          class="user-login-input-form"
-          required
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="showPassword ? 'text' : 'password'"
-          name="input-10-1"
-          prepend-icon="mdi-key"
-          label="パスワードを入力"
-          counter
-          @keydown.enter="userLogin"
-          @click:append="showPassword = !showPassword"
-        />
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        color="yellow darken-1"
-        x-large
-        block
+      メールアドレス または パスワードが間違っています
+    </p>
+    <v-form class="pt-3">
+      <v-text-field
+        v-model="username"
+        outlined
         class="user-login-input-form"
-        @click="userLogin"
-      >
-        ログイン
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+        prepend-icon="mdi-email"
+        counter="25"
+        hint="ユーザー作成時のメールアドレスを入力"
+        label="メールアドレス"
+        required
+        @keydown.prevent.enter="moveNext"
+      />
+      <v-text-field
+        v-model="password"
+        outlined
+        class="user-login-input-form"
+        required
+        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        :type="showPassword ? 'text' : 'password'"
+        name="input-10-1"
+        prepend-icon="mdi-key"
+        label="パスワード"
+        counter
+        @keydown.enter="userLogin"
+        @click:append="showPassword = !showPassword"
+      />
+    </v-form>
+    <v-spacer />
+    <v-btn
+      block
+      color="yellow darken-1"
+      large
+      class="user-login-input-form"
+      :loading="loading"
+      :disabled="loading"
+      @click="userLogin"
+    >
+      ログインする
+    </v-btn>
+  </v-content>
 </template>
 
 <script>
@@ -67,10 +64,15 @@ export default {
     username: "",
     password: "",
     showPassword: false,
-    error: false
+    error: false,
+    loading: false
   }),
   methods: {
+    switchComponent() {
+      this.$emit("switch");
+    },
     userLogin() {
+      this.loading = true;
       this.$store
         .dispatch("user/userLogin", {
           username: this.username,
@@ -84,6 +86,7 @@ export default {
           this.error = true;
           this.password = "";
         });
+      this.loading = false;
     },
     findIndex(target) {
       return this.elements.findIndex(
