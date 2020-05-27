@@ -274,20 +274,20 @@ export default {
   props: {
     workId: {
       type: Number,
-      default: null,
+      default: null
     },
     classroomId: {
       type: Number,
-      default: null,
+      default: null
     },
     question: {
       type: Object,
-      default: null,
+      default: null
     },
     work: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
@@ -309,6 +309,7 @@ export default {
   },
   computed: {
     topicSelectList() {
+      console.log("computed始め" + msgList);
       const msgList = this.topicList.map(topic => {
         let body = topic.body;
         if (body == null || body == undefined) {
@@ -319,25 +320,45 @@ export default {
           value: topic.comment_id
         };
       });
+      console.log("computed終わり" + msgList);
       return msgList;
     }
   },
   created() {
-    this.getWorkCommentList();
+    console.log("created始め" + this.topicSelectList);
+    this.getWorkCommentList().then(this.setInitialTopic);
+    console.log("created終わり" + this.topicSelectList);
   },
   mounted() {
-    this.$nextTick(function () {
+    console.log("mounted始め");
+    this.$nextTick(function() {
       const contents = document.getElementById("work-detail-dialog-contents");
       const imgList = contents.getElementsByTagName("img");
       imgList.forEach(async img => {
         const url = await this.getImageUrl(img.getAttribute("s3-key"));
         img.setAttribute("src", url);
-        img.style.width = '100%'
+        img.style.width = "100%";
       });
-    })
-    this.getWorkCommentList();
+    });
+    console.log("mounted終わり");
   },
   methods: {
+    setInitialTopic() {
+      console.log("初期表示" + this.topicList);
+      this.selectedTopic = this.topicList.find(
+        item => item.body === "関係代名詞まとめ"
+      );
+      this.selectedTopicId = this.selectedTopic.comment_id;
+      const l = this.topicMessageDict[this.selectedTopicId];
+      if (l != undefined) {
+        this.topicMessageList = l;
+      } else {
+        this.topicMessageList = [];
+      }
+
+      console.log("初期トピック表示");
+    },
+
     goToBottom() {
       var element = document.documentElement;
       var different = element.scrollHeight - element.clientHeight;
@@ -347,6 +368,7 @@ export default {
       this.getWorkCommentList();
     },
     setDisplayMessageList(newCommentId) {
+      console.log("メッセセット開始");
       // 編集中のコメントを保存
       const beforeCommentId = this.selectedTopic.comment_id;
       if (beforeCommentId !== undefined) {
@@ -369,8 +391,10 @@ export default {
       } else {
         this.topicMessageList = [];
       }
+      console.log("メッセセット完了");
     },
     getWorkCommentList() {
+      console.log("getWorkCommentList始め");
       return new Promise((resolve, reject) => {
         if (this.workId == null) return;
         if (this.classroomId == null) return;
@@ -385,6 +409,7 @@ export default {
             this.rootMessageList = data["root_message_list"];
             this.topicMessageDict = data["topic_message_dict"];
             resolve(data);
+            console.log("getWorkCommentList完了");
           })
           .catch(err => {
             console.log(err);

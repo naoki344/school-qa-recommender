@@ -11,7 +11,7 @@
     </v-toolbar>
     <v-content>
       <v-container
-        class="pa-4"
+        class="pa-6"
         fluid
         fill-height
       >
