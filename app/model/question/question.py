@@ -57,7 +57,7 @@ class SentenceContents:
     @staticmethod
     def parse_src(src: str):
         url = urlparse(src)
-        return url.path.replace('/public/', '')
+        return url.path.replace('/public/upload/', '')
 
 
 @dataclass(frozen=True)

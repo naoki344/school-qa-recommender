@@ -17,9 +17,7 @@ Resources:
         -
           AttributeName: "question_id"
           KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
         -
           IndexName: "RegisterUserId-Index"
@@ -32,9 +30,6 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"
 
   ToiToySequensesTable:
     Type: AWS::DynamoDB::Table
@@ -48,9 +43,7 @@ Resources:
         -
           AttributeName: "name"
           KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
 
   ToiToyClassroomTable:
     Type: AWS::DynamoDB::Table
@@ -64,9 +57,7 @@ Resources:
         -
           AttributeName: "classroom_id"
           KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
 
   ToiToyClassmateTable:
     Type: AWS::DynamoDB::Table
@@ -89,9 +80,7 @@ Resources:
         -
           AttributeName: "user_id"
           KeyType: "RANGE"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
         -
           IndexName: "UserId-Index"
@@ -104,9 +93,6 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"
 
   ToiToyWorkTable:
     Type: AWS::DynamoDB::Table
@@ -126,9 +112,7 @@ Resources:
         -
           AttributeName: "work_id"
           KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
         -
           IndexName: "Classroom-Index"
@@ -141,9 +125,6 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"
   ToiToyWorkCommentTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -162,9 +143,7 @@ Resources:
         -
           AttributeName: "comment_id"
           KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
         -
           IndexName: "WorkId-Index"
@@ -177,9 +156,6 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"
 
   ToiToyClassroomInviteTable:
     Type: AWS::DynamoDB::Table
@@ -196,9 +172,7 @@ Resources:
         -
           AttributeName: "classroom_id"
           KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: "5"
-        WriteCapacityUnits: "5"
+      BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
         -
           IndexName: "InviteKey-Index"
@@ -208,6 +182,3 @@ Resources:
               KeyType: "HASH"
           Projection:
             ProjectionType: "ALL"
-          ProvisionedThroughput:
-            ReadCapacityUnits: "5"
-            WriteCapacityUnits: "5"

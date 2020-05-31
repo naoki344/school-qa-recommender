@@ -335,7 +335,7 @@ export default {
       const contents = document.getElementById("work-detail-dialog-contents");
       const imgList = contents.getElementsByTagName("img");
       imgList.forEach(async img => {
-        const url = await this.getImageUrl(img.getAttribute("s3-key"));
+        const url = await this.getImageUrl("thumbnail/w512/" + img.getAttribute("s3-key"));
         img.setAttribute("src", url);
         img.style.width = "100%";
       });

@@ -31,9 +31,9 @@ export default new Vuex.Store({
     putS3PublicFile(_, {file}) {
       return new Promise((resolve, reject) => {
         const dt = new Date();
-        const filePath = dt.getTime() + "-" + file.name;
+        const filePath = dt.getTime() + "_" + file.name;
         Storage.configure({ level: "public" });
-        Storage.put("" + filePath, file)
+        Storage.put("upload/" + filePath, file)
           .then((result) => {
             resolve(result.key);
           })
