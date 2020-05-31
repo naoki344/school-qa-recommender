@@ -1,47 +1,42 @@
 <template>
-  <v-card class="elevation-6">
-    <v-toolbar
-      color="yellow darken-1"
-      flat
+  <v-content class="pt-5">
+    <h3 align="center">
+      ご登録のメールアドレス宛に
+      「認証コード」をお送りしました。
+      メールの本文に記載されている
+      「認証コード」を入力してアカウントを有効化してください。
+    </h3>
+
+    <div
+      v-if="isFailure"
+      :class="error_class"
+      align="center"
     >
-      <v-spacer />
-      <v-toolbar-title>
-        <strong>ユーザー認証画面</strong>
-      </v-toolbar-title>
-      <v-spacer />
-    </v-toolbar>
-    <v-card-text>
-      <div
-        v-if="isFailure"
-        :class="error_class"
-      >
-        認証コードが間違っています。
-        再度入力してください。
-      </div>
-      <v-text-field
-        v-model="email"
-        prepend-icon
-        label="メールアドレス"
-        required
-      />
-      <v-text-field
-        v-model="verificationCode"
-        prepend-icon
-        label="認証コード"
-        required
-      />
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        color="yellow darken-1"
-        block
-        @click="userVerify"
-      >
-        認証する
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+      認証コードが間違っています。
+      <br>再度入力してください。
+    </div>
+    <v-text-field
+      v-model="email"
+      prepend-icon
+      label="メールアドレス"
+      required
+    />
+    <v-text-field
+      v-model="verificationCode"
+      prepend-icon
+      label="認証コード"
+      required
+    />
+
+    <v-btn
+      color="yellow darken-1"
+      block
+      large
+      @click="userVerify"
+    >
+      有効化する
+    </v-btn>
+  </v-content>
 </template>
 
 <script>
@@ -56,7 +51,7 @@ export default {
   }),
   computed: {
     email() {
-      return this.$route.query.email
+      return this.$route.query.email;
     }
   },
   methods: {

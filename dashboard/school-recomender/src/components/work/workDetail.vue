@@ -40,10 +40,7 @@
               class="px-4 pt-0 pb-6 body-1"
               style="text-align: left;"
             >
-              <div
-                class="work-detail-contants"
-                v-html="question.question_sentence.contents"
-              />
+              <div v-html="question.question_sentence.contents" />
             </v-card-text>
             <v-divider />
             <v-row style="justify-content: space-around; ">
@@ -96,6 +93,7 @@
                   </span>
                 </div>
               </v-col>
+
               <v-spacer />
             </v-row>
             <v-divider />
@@ -145,6 +143,8 @@
                 @keydown.enter.shift.exact="postTopicCommentBody"
               />
               <v-btn
+                :loading="loading"
+                :disabled="loading"
                 block
                 color="yellow darken-1"
                 @click="postTopicCommentBody"
@@ -172,7 +172,6 @@
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-card-text>
-
     <v-dialog v-model="postCommentDialog">
       <v-card class="pa-0">
         <v-card-actions>
@@ -185,7 +184,8 @@
           </v-btn>
           <v-spacer />
           <v-btn
-            :disabled="!editingComment"
+            :loading="loading"
+            :disabled="loading"
             color="yellow darken-1"
             @click="postTopicCommentBody"
           >
@@ -207,6 +207,7 @@
     <v-dialog
       v-model="topicCreateDialog"
       transition="dialog-bottom-transition"
+      width="400px"
     >
       <v-card>
         <v-card-actions>
@@ -218,7 +219,8 @@
           </v-btn>
           <v-spacer />
           <v-btn
-            :disabled="!topicBody"
+            :loading="loading"
+            :disabled="loading"
             color="yellow darken-1"
             @click="postTopic"
           >
@@ -272,20 +274,20 @@ export default {
   props: {
     workId: {
       type: Number,
-      default: null,
+      default: null
     },
     classroomId: {
       type: Number,
-      default: null,
+      default: null
     },
     question: {
       type: Object,
-      default: null,
+      default: null
     },
     work: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
@@ -301,11 +303,13 @@ export default {
       selectedTopicId: null,
       postCommentDialog: false,
       editingComment: "",
-      editingCommentDict: {}
+      editingCommentDict: {},
+      loading: false
     };
   },
   computed: {
     topicSelectList() {
+      console.log("computed始め" + msgList);
       const msgList = this.topicList.map(topic => {
         let body = topic.body;
         if (body == null || body == undefined) {
@@ -316,25 +320,45 @@ export default {
           value: topic.comment_id
         };
       });
+      console.log("computed終わり" + msgList);
       return msgList;
     }
   },
   created() {
-    this.getWorkCommentList();
+    console.log("created始め" + this.topicSelectList);
+    this.getWorkCommentList().then(this.setInitialTopic);
+    console.log("created終わり" + this.topicSelectList);
   },
   mounted() {
-    this.$nextTick(function () {
+    console.log("mounted始め");
+    this.$nextTick(function() {
       const contents = document.getElementById("work-detail-dialog-contents");
       const imgList = contents.getElementsByTagName("img");
       imgList.forEach(async img => {
         const url = await this.getImageUrl(img.getAttribute("s3-key"));
         img.setAttribute("src", url);
-        img.style.width = '100%'
+        img.style.width = "100%";
       });
-    })
-    this.getWorkCommentList();
+    });
+    console.log("mounted終わり");
   },
   methods: {
+    setInitialTopic() {
+      console.log("初期表示" + this.topicList);
+      this.selectedTopic = this.topicList.find(
+        item => item.body === "関係代名詞まとめ"
+      );
+      this.selectedTopicId = this.selectedTopic.comment_id;
+      const l = this.topicMessageDict[this.selectedTopicId];
+      if (l != undefined) {
+        this.topicMessageList = l;
+      } else {
+        this.topicMessageList = [];
+      }
+
+      console.log("初期トピック表示");
+    },
+
     goToBottom() {
       var element = document.documentElement;
       var different = element.scrollHeight - element.clientHeight;
@@ -343,29 +367,34 @@ export default {
     getLatest() {
       this.getWorkCommentList();
     },
-    setDisplayMessageList(comment_id) {
+    setDisplayMessageList(newCommentId) {
+      console.log("メッセセット開始");
+      // 編集中のコメントを保存
       const beforeCommentId = this.selectedTopic.comment_id;
       if (beforeCommentId !== undefined) {
         this.editingCommentDict[beforeCommentId] = this.editingComment;
       }
-      const editingComment = this.editingCommentDict[comment_id];
+      // 選択したトピックのコメントをテキストエリアに表示
+      const editingComment = this.editingCommentDict[newCommentId];
       if (editingComment !== undefined) {
         this.editingComment = editingComment;
       } else {
         this.editingComment = "";
       }
+
       this.selectedTopic = this.topicList.find(
-        item => item.comment_id === comment_id
+        item => item.comment_id === newCommentId
       );
-      console.log(this.selectedTopic);
-      const l = this.topicMessageDict[comment_id];
+      const l = this.topicMessageDict[newCommentId];
       if (l != undefined) {
         this.topicMessageList = l;
       } else {
         this.topicMessageList = [];
       }
+      console.log("メッセセット完了");
     },
     getWorkCommentList() {
+      console.log("getWorkCommentList始め");
       return new Promise((resolve, reject) => {
         if (this.workId == null) return;
         if (this.classroomId == null) return;
@@ -380,6 +409,7 @@ export default {
             this.rootMessageList = data["root_message_list"];
             this.topicMessageDict = data["topic_message_dict"];
             resolve(data);
+            console.log("getWorkCommentList完了");
           })
           .catch(err => {
             console.log(err);
@@ -425,6 +455,7 @@ export default {
     },
     postTopicCommentBody() {
       if (!(this.editingComment && this.editingComment.match(/\S/g))) return;
+      this.loading = true;
       this.goToBottom();
       this.postWorkComment(
         "message",
@@ -435,7 +466,6 @@ export default {
           this.selectedTopic.comment_id
         ];
         if (topicMessage instanceof Array) {
-          console.log(this.topicMessageList);
           this.topicMessageList.splice(
             0,
             this.topicMessageList.length,
@@ -444,15 +474,22 @@ export default {
         } else {
           this.topicMessageList.splice(0, this.topicMessageList.length, [data]);
         }
+        this.loading = false;
         this.editingComment = "";
         this.postCommentDialog = false;
       });
     },
     postTopic() {
+      if (!(this.topicBody && this.topicBody.match(/\S/g))) return;
+      this.loading = true;
       this.postWorkComment("topic", null, this.topicBody).then(data => {
         this.topicBody = "";
         this.topicCreateDialog = false;
+        this.selectedTopicId = this.topicSelectList.slice(-1)[0];
+        this.setDisplayMessageList(this.selectedTopicId.value);
+        this.loading = false;
       });
+      // セレクトボックスでのトピック切り替えをシミュレーション
     },
     async getImageUrl(s3Key) {
       if (s3Key == null) {

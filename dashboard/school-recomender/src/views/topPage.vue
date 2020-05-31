@@ -12,9 +12,8 @@ export default {
   name: "TopPage",
   components: {
     headerNav,
-    classroomSwiper,
+    classroomSwiper
   },
-  data: () => ({
-  })
+  data: () => ({})
 };
 </script>

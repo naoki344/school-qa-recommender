@@ -2,12 +2,13 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import userLoginPage from "../views/userLoginPage.vue";
 import userLogoutPage from "../views/userLogoutPage.vue";
-import userSignUpPage from "../views/userSignUpPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
+import invitePage from "../views/invitePage.vue";
 import classroomCreatePage from "../views/classroomCreatePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
 import topPage from "../views/topPage.vue";
 import classroomWorkDetailPage from "../views/classroomWorkDetailPage.vue";
+
 import {
   Auth
 } from "aws-amplify";
@@ -30,14 +31,14 @@ const routes = [{
     component: userLoginPage
   },
   {
-    path: "/userSignUp",
-    name: "userSignUpPage",
-    component: userSignUpPage
-  },
-  {
     path: "/userVerify",
     name: "userVerifyPage",
     component: userVerifyPage
+  },
+  {
+    path: "/invite",
+    name: "invitePage",
+    component: invitePage
   },
   {
     path: "/questionTop",
@@ -52,8 +53,9 @@ const routes = [{
   {
     path: "/classroomWorkDetail",
     name: "classroomWorkDetailPage",
-    component: classroomWorkDetailPage,
-  }
+    component: classroomWorkDetailPage
+  },
+
 ];
 
 const router = new VueRouter({
