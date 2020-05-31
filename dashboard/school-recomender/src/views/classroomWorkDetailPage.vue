@@ -14,9 +14,7 @@
       </v-btn>
       <v-toolbar-title>{{ classroomName }}</v-toolbar-title>
       <v-spacer />
-      <v-btn
-        icon
-      >
+      <v-btn icon>
         <v-icon>mdi-reload</v-icon>
       </v-btn>
     </v-app-bar>
@@ -39,7 +37,7 @@ import workDetail from "@/components/work/workDetail.vue";
 export default {
   name: "ClassroomWorkDetailPage",
   components: {
-    workDetail,
+    workDetail
   },
   data: () => ({
     work: null,
@@ -47,13 +45,13 @@ export default {
     workId: null,
     classroomId: null,
     workExisted: false,
-    classroomName: '',
+    classroomName: ""
   }),
   async created() {
     this.workId = Number(this.$route.query.work_id);
     this.classroomId = Number(this.$route.query.classroom_id);
     this.classroom = this.$store
-	  .dispatch("classroom/fetchClassroom", this.classroomId)
+      .dispatch("classroom/fetchClassroom", this.classroomId)
       .then(data => {
         this.classroomName = data.name;
       })

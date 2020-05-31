@@ -1,15 +1,17 @@
 <template>
   <v-app>
-    <router-view />
+    <keep-alive include="TopPage">
+      <router-view />
+    </keep-alive>
   </v-app>
 </template>
 
 <script>
 export default {
   async created() {
-    await this.$store.dispatch("user/fetchLoginUserInfo")
-  },
-}
+    await this.$store.dispatch("user/fetchLoginUserInfo");
+  }
+};
 </script>
 
 <style lang="scss">
@@ -32,5 +34,4 @@ export default {
     }
   }
 }
-
 </style>
