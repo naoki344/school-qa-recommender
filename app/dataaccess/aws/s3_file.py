@@ -1,4 +1,5 @@
-import mimetypes
+from typing import BinaryIO
+from typing import Optional
 
 import boto3
 
@@ -9,10 +10,16 @@ class S3FileClient:
         self.s3 = boto3.resource('s3')
         self.s3_bucket = self.s3.Bucket(bucket_name)
 
-    def upload_file(self, s3_key: str, data: bytes, content_type: str) -> str:
-        self.s3_bucket.put_object(Key=s3_key,
-                                  Body=data,
-                                  ContentType=content_type)
+    def upload_file(
+            self, s3_key: str, data: bytes,
+            content_type: Optional[str] = None) -> str:
+        if content_type is None:
+            self.s3_bucket.put_object(Key=s3_key,
+                                      Body=data)
+        else:
+            self.s3_bucket.put_object(Key=s3_key,
+                                      Body=data,
+                                      ContentType=content_type)
         return self.get_obj_url(s3_key)
 
     def get_obj_url(self, s3_key: str):
@@ -37,3 +44,8 @@ class S3FileClient:
             'Bucket': self.s3_bucket_name,
             'Key': from_file
         })
+
+    def get_fp(self, s3_key: str) -> BinaryIO:
+        '''S3からデータを取得する'''
+        result = self.s3_bucket.Object(s3_key).get()
+        return result['Body']

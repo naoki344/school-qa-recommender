@@ -14,7 +14,6 @@ provider:
 plugins:
   - serverless-plugin-split-stacks
   - serverless-python-requirements
-
 package:
   individually: false
   include:
@@ -26,6 +25,11 @@ custom:
   stageName: "${opt:stage, self:provider.stage}"
   resourcePrefix: "${self:custom.stageName}-tt"
   lambdaHandlerPrefix: "app/interfaces/"
+  pythonRequirements:
+    dockerizePip: true
+    fileName: requirements.txt
+    useStaticCache: true
+    useDownloadCache: true
   splitStacks:
     perFunction: false
     perType: true
@@ -263,6 +267,21 @@ functions:
           path: public/user/avatar
           method: PUT
           cors: true
+    tags:
+      TYPE: API
+      SERVICE: User
+
+  LambdaS3EventCreateImageThumbnail:
+    handler: ${self:custom.lambdaHandlerPrefix}s3/image_convert.s3_event_create_image_thumbnail_handler
+    name: ${self:custom.resourcePrefix}-s3-event-create-image-thumbnail
+    events:
+      - s3:
+          bucket: !Ref ToiToyPrivateImageStorage
+          events:
+            - "s3:ObjectCreated:*"
+          rules:
+            - prefix: public/upload/
+          existing: true
     tags:
       TYPE: API
       SERVICE: User

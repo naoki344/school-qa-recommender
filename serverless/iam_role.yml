@@ -29,6 +29,23 @@ iamRoleStatements:
         - ""
         - - "arn:aws:s3:::"
           - "Ref" : "ToiToyPublicImageStorage"
+  - Effect: "Allow"
+    Action:
+      - "s3:*"
+    Resource:
+      Fn::Join:
+        - ""
+        - - "arn:aws:s3:::"
+          - "Ref" : "ToiToyPrivateImageStorage"
+          - "/*"
+  - Effect: "Allow"
+    Action:
+      - "s3:*"
+    Resource:
+      Fn::Join:
+        - ""
+        - - "arn:aws:s3:::"
+          - "Ref" : "ToiToyPrivateImageStorage"
   - Effect: Allow
     Action:
       - dynamodb:DescribeTable
