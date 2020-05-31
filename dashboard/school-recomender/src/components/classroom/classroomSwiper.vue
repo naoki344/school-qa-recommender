@@ -14,9 +14,9 @@
           <div class="classroom-swiper-thumbs-box">
             <v-card shaped>
               <v-img
-                v-if="getImageUrl(myClass.classroom)"
+                v-if="getImageUrlW512(myClass.classroom)"
                 class="white--text align-end classroom-swiper-thumbs-image"
-                :src="imageList[myClass.classroom.image_url]"
+                :src="imageListW512[myClass.classroom.image_url]"
               >
                 <v-card-title>
                   <h3>{{ myClass.classroom.name }}</h3>
@@ -64,11 +64,11 @@
                 >
                   <div class="classroom-work-list-item-image">
                     <v-img
-                      v-if="getImageUrl(item)"
+                      v-if="getImageUrlH60(item)"
                       class
                       width="80"
                       min-height="60"
-                      :src="imageList[item.image_url]"
+                      :src="imageListH60[item.image_url]"
                     />
                   </div>
                   <v-list-item-content class="pa-0">
@@ -191,7 +191,8 @@ export default {
         slidesPerView: "auto",
         centeredSlides: true
       },
-      imageList: [],
+      imageListW512: [],
+      imageListH60: [],
       selectedWorkId: "",
       selectedClassId: "",
       swiperOptionThumbs: {
@@ -294,18 +295,38 @@ export default {
           console.log(err);
         });
     },
-    getImageUrl(obj) {
+    getImageUrlW512(obj) {
       if (obj["image_url"] == null) {
         return false;
       }
       const path = obj["image_url"];
-      if (this.imageList[path] != null) {
+      if (this.imageListW512[path] != null) {
         return true;
       }
+      const thumbPath = "thumbnail/w512/" + path;
       this.$store
-        .dispatch("getS3PublicFile", path)
+        .dispatch("getS3PublicFile", thumbPath)
         .then(url => {
-          this.$set(this.imageList, path, url);
+          this.$set(this.imageListW512, path, url);
+        })
+        .catch(() => {
+          return false;
+        });
+      return true;
+    },
+    getImageUrlH60(obj) {
+      if (obj["image_url"] == null) {
+        return false;
+      }
+      const path = obj["image_url"];
+      if (this.imageListH60[path] != null) {
+        return true;
+      }
+      const thumbPath = "thumbnail/h60/" + path;
+      this.$store
+        .dispatch("getS3PublicFile", thumbPath)
+        .then(url => {
+          this.$set(this.imageListH60, path, url);
         })
         .catch(() => {
           return false;
