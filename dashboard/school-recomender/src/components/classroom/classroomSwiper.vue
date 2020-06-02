@@ -44,21 +44,16 @@
           <div v-if="isShowClassroomContent(myClass)">
             <v-subheader>ワーク一覧</v-subheader>
             <v-divider />
-            <v-list
-              subheader
-              two-line
-              style="margin-bottom: 50px;"
-            >
+            <div>
               <div
                 v-for="item in classroomWorkList[
                   myClass.classroom.classroom_id
                 ]"
                 :key="item.work_id"
-                subheader
-                two-line
+                class="pa-0 classroom-work-list"
               >
-                <v-list-item
-                  link
+                <div
+                  style="border-left: solid 1px #e4e4e4; "
                   class="classroom-work-list-item"
                   @click="openWorkDetail(item, myClass)"
                 >
@@ -71,18 +66,18 @@
                       :src="imageListH60[item.image_url]"
                     />
                   </div>
-                  <v-list-item-content class="pa-0">
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    <v-list-item-subtitle>
+                  <div class="my-1 mx-3">
+                    <strong>{{ item.title }}</strong>
+                    <p class="ma-0">
                       {{
                         item.caption
                       }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
+                    </p>
+                  </div>
+                </div>
                 <v-divider />
               </div>
-            </v-list>
+            </div>
             <v-subheader class="create-approve-join-request-header">
               クラスメイト一覧
               <div class="create-approve-join-request-link">
@@ -112,7 +107,7 @@
                     <v-img :src="getUserAvatarImageUrl(classmate.user_id)" />
                   </v-avatar>
                   <v-list-item-content class="pa-0">
-                    <div>
+                    <div style="align-items: center; display: flex; line-height: 1;">
                       {{ classmate.nickname }}
                       <span>
                         {{
@@ -390,7 +385,11 @@ export default {
 }
 
 .classroom-work-list-item {
-  padding: 10px 15px;
+  padding: 10px 16px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+
   .classroom-work-list-item-image {
     width: 80px;
     height: 100%;
@@ -412,6 +411,7 @@ export default {
 .classmate-list-item {
   font-weight: 600;
   margin: 0;
+  cursor: default;
   span {
     font-size: 0.8rem;
     margin-left: 5px;
@@ -433,12 +433,20 @@ export default {
 .create-approve-join-request-header {
   display: flex;
   justify-content: space-between;
+  padding-top: 60px;
   a {
     text-decoration: underline;
     color: #35a7ff;
   }
   .create-approve-join-request-link {
     margin-top: 10px;
+  }
+}
+
+@media screen and (min-width: 760px) {
+  .classroom-work-list {
+    width: 50%;
+    display: inline-block;
   }
 }
 </style>
