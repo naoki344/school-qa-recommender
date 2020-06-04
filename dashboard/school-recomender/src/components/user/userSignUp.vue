@@ -5,7 +5,7 @@
     </h1>
     <h5 align="center">
       または
-      <a @click="switchComponent">ログインする</a>
+      <a @click="toUserLogin">ログインする</a>
     </h5>
     <p>{{ errorMessage }}</p>
     <avatarCreate
@@ -175,11 +175,14 @@ export default {
   computed: {
     elements() {
       return [...document.getElementsByClassName("user-register-input-form")];
+    },
+    originPagePath() {
+      return this.$route.query.originPagePath;
     }
   },
   methods: {
-    switchComponent() {
-      this.$emit("switch");
+    toUserLogin() {
+      this.$router.push({ path: "/userLogin" });
     },
     userSignUp() {
       this.inputFormIsValid = this.$refs.form.validate();
@@ -196,10 +199,17 @@ export default {
           avatarImageDataUrl: this.avatarImageDataUrl
         })
         .then(() => {
-          this.$router.push({
-            path: "/userVerify",
-            query: { email: this.email }
-          });
+          if (this.originPagePath == undefined || this.originPagePath == null){
+            this.$router.push({
+              path: "/userVerify",
+              query: { email: this.email }
+            });
+          } else {
+            this.$router.push({
+              path: "/userVerify",
+              query: { email: this.email, originPagePath: this.originPagePath }
+            });
+          }
         })
         .catch(err => {
           console.log(err);

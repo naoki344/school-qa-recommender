@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import userLoginPage from "../views/userLoginPage.vue";
+import userSignUpPage from "../views/userSignUpPage.vue";
 import userLogoutPage from "../views/userLogoutPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
 import invitePage from "../views/invitePage.vue";
@@ -29,6 +30,11 @@ const routes = [{
     path: "/userLogin",
     name: "userLoginPage",
     component: userLoginPage
+  },
+  {
+    path: "/userSignUp",
+    name: "userSignUpPage",
+    component: userSignUpPage
   },
   {
     path: "/userVerify",
@@ -70,7 +76,7 @@ router.beforeEach(async (to, from, next) => {
     .catch(err => {
       return false;
     });
-  if (to.name === "userSignUpPage" || to.name === "userVerifyPage") {
+  if (to.name === "userSignUpPage" || to.name === "userVerifyPage" || to.name === "invitePage") {
     next();
     return
   }

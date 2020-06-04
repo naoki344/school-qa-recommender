@@ -71,6 +71,34 @@ export default {
 		}
       });
     },
+    fetchClassroomByInviteKey(_, inviteKey) {
+      return new Promise((resolve, reject) => {
+        API.get(
+            "ToiToyApi",
+            "/public/invite_key/" + `${inviteKey}/classroom`
+          )
+          .then(result => {
+            resolve(result["classroom"]);
+          })
+          .catch((e) => {
+            reject(e);
+          });
+      });
+    },
+    joinRequestByinviteKey(_, inviteKey) {
+      return new Promise((resolve, reject) => {
+        API.post(
+            "ToiToyApi",
+            `/invite_key/${inviteKey}/join_request`, {}
+          )
+          .then(result => {
+            resolve();
+          })
+          .catch((e) => {
+            reject(e);
+          });
+      });
+    },
     fetchClassroomWorkList({
       commit,
       rootState

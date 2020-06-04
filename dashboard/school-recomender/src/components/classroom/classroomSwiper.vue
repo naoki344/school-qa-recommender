@@ -109,7 +109,9 @@
                     tile
                     size="40"
                   >
-                    <v-img :src="getUserAvatarImageUrl(classmate.user_id)" />
+                    <v-img
+                      :src="getUserAvatarImageUrl(classmate.user_id)"
+                    />
                   </v-avatar>
                   <v-list-item-content class="pa-0">
                     <div>
@@ -142,6 +144,14 @@
               </div>
             </v-list>
           </div>
+          <div v-else>
+            <v-subheader>ワーク一覧</v-subheader>
+            <v-divider />
+            <h5 class="ma-4 ml-6">
+              オーナーの承認をお待ちください。<br>
+              クラスの詳細情報は承認後表示されます。
+            </h5>
+          </div>
         </swiper-slide>
       </swiper>
     </div>
@@ -155,9 +165,9 @@
         </v-card>
       </div>
       <v-divider />
-      <p class="ma-4">
+      <h5 class="ma-4 ml-6">
         現在参加中のクラスはありません。
-      </p>
+      </h5>
     </div>
   </v-content>
 </template>
