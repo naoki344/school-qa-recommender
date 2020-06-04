@@ -71,12 +71,27 @@ export default {
 		}
       });
     },
+    createInviteLink({ dispatch, state }, classroomId) {
+      return new Promise(async (resolve, reject) => {
+        API.post(
+            "ToiToyApi",
+            `/classroom/${classroomId}/invite_key`, {
+              body: {}
+            })
+          .then(result => {
+            const invite_url = process.env.VUE_APP_TOITOY_PAGE_URL + "invite?inviteKey=" + result.classmate_invite.invite_key;
+            resolve({"invite_url": invite_url, "expire_date": result.classmate_invite.expire_date});
+          })
+          .catch(() => {
+            reject();
+          });
+      });
+    },
     fetchClassroomWorkList({
       commit,
       rootState
     }, classroom_id) {
       return new Promise((resolve, reject) => {
-        const pathTemplate = `/classroom/${classroom_id}/work`
         API.get(
             "ToiToyApi",
             `/classroom/${classroom_id}/work`
@@ -193,7 +208,6 @@ export default {
       title,
       caption
     }) {
-      const pathTemplate = '/classroom/{classroom_id}/work'
       Promise.all(selectedClassroom.map(async classroomId => {
         return new Promise((resolve, reject) => {
           API.post(

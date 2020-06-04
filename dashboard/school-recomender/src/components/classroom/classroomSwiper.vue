@@ -82,7 +82,7 @@
             <v-subheader class="create-approve-join-request-header">
               クラスメイト一覧
               <div class="create-approve-join-request-link">
-                <a @click="inviteDialog = true">招待用リンクを取得</a>
+                <a @click="createInviteLink(myClass.classroom.classroom_id)">招待用リンクを取得</a>
               </div>
             </v-subheader>
             <v-divider />
@@ -228,7 +228,7 @@ export default {
       workDialogVisible: false,
       existsJoinClassroom: true,
       inviteDialog: false,
-      inviteUrl: "inviteUrl",
+      inviteUrl: "",
     };
   },
   computed: {
@@ -247,6 +247,13 @@ export default {
     });
   },
   methods: {
+    createInviteLink(classroomId) {
+      this.$store.dispatch("classroom/createInviteLink", classroomId).then((res) => {
+        this.inviteUrl = res.invite_url;
+        console.log(res.expire_date)
+        this.inviteDialog = true;
+      });
+    },
     copyUrl() {
       // コピー対象をJavaScript上で変数として定義する
       const copyTarget = document.getElementById("copyTargetUrl");
