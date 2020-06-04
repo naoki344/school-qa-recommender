@@ -49,13 +49,12 @@ def find_classroom_handler(event, context):
 
 
 def find_classroom_by_invite_key_handler(event, context):
-    user_id = AuthenticationEventPerser.parse(event)
     path = event["pathParameters"]
     logger = getLogger()
     invite_key = InviteKey(str(path["invite_key"]))
     service: FindClassroomByInviteKey = find_classroom_by_invite_key(
         logger=logger)
-    classroom = service.run(user_id, invite_key)
+    classroom = service.run(invite_key)
     return APIGatewayResponse.to_response({"classroom": classroom.to_dict()})
 
 
@@ -109,6 +108,7 @@ def approve_join_classroom_request_handler(event, context):
 
 
 def get_my_classroom_list_handler(event, context):
+    #TODO: 承認まちの状態で取得できないようにする
     user_id = AuthenticationEventPerser.parse(event)
     logger = getLogger()
     service: MyClassroomList = get_my_classroom_list(logger=logger)
