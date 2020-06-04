@@ -3,6 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify';
 import store from './store'
 import router from './router'
+import VueQriously from "vue-qriously";
 import Amplify, * as AmplifyModules from 'aws-amplify';
 import {
   AmplifyPlugin
@@ -38,6 +39,7 @@ Amplify.configure({
 
 Vue.config.productionTip = false
 Vue.use(AmplifyPlugin, AmplifyModules)
+Vue.use(VueQriously);
 
 new Vue({
   vuetify,

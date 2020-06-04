@@ -335,7 +335,9 @@ export default {
       const contents = document.getElementById("work-detail-dialog-contents");
       const imgList = contents.getElementsByTagName("img");
       imgList.forEach(async img => {
-        const url = await this.getImageUrl("thumbnail/w512/" + img.getAttribute("s3-key"));
+        const url = await this.getImageUrl(
+          "thumbnail/w512/" + img.getAttribute("s3-key")
+        );
         img.setAttribute("src", url);
         img.style.width = "100%";
       });
@@ -552,7 +554,7 @@ export default {
   width: 100%;
 }
 
-@media screen and (min-width: 761px) {
+@media screen and (min-width: 760px) {
   .split-left {
     width: 60%;
   }

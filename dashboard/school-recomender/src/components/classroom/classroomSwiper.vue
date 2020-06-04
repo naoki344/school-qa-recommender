@@ -12,13 +12,16 @@
           :key="myClass.classroom.classroom_id"
         >
           <div class="classroom-swiper-thumbs-box">
-            <v-card shaped>
+            <v-card
+              class="classroom-swiper-v-card"
+              shaped
+            >
               <v-img
                 v-if="getImageUrlW512(myClass.classroom)"
                 class="white--text align-end classroom-swiper-thumbs-image"
                 :src="imageListW512[myClass.classroom.image_url]"
               >
-                <v-card-title>
+                <v-card-title class="classroom-swiper-v-card__title">
                   <h3>{{ myClass.classroom.name }}</h3>
                 </v-card-title>
               </v-img>
@@ -44,21 +47,16 @@
           <div v-if="isShowClassroomContent(myClass)">
             <v-subheader>ワーク一覧</v-subheader>
             <v-divider />
-            <v-list
-              subheader
-              two-line
-              style="margin-bottom: 50px;"
-            >
+            <div>
               <div
                 v-for="item in classroomWorkList[
                   myClass.classroom.classroom_id
                 ]"
                 :key="item.work_id"
-                subheader
-                two-line
+                class="pa-0 classroom-work-list"
               >
-                <v-list-item
-                  link
+                <div
+                  style="border-left: solid 1px #e4e4e4; "
                   class="classroom-work-list-item"
                   @click="openWorkDetail(item, myClass)"
                 >
@@ -71,22 +69,20 @@
                       :src="imageListH60[item.image_url]"
                     />
                   </div>
-                  <v-list-item-content class="pa-0">
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{
-                        item.caption
-                      }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
+                  <div class="my-1 mx-3">
+                    <strong>{{ item.title }}</strong>
+                    <p class="ma-0">
+                      {{ item.caption }}
+                    </p>
+                  </div>
+                </div>
                 <v-divider />
               </div>
-            </v-list>
+            </div>
             <v-subheader class="create-approve-join-request-header">
               クラスメイト一覧
               <div class="create-approve-join-request-link">
-                <a>招待用リンクを取得</a>
+                <a @click="createInviteLink(myClass.classroom.classroom_id)">招待用リンクを取得</a>
               </div>
             </v-subheader>
             <v-divider />
@@ -114,12 +110,12 @@
                     />
                   </v-avatar>
                   <v-list-item-content class="pa-0">
-                    <div>
+                    <div
+                      style="align-items: center; display: flex; line-height: 1;"
+                    >
                       {{ classmate.nickname }}
                       <span>
-                        {{
-                          classmate.join_status | joinStatusFilter
-                        }}
+                        {{ classmate.join_status | joinStatusFilter }}
                       </span>
                     </div>
                   </v-list-item-content>
@@ -169,6 +165,34 @@
         現在参加中のクラスはありません。
       </h5>
     </div>
+    <v-dialog
+      v-model="inviteDialog"
+      width="600"
+    >
+      <v-card>
+        <v-card-title>招待リンクを共有する</v-card-title>
+        <v-card-text>
+          <div>への招待リンク</div>
+          <div>QRコード</div>
+          <qriously
+            :value="inviteUrl"
+            :size="100"
+          />
+          <v-text-field
+            id="copyTargetUrl"
+            v-model="inviteUrl"
+            readonly
+          />
+          <v-btn @click="copyUrl">
+            コピー
+          </v-btn>
+          <div>今日で有効期限が切れます</div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn>戻る</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-content>
 </template>
 
@@ -183,7 +207,7 @@ export default {
   components: {
     swiper,
     swiperSlide,
-    ...components
+    ...components,
   },
   filters: {
     joinStatusFilter(value) {
@@ -191,7 +215,7 @@ export default {
       if (value === "approved") return "参加中";
       if (value === "owner") return "オーナー";
       if (value === "requested") return "承認待ち";
-    }
+    },
   },
   data() {
     return {
@@ -199,7 +223,7 @@ export default {
       url: "",
       swiperOptionTop: {
         slidesPerView: "auto",
-        centeredSlides: true
+        centeredSlides: true,
       },
       imageListW512: [],
       imageListH60: [],
@@ -209,17 +233,19 @@ export default {
         speed: 500,
         slidesPerView: "auto",
         spaceBetween: 20,
-        centeredSlides: true
+        centeredSlides: true,
       },
       workDialogVisible: false,
-      existsJoinClassroom: true
+      existsJoinClassroom: true,
+      inviteDialog: false,
+      inviteUrl: "",
     };
   },
   computed: {
     ...mapState({
-      classroomList: state => state.classroom.myClassroomList,
-      classroomWorkList: state => state.classroom.classroomWorkList
-    })
+      classroomList: (state) => state.classroom.myClassroomList,
+      classroomWorkList: (state) => state.classroom.classroomWorkList,
+    }),
   },
   mounted() {
     this.fetchClassroomList();
@@ -231,6 +257,26 @@ export default {
     });
   },
   methods: {
+    createInviteLink(classroomId) {
+      this.$store.dispatch("classroom/createInviteLink", classroomId).then((res) => {
+        this.inviteUrl = res.invite_url;
+        console.log(res.expire_date)
+        this.inviteDialog = true;
+      });
+    },
+    copyUrl() {
+      // コピー対象をJavaScript上で変数として定義する
+      const copyTarget = document.getElementById("copyTargetUrl");
+
+      // コピー対象のテキストを選択する
+      copyTarget.select();
+
+      // 選択しているテキストをクリップボードにコピーする
+      document.execCommand("Copy");
+
+      // コピーをお知らせする
+      alert("コピーできました！ : " + copyTarget.value);
+    },
     isShowClassroomContent(classroom) {
       if (classroom.classmate.join_status == "approved") return true;
       if (classroom.classmate.join_status == "owner") return true;
@@ -248,8 +294,8 @@ export default {
         name: "classroomWorkDetailPage",
         query: {
           work_id: this.selectedWorkId,
-          classroom_id: this.selectedClassId
-        }
+          classroom_id: this.selectedClassId,
+        },
       });
     },
     closeWorkDetailDialog() {
@@ -268,13 +314,13 @@ export default {
       this.$store
         .dispatch("classroom/approveClassroomJoinRequest", {
           classroomId,
-          userId
+          userId,
         })
-        .then(data => {
+        .then((data) => {
           this.$store.dispatch("classroom/fetchMyClassroomList");
           alert(`${nickName} をクラスに追加しました。`);
         })
-        .catch(err => {
+        .catch((err) => {
           alert(
             `${nickName} のクラスに追加に失敗しました。(再度実行してくだください)`
           );
@@ -283,10 +329,10 @@ export default {
     fetchS3Object(path) {
       this.$store
         .dispatch("getS3PublicFile", path)
-        .then(url => {
+        .then((url) => {
           this.url = url;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -296,12 +342,12 @@ export default {
       this.$store
         .dispatch("putS3PublicFile", {
           filePath: filePath,
-          data: this.file
+          data: this.file,
         })
-        .then(data => {
+        .then((data) => {
           this.fetchS3Object(data.key);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -316,7 +362,7 @@ export default {
       const thumbPath = "thumbnail/w512/" + path;
       this.$store
         .dispatch("getS3PublicFile", thumbPath)
-        .then(url => {
+        .then((url) => {
           this.$set(this.imageListW512, path, url);
         })
         .catch(() => {
@@ -335,15 +381,15 @@ export default {
       const thumbPath = "thumbnail/h60/" + path;
       this.$store
         .dispatch("getS3PublicFile", thumbPath)
-        .then(url => {
+        .then((url) => {
           this.$set(this.imageListH60, path, url);
         })
         .catch(() => {
           return false;
         });
       return true;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -376,10 +422,10 @@ export default {
   margin: auto;
   margin-bottom: 15px;
 }
-.v-card {
+.classroom-swiper-v-card {
   border-radius: 12px;
 }
-.v-card__title {
+.classroom-swiper-v-card__title {
   padding: 12px;
   display: flex;
   justify-content: flex-end;
@@ -400,7 +446,11 @@ export default {
 }
 
 .classroom-work-list-item {
-  padding: 10px 15px;
+  padding: 10px 16px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+
   .classroom-work-list-item-image {
     width: 80px;
     height: 100%;
@@ -422,6 +472,7 @@ export default {
 .classmate-list-item {
   font-weight: 600;
   margin: 0;
+  cursor: default;
   span {
     font-size: 0.8rem;
     margin-left: 5px;
@@ -443,12 +494,20 @@ export default {
 .create-approve-join-request-header {
   display: flex;
   justify-content: space-between;
+  padding-top: 60px;
   a {
     text-decoration: underline;
     color: #35a7ff;
   }
   .create-approve-join-request-link {
     margin-top: 10px;
+  }
+}
+
+@media screen and (min-width: 760px) {
+  .classroom-work-list {
+    width: 50%;
+    display: inline-block;
   }
 }
 </style>
