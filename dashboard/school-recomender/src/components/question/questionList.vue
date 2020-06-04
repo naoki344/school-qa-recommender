@@ -6,7 +6,10 @@
     >
       <v-container>
         <create-question-dialog />
-        <v-row>
+        <v-divider class="mb-4" />
+        <v-row
+          v-if="questionCardList.length > 0"
+        >
           <v-col
             v-for="question in questionCardList"
             :key="question.question_id"
@@ -17,8 +20,6 @@
             xl="3"
           >
             <v-card
-              v-if="type === 'cards'"
-              class=""
               style="height: 100%; position:relative;"
               white
               @click="openQuestionDetailDialog(question)"
@@ -26,6 +27,11 @@
               <v-img
                 v-if="getImageUrl(question)"
                 :src="imageList[question.image_url]"
+                style="width: 100%; height: 200px;"
+              />
+              <v-img
+                v-else
+                src="@/assets/question-no-image.png"
                 style="width: 100%; height: 200px;"
               />
               <v-card-text class="mb-2">
@@ -61,6 +67,14 @@
               </v-card-text>
             </v-card>
           </v-col>
+        </v-row>
+        <v-row
+          v-else
+          class="mb-4"
+        >
+          <h5 class="question-no-text">
+            トイが作成されていません。
+          </h5>
         </v-row>
       </v-container>
     </v-item-group>
@@ -100,8 +114,6 @@ export default {
     },
   },
   data: () => ({
-    types: ["cards", "images"],
-    type: "cards",
     username: "",
     password: "",
     showPassword: false,
@@ -155,11 +167,18 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 div[name="amplify-s3-image"] > img {
   width: 100% !important;
   margin: unset;
   border-radius: unset !important;
   border: unset !important;
+}
+
+.question-no-text {
+  margin-top: 40px;
+  display: block;
+  text-align: center;
+  width: 100%;
 }
 </style>

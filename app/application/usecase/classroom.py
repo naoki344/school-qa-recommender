@@ -83,7 +83,7 @@ class FindClassroomByInviteKey:
         self.invite_datasource = invite_datasource
         self.user_service = user_service
 
-    def run(self, user_id: UserId, invite_key: InviteKey) -> Classroom:
+    def run(self, invite_key: InviteKey) -> Classroom:
         classmate_invite = self.invite_datasource.find_by_invite_key(
             invite_key=invite_key)
         classroom = self.datasource.find_by_id(classmate_invite.classroom_id)

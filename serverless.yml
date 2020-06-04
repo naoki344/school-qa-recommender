@@ -142,19 +142,6 @@ functions:
       TYPE: API
       SERVICE: Classroom
 
-  LambdaApiFindClassroomByInviteKey:
-    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_by_invite_key_handler
-    name: ${self:custom.resourcePrefix}-find-classroom-by-invite-key
-    events:
-      - http:
-          path: invite_key/{invite_key}/classroom
-          method: get
-          cors: true
-          authorizer: aws_iam
-    tags:
-      TYPE: API
-      SERVICE: Classroom
-
   LambdaApiRequestJoinClassroomByInviteKey:
     handler: ${self:custom.lambdaHandlerPrefix}api/classroom.request_join_classroom_by_invite_key_handler
     name: ${self:custom.resourcePrefix}-request-join-classroom-by-invite-key
@@ -270,6 +257,18 @@ functions:
     tags:
       TYPE: API
       SERVICE: User
+
+  LambdaApiFindClassroomByInviteKey:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_by_invite_key_handler
+    name: ${self:custom.resourcePrefix}-find-classroom-by-invite-key
+    events:
+      - http:
+          path: public/invite_key/{invite_key}/classroom
+          method: get
+          cors: true
+    tags:
+      TYPE: API
+      SERVICE: Classroom
 
   LambdaS3EventCreateImageThumbnail:
     handler: ${self:custom.lambdaHandlerPrefix}s3/image_convert.s3_event_create_image_thumbnail_handler

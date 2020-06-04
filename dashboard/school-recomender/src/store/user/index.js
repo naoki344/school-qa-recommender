@@ -8,9 +8,7 @@ const userApiClient = {
         email: inputData.email,
         nickname: inputData.nickname,
         "custom:last_name": inputData.lastName,
-        "custom:first_name": inputData.firstName,
-        "custom:last_name_kana": inputData.lastNameKana,
-        "custom:first_name_kana": inputData.firstNameKana
+        "custom:first_name": inputData.firstName
       };
       if (inputData.avatarUrl != null) {
         attributes = {
@@ -66,6 +64,13 @@ export default {
   getters: {
     userAvatarImageUrl: state => userId => {
       return `${process.env.VUE_APP_TOITOY_PUBLIC_IMAGE_STORAGE_URL}/user/${userId}/avatar_image`;
+    },
+    isLogin: state => {
+      if (state.loginUser === null || state.loginUser === undefined) {
+        return false;
+      } else {
+        return true;
+	  }
     }
   },
   actions: {

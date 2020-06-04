@@ -353,7 +353,7 @@ class FindClassroomByInviteKeyTest(TestCase):
                                            logger=MagicMock())
         user_id = UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39')
         invite_key = InviteKey('79434gatbgare')
-        result = usecase.run(user_id, invite_key)
+        result = usecase.run(invite_key)
         usecase.invite_datasource.find_by_invite_key.assert_called_once_with(
             invite_key=invite_key)
         usecase.datasource.find_by_id.assert_called_once_with(ClassroomId(1))

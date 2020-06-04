@@ -21,7 +21,7 @@
             sm8
             md4
           >
-            <userLogin />
+            <userSignUp />
           </v-flex>
         </v-layout>
       </v-container>
@@ -31,12 +31,12 @@
 
 <script>
 // @ is an alias to /src
-import userLogin from "@/components/user/userLogin.vue";
+import userSignUp from "@/components/user/userSignUp.vue";
 
 export default {
-  name: "UserLoginPage",
+  name: "UserSignUpPage",
   components: {
-    userLogin
+    userSignUp
   },
 };
 </script>

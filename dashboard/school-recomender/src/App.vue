@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <keep-alive include="TopPage">
+    <keep-alive :include="cacheComponentName">
       <router-view />
     </keep-alive>
   </v-app>
@@ -8,6 +8,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      cacheComponentName: ["TopPage", "UserLoginPage", "UserSignUpPage"]
+	}
+  },
   async created() {
     await this.$store.dispatch("user/fetchLoginUserInfo");
   }

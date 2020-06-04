@@ -5,7 +5,7 @@
     </h1>
     <h5 align="center">
       または
-      <a @click="switchComponent">アカウントを作る</a>
+      <a @click="toUserSignUp">アカウントを作る</a>
     </h5>
 
     <p
@@ -59,7 +59,7 @@
 <script>
 import "@mdi/font/css/materialdesignicons.css";
 export default {
-  name: "Login",
+  name: "UserLogin",
   data: () => ({
     username: "",
     password: "",
@@ -67,9 +67,18 @@ export default {
     error: false,
     loading: false
   }),
+  computed: {
+    originPagePath() {
+      return this.$route.query.originPagePath;
+    }
+  },
   methods: {
-    switchComponent() {
-      this.$emit("switch");
+    toUserSignUp() {
+      if (this.originPagePath == undefined || this.originPagePath == null){
+        this.$router.push({ path: "/userSignUp" });
+	  } else {
+        this.$router.push({ path: "/userSignUp", query: {originPagePath: this.originPagePath}});
+      }
     },
     userLogin() {
       this.loading = true;
@@ -79,7 +88,11 @@ export default {
           password: this.password
         })
         .then(() => {
-          this.$router.push({ path: "/" });
+          if (this.originPagePath == undefined || this.originPagePath == null){
+            this.$router.push({ path: "/" });
+          } else {
+            this.$router.push({ path: this.originPagePath });
+          }
         })
         .catch(err => {
           console.log(err);

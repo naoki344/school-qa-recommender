@@ -52,6 +52,9 @@ export default {
   computed: {
     email() {
       return this.$route.query.email;
+    },
+    originPagePath() {
+      return this.$route.query.originPagePath;
     }
   },
   methods: {
@@ -62,7 +65,11 @@ export default {
           verificationCode: this.verificationCode
         })
         .then(() => {
-          this.$router.push({ path: "/userLogin" });
+          if (this.originPagePath == undefined || this.originPagePath == null){
+            this.$router.push({ path: "/userLogin" });
+          } else {
+            this.$router.push({ path: "/userLogin", query: { originPagePath: this.originPagePath }});
+          }
         })
         .catch(() => {
           this.isFailure = true;

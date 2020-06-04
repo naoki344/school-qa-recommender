@@ -5,7 +5,6 @@
       fill-height
     >
       <v-layout
-        align-center
         justify-center
       >
         <v-flex
@@ -22,7 +21,7 @@
 
 <script>
 // @ is an alias to /src
-import invite from "@/components/user/invite.vue";
+import invite from "@/components/classroom/invite.vue";
 
 export default {
   name: "InvitePage",
