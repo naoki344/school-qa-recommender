@@ -16,6 +16,12 @@ class JoinStatus(Enum):
     approved = auto()
     rejected = auto()
 
+    def is_join(self):
+        allow_status = [JoinStatus.owner, JoinStatus.approved]
+        if self.join_status in allow_status:
+            return True
+        return False
+
 
 @dataclass(frozen=True)
 class Classmate:

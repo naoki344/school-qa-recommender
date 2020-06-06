@@ -1,8 +1,8 @@
+import io
 import mimetypes
 import os
 
 from PIL import Image
-import io
 
 from app.dataaccess.aws.s3_file import S3FileClient
 
