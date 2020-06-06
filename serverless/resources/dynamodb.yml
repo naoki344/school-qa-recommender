@@ -163,22 +163,10 @@ Resources:
       TableName: "${self:custom.resourcePrefix}-ClassmateInvite"
       AttributeDefinitions:
         -
-          AttributeName: "classroom_id"
-          AttributeType: "N"
-        -
           AttributeName: "invite_key"
           AttributeType: "S"
       KeySchema:
         -
-          AttributeName: "classroom_id"
+          AttributeName: "invite_key"
           KeyType: "HASH"
       BillingMode: PAY_PER_REQUEST
-      GlobalSecondaryIndexes:
-        -
-          IndexName: "InviteKey-Index"
-          KeySchema:
-            -
-              AttributeName: "invite_key"
-              KeyType: "HASH"
-          Projection:
-            ProjectionType: "ALL"
