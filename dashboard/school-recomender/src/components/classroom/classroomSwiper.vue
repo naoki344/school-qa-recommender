@@ -212,9 +212,9 @@ export default {
   filters: {
     joinStatusFilter(value) {
       if (value === "") return "";
-      if (value === "approved") return "参加中";
       if (value === "owner") return "オーナー";
       if (value === "requested") return "承認待ち";
+      return ""
     },
   },
   data() {

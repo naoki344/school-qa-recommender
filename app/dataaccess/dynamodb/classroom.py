@@ -86,7 +86,7 @@ class ClassmateInviteDatasource:
         self.client.put_item(item.to_dict())
 
     def find_by_invite_key(self, invite_key: InviteKey) -> ClassmateInvite:
-        items = self.client.get_items(name='invite_key',
-                                      value=invite_key.value,
-                                      index_name='InviteKey-Index')
-        return ClassmateInvite.from_dict(list(items)[0])
+        item = self.client.get_item({
+            'invite_key': invite_key.value
+        })
+        return ClassmateInvite.from_dict(item)
