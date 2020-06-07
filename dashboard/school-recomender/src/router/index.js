@@ -5,7 +5,6 @@ import userSignUpPage from "../views/userSignUpPage.vue";
 import userLogoutPage from "../views/userLogoutPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
 import invitePage from "../views/invitePage.vue";
-import classroomCreatePage from "../views/classroomCreatePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
 import topPage from "../views/topPage.vue";
 import classroomWorkDetailPage from "../views/classroomWorkDetailPage.vue";
@@ -51,11 +50,7 @@ const routes = [{
     name: "questionTopPage",
     component: questionTopPage,
   },
-  {
-    path: "/classroomCreate",
-    name: "classroomCreatePage",
-    component: classroomCreatePage
-  },
+
   {
     path: "/classroomWorkDetail",
     name: "classroomWorkDetailPage",

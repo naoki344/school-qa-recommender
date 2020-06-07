@@ -134,6 +134,7 @@
 <script>
 export default {
   name: "HeaderNav",
+  components: {},
   data: () => ({
     drawer: null,
     logoutDialog: false,
@@ -145,6 +146,7 @@ export default {
         text: "トイ（TOI）"
       }
     ],
+
     logoutItem: { icon: "mdi-logout", text: "ログアウト" },
     myAvatarImageUrl: ""
   }),
