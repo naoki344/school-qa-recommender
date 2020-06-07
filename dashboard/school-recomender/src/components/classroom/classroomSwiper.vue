@@ -33,6 +33,19 @@
             </v-card>
           </div>
         </swiper-slide>
+        <swiper-slide>
+          <div class="classroom-swiper-thumbs-box">
+            <v-card
+              class="classroom-swiper-v-card"
+              shaped
+            >
+              <v-img
+                class="white--text align-end classroom-swiper-thumbs-image"
+                src="@/assets/classroom-top_small.png"
+              />
+            </v-card>
+          </div>
+        </swiper-slide>
       </swiper>
       <swiper
         ref="swiperTop"
@@ -105,18 +118,12 @@
                     tile
                     size="40"
                   >
-                    <v-img
-                      :src="getUserAvatarImageUrl(classmate.user_id)"
-                    />
+                    <v-img :src="getUserAvatarImageUrl(classmate.user_id)" />
                   </v-avatar>
                   <v-list-item-content class="pa-0">
-                    <div
-                      style="align-items: center; display: flex; line-height: 1;"
-                    >
+                    <div style="align-items: center; display: flex; line-height: 1;">
                       {{ classmate.nickname }}
-                      <span>
-                        {{ classmate.join_status | joinStatusFilter }}
-                      </span>
+                      <span>{{ classmate.join_status | joinStatusFilter }}</span>
                     </div>
                   </v-list-item-content>
                   <v-list-item-content
@@ -144,27 +151,29 @@
             <v-subheader>ワーク一覧</v-subheader>
             <v-divider />
             <h5 class="ma-4 ml-6">
-              オーナーの承認をお待ちください。<br>
-              クラスの詳細情報は承認後表示されます。
+              オーナーの承認をお待ちください。
+              <br>クラスの詳細情報は承認後表示されます。
             </h5>
+          </div>
+        </swiper-slide>
+        <swiper-slide>
+          <v-divider />
+          <div
+            style="text-align: center;"
+            class="ma-5"
+          >
+            <v-btn
+              x-large
+              color="yellow darken-1"
+              @click="openClassroomCreateDialog"
+            >
+              新しくクラスを作成する
+            </v-btn>
           </div>
         </swiper-slide>
       </swiper>
     </div>
-    <div v-else>
-      <div class="classroom-swiper-thumbs-box join-classroom-nothing-image">
-        <v-card shaped>
-          <v-img
-            class="white--text align-end classroom-swiper-thumbs-image"
-            src="@/assets/classroom-top_small.png"
-          />
-        </v-card>
-      </div>
-      <v-divider />
-      <h5 class="ma-4 ml-6">
-        現在参加中のクラスはありません。
-      </h5>
-    </div>
+
     <v-dialog
       v-model="inviteDialog"
       width="600"
@@ -193,12 +202,20 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      v-model="classroomCreateDialog"
+      width="400"
+    >
+      <classroomCreate />
+    </v-dialog>
   </v-content>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import "swiper/dist/css/swiper.css";
+import classroomCreate from "@/components/classroom/classroomCreate.vue";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { components } from "aws-amplify-vue";
 
@@ -207,7 +224,8 @@ export default {
   components: {
     swiper,
     swiperSlide,
-    ...components,
+    classroomCreate,
+    ...components
   },
   filters: {
     joinStatusFilter(value) {
@@ -215,7 +233,7 @@ export default {
       if (value === "owner") return "オーナー";
       if (value === "requested") return "承認待ち";
       return ""
-    },
+    }
   },
   data() {
     return {
@@ -223,7 +241,7 @@ export default {
       url: "",
       swiperOptionTop: {
         slidesPerView: "auto",
-        centeredSlides: true,
+        centeredSlides: true
       },
       imageListW512: [],
       imageListH60: [],
@@ -233,19 +251,20 @@ export default {
         speed: 500,
         slidesPerView: "auto",
         spaceBetween: 20,
-        centeredSlides: true,
+        centeredSlides: true
       },
       workDialogVisible: false,
       existsJoinClassroom: true,
       inviteDialog: false,
       inviteUrl: "",
+      classroomCreateDialog: false
     };
   },
   computed: {
     ...mapState({
-      classroomList: (state) => state.classroom.myClassroomList,
-      classroomWorkList: (state) => state.classroom.classroomWorkList,
-    }),
+      classroomList: state => state.classroom.myClassroomList,
+      classroomWorkList: state => state.classroom.classroomWorkList
+    })
   },
   mounted() {
     this.fetchClassroomList();
@@ -257,12 +276,20 @@ export default {
     });
   },
   methods: {
+    openClassroomCreateDialog() {
+      this.classroomCreateDialog = true;
+    },
+    closeclassroomCreateDialog() {
+      this.classroomCreateDialog = false;
+    },
     createInviteLink(classroomId) {
-      this.$store.dispatch("classroom/createInviteLink", classroomId).then((res) => {
-        this.inviteUrl = res.invite_url;
-        console.log(res.expire_date)
-        this.inviteDialog = true;
-      });
+      this.$store
+        .dispatch("classroom/createInviteLink", classroomId)
+        .then(res => {
+          this.inviteUrl = res.invite_url;
+          console.log(res.expire_date);
+          this.inviteDialog = true;
+        });
     },
     copyUrl() {
       // コピー対象をJavaScript上で変数として定義する
@@ -294,8 +321,8 @@ export default {
         name: "classroomWorkDetailPage",
         query: {
           work_id: this.selectedWorkId,
-          classroom_id: this.selectedClassId,
-        },
+          classroom_id: this.selectedClassId
+        }
       });
     },
     closeWorkDetailDialog() {
@@ -314,13 +341,13 @@ export default {
       this.$store
         .dispatch("classroom/approveClassroomJoinRequest", {
           classroomId,
-          userId,
+          userId
         })
-        .then((data) => {
+        .then(data => {
           this.$store.dispatch("classroom/fetchMyClassroomList");
           alert(`${nickName} をクラスに追加しました。`);
         })
-        .catch((err) => {
+        .catch(err => {
           alert(
             `${nickName} のクラスに追加に失敗しました。(再度実行してくだください)`
           );
@@ -329,10 +356,10 @@ export default {
     fetchS3Object(path) {
       this.$store
         .dispatch("getS3PublicFile", path)
-        .then((url) => {
+        .then(url => {
           this.url = url;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -342,12 +369,12 @@ export default {
       this.$store
         .dispatch("putS3PublicFile", {
           filePath: filePath,
-          data: this.file,
+          data: this.file
         })
-        .then((data) => {
+        .then(data => {
           this.fetchS3Object(data.key);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -362,7 +389,7 @@ export default {
       const thumbPath = "thumbnail/w512/" + path;
       this.$store
         .dispatch("getS3PublicFile", thumbPath)
-        .then((url) => {
+        .then(url => {
           this.$set(this.imageListW512, path, url);
         })
         .catch(() => {
@@ -381,15 +408,15 @@ export default {
       const thumbPath = "thumbnail/h60/" + path;
       this.$store
         .dispatch("getS3PublicFile", thumbPath)
-        .then((url) => {
+        .then(url => {
           this.$set(this.imageListH60, path, url);
         })
         .catch(() => {
           return false;
         });
       return true;
-    },
-  },
+    }
+  }
 };
 </script>
 
