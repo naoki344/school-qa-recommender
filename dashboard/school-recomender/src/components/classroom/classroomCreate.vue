@@ -33,7 +33,7 @@
           >
         </div>
       </label>
-      <v-form>
+      <v-form class="mt-3">
         <v-text-field
           v-model="classroomName"
           counter="25"

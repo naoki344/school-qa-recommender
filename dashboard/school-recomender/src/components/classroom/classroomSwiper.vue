@@ -94,7 +94,10 @@
             </div>
             <v-subheader class="create-approve-join-request-header">
               クラスメイト一覧
-              <div class="create-approve-join-request-link">
+              <div
+                v-if="myClass.classmate.join_status === 'owner'"
+                class="create-approve-join-request-link"
+              >
                 <a @click="createInviteLink(myClass.classroom.classroom_id)">招待用リンクを取得</a>
               </div>
             </v-subheader>
@@ -179,27 +182,45 @@
       width="600"
     >
       <v-card>
-        <v-card-title>招待リンクを共有する</v-card-title>
-        <v-card-text>
-          <div>への招待リンク</div>
-          <div>QRコード</div>
-          <qriously
-            :value="inviteUrl"
-            :size="100"
-          />
-          <v-text-field
-            id="copyTargetUrl"
-            v-model="inviteUrl"
-            readonly
-          />
-          <v-btn @click="copyUrl">
-            コピー
+        <v-card-title class="pr-4">
+          招待リンクを共有する
+          <v-spacer />
+          <v-btn
+            icon
+            large
+            @click="closeInviteDialog"
+          >
+            <v-icon>mdi-close</v-icon>
           </v-btn>
-          <div>今日で有効期限が切れます</div>
+        </v-card-title>
+
+        <v-card-text class="pb-3">
+          <div style="text-align: center;">
+            <qriously
+              :value="inviteUrl"
+              :size="100"
+              style="text-align: center;"
+            />
+          </div>
+          <div
+            style="display: flex;"
+            class="mt-2"
+          >
+            <v-text-field
+              id="copyTargetUrl"
+              v-model="inviteUrl"
+              class="mr-1"
+              readonly
+              dense
+            />
+            <v-btn
+              color="yellow darken-1"
+              @click="copyUrl"
+            >
+              コピー
+            </v-btn>
+          </div>
         </v-card-text>
-        <v-card-actions>
-          <v-btn>戻る</v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -291,6 +312,9 @@ export default {
           this.inviteDialog = true;
         });
     },
+    closeInviteDialog() {
+      this.inviteDialog = false;
+    },
     copyUrl() {
       // コピー対象をJavaScript上で変数として定義する
       const copyTarget = document.getElementById("copyTargetUrl");
@@ -300,9 +324,6 @@ export default {
 
       // 選択しているテキストをクリップボードにコピーする
       document.execCommand("Copy");
-
-      // コピーをお知らせする
-      alert("コピーできました！ : " + copyTarget.value);
     },
     isShowClassroomContent(classroom) {
       if (classroom.classmate.join_status == "approved") return true;

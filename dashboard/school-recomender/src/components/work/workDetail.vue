@@ -347,9 +347,7 @@ export default {
   methods: {
     setInitialTopic() {
       console.log("初期表示" + this.topicList);
-      this.selectedTopic = this.topicList.find(
-        item => item.body === "関係代名詞まとめ"
-      );
+      this.selectedTopic = this.topicList.find(item => item.body === "メイン");
       this.selectedTopicId = this.selectedTopic.comment_id;
       const l = this.topicMessageDict[this.selectedTopicId];
       if (l != undefined) {
