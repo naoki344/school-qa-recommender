@@ -36,7 +36,7 @@ def get_classroom_work_list_handler(event, context):
         path = event["pathParameters"]
         classroom_id = ClassroomId(int(path["classroom_id"]))
         service: GetClassroomWorkList = \
-            get_classroom_work_list(logger=logger())
+            get_classroom_work_list(logger=logger)
         user_id = AuthenticationEventPerser.parse(event)
         work_list = service.run(user_id=user_id, classroom_id=classroom_id)
         return APIGatewayResponse.to_response(
