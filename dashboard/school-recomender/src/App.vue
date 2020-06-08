@@ -1,10 +1,14 @@
 <template>
   <v-app>
-    <keep-alive
-      :include="cacheComponentName"
-    >
-      <router-view />
-    </keep-alive>
+    <v-content>
+      <v-container fluid>
+        <keep-alive
+          :include="cacheComponentName"
+        >
+          <router-view />
+        </keep-alive>
+      </v-container>
+    </v-content>
   </v-app>
 </template>
 
@@ -12,7 +16,7 @@
 export default {
   data() {
     return {
-      cacheComponentName: ["HeaderNav", "TopPage", "UserLoginPage", "UserSignUpPage"]
+      cacheComponentName: ["TopPage", "UserLoginPage", "UserSignUpPage"]
 	}
   },
   computed: {

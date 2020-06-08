@@ -1,6 +1,6 @@
 <!-- The ref attr used to find the swiper instance -->
 <template>
-  <v-content>
+  <div>
     <div v-if="existsJoinClassroom">
       <swiper
         ref="swiperThumbs"
@@ -195,6 +195,10 @@
         </v-card-title>
 
         <v-card-text class="pb-3">
+          <p>
+            以下のリンクもしくはQRコードを招待したいユーザーに共有してください。
+            <br>{{ inviteUrlExpireDate | dateTimeFilter }} まで有効です。
+          </p>
           <div style="text-align: center;">
             <qriously
               :value="inviteUrl"
@@ -232,7 +236,7 @@
         @classroomCreated="classroomCreated"
       />
     </v-dialog>
-  </v-content>
+  </div>
 </template>
 
 <script>
@@ -241,6 +245,7 @@ import "swiper/dist/css/swiper.css";
 import classroomCreate from "@/components/classroom/classroomCreate.vue";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { components } from "aws-amplify-vue";
+import moment from "moment";
 
 export default {
   name: "ClassroomSwiper",
@@ -256,7 +261,11 @@ export default {
       if (value === "owner") return "オーナー";
       if (value === "requested") return "承認待ち";
       return ""
-    }
+    },
+    dateTimeFilter: function(value) {
+      if (!value) return "";
+      return moment(value).format("MM月DD日 hh:mm");
+    },
   },
   data() {
     return {
@@ -270,6 +279,7 @@ export default {
       imageListH60: [],
       selectedWorkId: "",
       selectedClassId: "",
+      inviteUrlExpireDate: "",
       swiperOptionThumbs: {
         speed: 500,
         slidesPerView: "auto",
@@ -311,7 +321,7 @@ export default {
         .dispatch("classroom/createInviteLink", classroomId)
         .then(res => {
           this.inviteUrl = res.invite_url;
-          console.log(res.expire_date);
+          this.inviteUrlExpireDate = res.expire_date;
           this.inviteDialog = true;
         });
     },
