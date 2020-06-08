@@ -1,7 +1,10 @@
 <template>
   <v-app>
     <v-content>
-      <v-container fluid>
+      <v-container
+        fluid
+        class="pa-0 pt-6"
+      >
         <keep-alive
           :include="cacheComponentName"
         >
