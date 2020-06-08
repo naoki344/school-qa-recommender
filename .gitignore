@@ -6,6 +6,7 @@ develop-eggs/
 dist/
 downloads/
 eggs/
+.nuxt/
 .eggs/
 lib/
 lib64/
@@ -16,6 +17,10 @@ var/
 .installed.cfg
 *.egg
 *.pyc
+*node_modules/
+.DS_Store
+.envrc
+.python-version
 
 # Serverless directories
 .serverless

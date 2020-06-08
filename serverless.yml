@@ -1,129 +1,291 @@
-service: school-qa-recommender
+service: toi-toy-app
 
 provider:
   name: aws
   runtime: python3.8
   stage: dev
   region: ap-northeast-1
-
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-    - Effect: "Allow"
-      Action:
-        - "s3:PutObject"
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:s3:::"
-            - "Ref" : "ServerlessDeploymentBucket"
-            - "/*"
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:dynamodb:"
-            - Ref: AWS::Region
-            - ":"
-            - Ref: AWS::AccountId
-            - ":table/${self:custom.resourcePrefix}-*"
-
+    ${file(serverless/iam_role.yml):iamRoleStatements}
   environment:
     STAGE_NAME: "${self:custom.stageName}"
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+
+plugins:
+  - serverless-plugin-split-stacks
+  - serverless-python-requirements
+package:
+  individually: false
+  include:
+    - './app/**'
+  exclude:
+    - '**'
 
 custom:
   stageName: "${opt:stage, self:provider.stage}"
-  resourcePrefix: "${self:custom.stageName}-qa" 
+  resourcePrefix: "${self:custom.stageName}-tt"
   lambdaHandlerPrefix: "app/interfaces/"
+  pythonRequirements:
+    dockerizePip: true
+    fileName: requirements.txt
+    useStaticCache: true
+    useDownloadCache: true
+  splitStacks:
+    perFunction: false
+    perType: true
+    perGroupFunction: true
+    nestedStackCount: 50
 
 
 functions:
-  LambdaCreateQuestion:
+  LambdaApiCreateQuestion:
     handler: ${self:custom.lambdaHandlerPrefix}api/question.create_question_handler
     name: ${self:custom.resourcePrefix}-create-question
     events:
       - http:
           path: question
           method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Question
 
-  LambdaFindQuestion:
-    handler: ${self:custom.lambdaHandlerPrefix}api/question.find_question_handler
-    name: ${self:custom.resourcePrefix}-find-question
+  LambdaApiGetQuestionList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/question.get_question_list_handler
+    name: ${self:custom.resourcePrefix}-get-question-list
     events:
       - http:
           path: question
           method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Question
+
+  LambdaApiFindQuestion:
+    handler: ${self:custom.lambdaHandlerPrefix}api/question.find_question_handler
+    name: ${self:custom.resourcePrefix}-find-question
+    events:
+      - http:
+          path: question/{question_id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Question
+
+  LambdaApiUpdateQuestion:
+    handler: ${self:custom.lambdaHandlerPrefix}api/question.update_question_handler
+    name: ${self:custom.resourcePrefix}-update-question
+    events:
+      - http:
+          path: question/{question_id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Question
+
+  LambdaApiCreateClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.create_classroom_handler
+    name: ${self:custom.resourcePrefix}-create-class-room
+    events:
+      - http:
+          path: classroom
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiFindClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_handler
+    name: ${self:custom.resourcePrefix}-find-class-room
+    events:
+      - http:
+          path: classroom/{classroom_id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiRequestJoinClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.request_join_classroom_handler
+    name: ${self:custom.resourcePrefix}-request-join-class-room
+    events:
+      - http:
+          path: classroom/{classroom_id}/join_request
+          method: POST
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiCreateClassmateInviteLink:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.create_classmate_invite_link_handler
+    name: ${self:custom.resourcePrefix}-create-classmate-invite-link
+    events:
+      - http:
+          path: classroom/{classroom_id}/invite_key
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiRequestJoinClassroomByInviteKey:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.request_join_classroom_by_invite_key_handler
+    name: ${self:custom.resourcePrefix}-request-join-classroom-by-invite-key
+    events:
+      - http:
+          path: invite_key/{invite_key}/join_request
+          method: post
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiApproveJoinClassroomRequest:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.approve_join_classroom_request_handler
+    name: ${self:custom.resourcePrefix}-approve-join-class-room-request
+    events:
+      - http:
+          path: classroom/{classroom_id}/approve_request
+          method: PUT
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiGetMyClassroomList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.get_my_classroom_list_handler
+    name: ${self:custom.resourcePrefix}-get-my-classroom-list
+    events:
+      - http:
+          path: classroom/my_classroom
+          method: GET
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaApiCreateWorkFromQuestion:
+    handler: ${self:custom.lambdaHandlerPrefix}api/work.create_work_from_question_handler
+    name: ${self:custom.resourcePrefix}-create-work-from-question
+    events:
+      - http:
+          path: classroom/{classroom_id}/work
+          method: POST
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiGetClassroomWorkList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/work.get_classroom_work_list_handler
+    name: ${self:custom.resourcePrefix}-get-classroom-work-list
+    events:
+      - http:
+          path: classroom/{classroom_id}/work
+          method: GET
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiFindClassroomWork:
+    handler: ${self:custom.lambdaHandlerPrefix}api/work.find_classroom_work_handler
+    name: ${self:custom.resourcePrefix}-find-classroom-work
+    events:
+      - http:
+          path: classroom/{classroom_id}/work/{work_id}
+          method: GET
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiRegisterWorkComment:
+    handler: ${self:custom.lambdaHandlerPrefix}api/comment.register_work_comment_handler
+    name: ${self:custom.resourcePrefix}-register-work-comment
+    events:
+      - http:
+          path: classroom/{classroom_id}/work/{work_id}/comment
+          method: POST
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiGetWorkCommentList:
+    handler: ${self:custom.lambdaHandlerPrefix}api/comment.get_work_comment_list_handler
+    name: ${self:custom.resourcePrefix}-get-work-comment-list-handler
+    events:
+      - http:
+          path: classroom/{classroom_id}/work/{work_id}/comment
+          method: GET
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Work
+
+  LambdaApiUploadUserAvatarImage:
+    handler: ${self:custom.lambdaHandlerPrefix}api/user.upload_user_avatar_image_handler
+    name: ${self:custom.resourcePrefix}-upload-user-avatar-image
+    events:
+      - http:
+          path: public/user/avatar
+          method: PUT
+          cors: true
+    tags:
+      TYPE: API
+      SERVICE: User
+
+  LambdaApiFindClassroomByInviteKey:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_by_invite_key_handler
+    name: ${self:custom.resourcePrefix}-find-classroom-by-invite-key
+    events:
+      - http:
+          path: public/invite_key/{invite_key}/classroom
+          method: get
+          cors: true
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
+  LambdaS3EventCreateImageThumbnail:
+    handler: ${self:custom.lambdaHandlerPrefix}s3/image_convert.s3_event_create_image_thumbnail_handler
+    name: ${self:custom.resourcePrefix}-s3-event-create-image-thumbnail
+    events:
+      - s3:
+          bucket: !Ref ToiToyPrivateImageStorage
+          events:
+            - "s3:ObjectCreated:*"
+          rules:
+            - prefix: public/upload/
+          existing: true
+    tags:
+      TYPE: API
+      SERVICE: User
 
 resources:
-  Resources:
-    QAQuestionTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: "${self:custom.resourcePrefix}-Question"
-        AttributeDefinitions:
-          -
-            AttributeName: "question_id"
-            AttributeType: "N"
-          -
-            AttributeName: "register_user_id"
-            AttributeType: "N"
-          -
-            AttributeName: "register_date"
-            AttributeType: "S"
-          -
-            AttributeName: "subject_type"
-            AttributeType: "S"
-        KeySchema:
-          -
-            AttributeName: "question_id"
-            KeyType: "HASH"
-        ProvisionedThroughput: 
-          ReadCapacityUnits: "5"
-          WriteCapacityUnits: "5"
-        GlobalSecondaryIndexes: 
-          - 
-            IndexName: "RegisterUser-Index"
-            KeySchema: 
-              - 
-                AttributeName: "register_user_id"
-                KeyType: "HASH"
-              - 
-                AttributeName: "register_date"
-                KeyType: "RANGE"
-            Projection: 
-              NonKeyAttributes: 
-                - "question_id"
-                - "title"
-                - "caption"
-              ProjectionType: "INCLUDE"
-            ProvisionedThroughput: 
-              ReadCapacityUnits: "5"
-              WriteCapacityUnits: "5"
-          - 
-            IndexName: "SubjectType-Index"
-            KeySchema: 
-              - 
-                AttributeName: "subject_type"
-                KeyType: "HASH"
-              - 
-                AttributeName: "register_date"
-                KeyType: "RANGE"
-            Projection: 
-              NonKeyAttributes: 
-                - "question_id"
-                - "title"
-                - "caption"
-              ProjectionType: "INCLUDE"
-            ProvisionedThroughput: 
-              ReadCapacityUnits: "5"
-              WriteCapacityUnits: "5"
+  - ${file(serverless/resources/outputs.yml)}
+  - ${file(serverless/resources/dynamodb.yml)}
+  - ${file(serverless/resources/s3.yml)}

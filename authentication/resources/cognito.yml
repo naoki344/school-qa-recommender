@@ -1,0 +1,162 @@
+Resources:
+  ToiToyUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AutoVerifiedAttributes:
+        - email
+#       EmailConfiguration:
+#         EmailSendingAccount: ${self:custom.cognitoEmailSendingAccount}
+#         SourceArn: "arn:aws:ses:[ここにArn]:identity/[ここにemailAddress]"
+      EmailVerificationMessage: "アカウントが作成されました。認証を行ってください{####}."
+      EmailVerificationSubject: "[ToiToy] アカウント認証"
+      MfaConfiguration: "OFF"
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: true
+          RequireSymbols: true
+          RequireUppercase: true
+      UserPoolName: ${self:custom.resourcePrefix}-ToiToyUserPool
+      UsernameAttributes:
+        - email
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: nickname
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: first_name
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: last_name
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+            MaxLength: 256
+        - Name: avatar_url
+          AttributeDataType: String
+          Mutable: false
+          Required: false
+          StringAttributeConstraints:
+            MinLength: 1
+  ToiToyUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ${self:custom.resourcePrefix}-ToiToyUserPoolClient
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+      GenerateSecret: false
+      UserPoolId:
+        Ref: ToiToyUserPool
+  ToiToyUserIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: ${self:custom.resourcePrefix}-ToiToyUserIdentityPool
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId:
+            Ref: ToiToyUserPoolClient
+          ProviderName:
+            Fn::GetAtt: [ "ToiToyUserPool", "ProviderName" ]
+
+  CognitoUserIdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId:
+        Ref: ToiToyUserIdentityPool
+      Roles:
+        authenticated:
+          Fn::GetAtt: [ToiToyUserAuthRole, Arn]
+
+  ToiToyUserAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Federated: "cognito-identity.amazonaws.com"
+            Action:
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                "cognito-identity.amazonaws.com:aud":
+                  Ref: ToiToyUserIdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": authenticated
+      Policies:
+        - PolicyName: ${self:custom.resourcePrefix}-ToiToyUserAuthorizedPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "mobileanalytics:PutEvents"
+                  - "cognito-sync:*"
+                  - "cognito-identity:*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "execute-api:Invoke"
+                Resource:
+                  # Allow users to invoke hello GET API
+                  - Fn::Join:
+                      - ""
+                      - - "arn:aws:execute-api:"
+                        - Ref: AWS::Region
+                        - ":"
+                        - Ref: AWS::AccountId
+                        - ":"
+                        - "Fn::ImportValue": ${self:custom.stageName}-ToiToyRecommenderApiId
+                        # /stageName/method/path....
+                        - "/*/*/*"
+              - Effect: "Allow"
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                Resource:
+                  # Allow users to invoke hello GET API
+                  - "Fn::ImportValue": ${self:custom.stageName}-ToiToyPrivateImageStorageArn
+                  - Fn::Join:
+                      - ""
+                      - - "Fn::ImportValue": ${self:custom.stageName}-ToiToyPrivateImageStorageArn
+                        - "/*"
+
+Outputs:
+  ToiToyUserPoolId:
+    Value:
+      Ref: ToiToyUserPool
+    Export:
+      Name: ${self:custom.resourcePrefix}-ToiToyUserPoolId
+
+  ToiToyUserPoolClientId:
+    Value:
+      Ref: ToiToyUserPoolClient
+    Export:
+      Name: ${self:custom.resourcePrefix}-ToiToyUserPoolClientId
+
+  ToiToyCognitoUserIdentityPool:
+    Value:
+      Ref: ToiToyUserIdentityPool
+    Export:
+      Name: ${self:custom.stageName}-ToiToyUserIdentityPoolId
