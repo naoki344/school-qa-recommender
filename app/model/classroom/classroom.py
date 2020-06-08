@@ -99,9 +99,9 @@ class Classroom:
         return Classroom(classroom_id=ClassroomId(int(classroom_id)),
                          name=ClassroomName(str(data['name'])),
                          owner_list=ClassroomOwnerList.create(user),
-                         image_url=
-                         ClassroomImageUrl(str(data['image_url']))
-                         if data.get('image_url') else ClassroomImageUrl('classroom-default-image.png'),
+                         image_url=ClassroomImageUrl(str(data['image_url']))
+                         if data.get('image_url') else
+                         ClassroomImageUrl('classroom-default-image.png'),
                          tag_list=ClassroomTagList.from_list(data['tag_list']),
                          publish_type=ClassroomPublishType[str(
                              data['publish_type'])],
