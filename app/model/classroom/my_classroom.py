@@ -25,6 +25,15 @@ class MyClassroom:
             "classmate_list": self.classmate_list.to_list()
         }
 
+    def to_response(self) -> dict:
+        data = {
+            "classroom": self.classroom.to_dict(),
+            "classmate": self.classmate.to_dict(),
+        }
+        if self.classmate.join_status.is_join:
+            data = {**data, "classmate_list": self.classmate_list.to_list()}
+        return data
+
 
 @dataclass(frozen=True)
 class MyClassroomList:
@@ -36,3 +45,6 @@ class MyClassroomList:
 
     def to_list(self) -> List[dict]:
         return [s.to_dict() for s in self.values]
+
+    def to_response(self) -> List[dict]:
+        return [s.to_response() for s in self.values]

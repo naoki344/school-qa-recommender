@@ -43,7 +43,7 @@
             class="px-4 pt-0 pb-6 body-1 question-sentence-contents"
             style="text-align: left;"
           >
-            <div v-html="question.question_sentence.contents" />
+            <div id="question-detail-dialog-contents-text" />
           </v-card-text>
 
           <v-divider class="pb-4" />
@@ -66,22 +66,25 @@
               :value="room.classroom.classroom_id"
             />
           </v-container>
-          <v-form>
+          <v-form
+            v-model="inputFormIsValid"
+          >
             <div
               v-if="selectedClassroom.length > 0"
+              align="center"
               class="pb-2 px-4"
             >
               <v-text-field
                 v-model="workTitle"
                 counter="25"
                 label="ワークのタイトル"
-                required
+                :rules="[rules.required]"
               />
               <v-text-field
                 v-model="workCaption"
                 counter="25"
                 label="ワークの説明"
-                required
+                :rules="[rules.required]"
               />
               <v-btn
                 style="height: 100%"
@@ -90,6 +93,7 @@
                 tile
                 outlined
                 color="success"
+                :disabled="!inputFormIsValid"
                 @click="registerWorkSelectedClassroom()"
               >
                 選択した{{ selectedClassroom.length }}つのクラスに<br>この問いを投稿
@@ -115,6 +119,7 @@
 <script>
 import { mapState } from "vuex";
 import moment from "moment";
+import sanitizeHTML from 'sanitize-html'
 
 export default {
   name: "QuestionDetailDialog",
@@ -153,6 +158,10 @@ export default {
     workCaption: '',
     workTitle: '',
     contents: '',
+    rules: {
+      required: value => !!value || "入力されていません",
+    },
+    inputFormIsValid: false,
   }),
   computed: {
     ...mapState({
@@ -161,16 +170,23 @@ export default {
   },
   mounted() {
     this.fetchClassroomList();
-    this.$nextTick(function () {
-      const contents = document.getElementById('question-detail-dialog-contents');
-      const imgList = contents.getElementsByTagName('img');
-      imgList.forEach(async img => {
-        const url = await this.getImageUrl(img.getAttribute('s3-key'))
-        console.log(url);
-        img.setAttribute('src', url);
+    const contents = document.getElementById('question-detail-dialog-contents-text');
+    contents.innerHTML = sanitizeHTML(this.question.question_sentence.contents,
+      {
+        allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'abbr', 'code', 'hr', 'br', 'div',
+  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'img' ],
+        allowedAttributes: {"img": ["s3-key"]}
       })
-      console.log(imgList);
-    })
+    console.log(contents.innerHTML);
+    const imgList = contents.getElementsByTagName("img");
+    imgList.forEach(async img => {
+      const url = await this.getImageUrl(
+        "thumbnail/w512/" + img.getAttribute("s3-key")
+      );
+      img.setAttribute("src", url);
+      img.style.width = "100%";
+    });
   },
   methods: {
     closeDialog() {

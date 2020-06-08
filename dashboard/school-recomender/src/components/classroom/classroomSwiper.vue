@@ -228,7 +228,9 @@
       v-model="classroomCreateDialog"
       width="400"
     >
-      <classroomCreate />
+      <classroomCreate
+        @classroomCreated="classroomCreated"
+      />
     </v-dialog>
   </v-content>
 </template>
@@ -251,9 +253,9 @@ export default {
   filters: {
     joinStatusFilter(value) {
       if (value === "") return "";
-      if (value === "approved") return "参加中";
       if (value === "owner") return "オーナー";
       if (value === "requested") return "承認待ち";
+      return ""
     }
   },
   data() {
@@ -300,8 +302,9 @@ export default {
     openClassroomCreateDialog() {
       this.classroomCreateDialog = true;
     },
-    closeclassroomCreateDialog() {
+    classroomCreated() {
       this.classroomCreateDialog = false;
+      this.fetchClassroomList();
     },
     createInviteLink(classroomId) {
       this.$store

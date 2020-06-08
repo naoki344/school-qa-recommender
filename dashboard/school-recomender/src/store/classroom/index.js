@@ -2,6 +2,7 @@ import {
   API
 } from "aws-amplify";
 import Vue from "vue";
+import schoolApiClassroomTransfer from "@/api/transfer/classroom.js";
 
 export default {
   namespaced: true,
@@ -85,6 +86,33 @@ export default {
           .catch(() => {
             reject();
           });
+      });
+    },
+    fetchClassroomByInviteKey(_, inviteKey) {
+      return new Promise((resolve, reject) => {
+        API.get(
+            "ToiToyApi",
+            "/public/invite_key/" + `${inviteKey}/classroom`
+          )
+          .then(result => {
+            resolve(result["classroom"]);
+          })
+          .catch((e) => {
+            reject(e);
+          });
+      });
+    },
+    createClassroom({ dispatch, state }, inputData) {
+      return new Promise(async (resolve, reject) => {
+        API.post(
+            "ToiToyApi",
+            `/classroom`,
+            {
+              body: schoolApiClassroomTransfer.toRequest(inputData)
+		    })
+          .then(result => {
+            resolve(result);
+          })
       });
     },
     fetchClassroomByInviteKey(_, inviteKey) {

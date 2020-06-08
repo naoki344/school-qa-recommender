@@ -2,7 +2,7 @@
   <v-container>
     <v-navigation-drawer
       v-model="drawer"
-      :clipped="$vuetify.breakpoint.lgAndUp"
+      clipped
       app
       fixed
     >
@@ -78,7 +78,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
+      clipped-left
       app
       color="yellow darken-1"
     >

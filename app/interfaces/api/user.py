@@ -1,14 +1,18 @@
 import json
 from logging import getLogger
 
-from app.anticorruption.model.user.parser import AuthenticationEventPerser
 from app.configure.usecase.user import upload_user_avatar_image
+from app.interfaces.api.response import APIGatewayErrorResponse
 from app.interfaces.api.response import APIGatewayResponse
 
 
 def upload_user_avatar_image_handler(event, context):
-    data = event["body"]
-    service = upload_user_avatar_image(getLogger())
-    url = service.run(data)
-
-    return APIGatewayResponse.to_response({"avatar_url": url.value})
+    try:
+        logger = getLogger()
+        data = event["body"]
+        service = upload_user_avatar_image(logger)
+        url = service.run(data)
+        return APIGatewayResponse.to_response({"avatar_url": url.value})
+    except Exception as e:
+        logger.error(e)
+        return APIGatewayErrorResponse.to_response(e)

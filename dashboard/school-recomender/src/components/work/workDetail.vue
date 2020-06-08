@@ -40,7 +40,9 @@
               class="px-4 pt-0 pb-6 body-1"
               style="text-align: left;"
             >
-              <div v-html="question.question_sentence.contents" />
+              <div
+                id="work-detail-dialog-contents-text"
+              />
             </v-card-text>
             <v-divider />
             <v-row style="justify-content: space-around; ">
@@ -241,6 +243,7 @@
 
 <script>
 import "swiper/dist/css/swiper.css";
+import sanitizeHTML from 'sanitize-html'
 import moment from "moment";
 export default {
   name: "WorkDetail",
@@ -330,19 +333,23 @@ export default {
     console.log("created終わり" + this.topicSelectList);
   },
   mounted() {
-    console.log("mounted始め");
-    this.$nextTick(function() {
-      const contents = document.getElementById("work-detail-dialog-contents");
-      const imgList = contents.getElementsByTagName("img");
-      imgList.forEach(async img => {
-        const url = await this.getImageUrl(
-          "thumbnail/w512/" + img.getAttribute("s3-key")
-        );
-        img.setAttribute("src", url);
-        img.style.width = "100%";
-      });
+    const contents = document.getElementById("work-detail-dialog-contents-text");
+    contents.innerHTML = sanitizeHTML(this.question.question_sentence.contents,
+      {
+        allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'abbr', 'code', 'hr', 'br', 'div',
+  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'img' ],
+        allowedAttributes: {"img": ["s3-key"]}
+      })
+    console.log(contents.innerHTML);
+    const imgList = contents.getElementsByTagName("img");
+    imgList.forEach(async img => {
+      const url = await this.getImageUrl(
+        "thumbnail/w512/" + img.getAttribute("s3-key")
+      );
+      img.setAttribute("src", url);
+      img.style.width = "100%";
     });
-    console.log("mounted終わり");
   },
   methods: {
     setInitialTopic() {
