@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <div>
     <v-item-group
       :mandatory="mandatory"
       :multiple="multiple"
@@ -84,7 +84,7 @@
       :dialog-visible="questionDetailDialogVisible"
       @closeDialog="closeQuestionDetailDialog()"
     />
-  </v-content>
+  </div>
 </template>
 
 <script>
