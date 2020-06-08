@@ -1,7 +1,7 @@
 <!-- The ref attr used to find the swiper instance -->
 <template>
   <div>
-    <div v-if="existsJoinClassroom">
+    <div>
       <swiper
         ref="swiperThumbs"
         class="classroom-swiper-thumbs"
@@ -168,6 +168,7 @@
         <swiper-slide>
           <v-divider />
           <div
+            v-if="classroomLoadFinish"
             style="text-align: center;"
             class="ma-5"
           >
@@ -295,7 +296,7 @@ export default {
         centeredSlides: true,
       },
       workDialogVisible: false,
-      existsJoinClassroom: true,
+      classroomLoadFinish: false,
       inviteDialog: false,
       inviteUrl: "",
       classroomCreateDialog: false,
@@ -372,11 +373,7 @@ export default {
     },
     async fetchClassroomList() {
       this.$store.dispatch("classroom/fetchMyClassroomList").then(() => {
-        if (this.classroomList.length == 0) {
-          this.existsJoinClassroom = false;
-        } else {
-          this.existsJoinClassroom = true;
-        }
+        this.classroomLoadFinish = true;
       });
     },
     approveJoinRequest(classroomId, userId, nickName) {

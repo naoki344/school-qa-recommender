@@ -176,7 +176,7 @@ export default {
         allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
   'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'abbr', 'code', 'hr', 'br', 'div',
   'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'img' ],
-        allowedAttributes: {"img": ["s3-key"]}
+        allowedAttributes: {"img": ["s3-key"], "a": ["href", "target"]}
       })
     console.log(contents.innerHTML);
     const imgList = contents.getElementsByTagName("img");

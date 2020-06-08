@@ -95,13 +95,15 @@ class Work:
     @staticmethod
     def create_from_question(_id: int, classroom_id: ClassroomId, user: User,
                              question: Question, data: dict):
+        image_url = question.question_sentence.get_top_image_url()
+        if not image_url:
+            image_url = 'work-default-image.png'
         return Work(work_id=WorkId(int(_id)),
                     work_type=WorkType.discussion,
                     classroom_id=classroom_id,
                     title=WorkTitle(str(data['title'])),
                     caption=WorkCaption(str(data['caption'])),
-                    image_url=WorkImageUrl(
-                        question.question_sentence.get_top_image_url()),
+                    image_url=WorkImageUrl(image_url),
                     origin_id=OriginId(int(question.question_id.value)),
                     origin_type=OriginType.question,
                     register_date=RegisterDate.create(),

@@ -144,9 +144,9 @@ export default {
           file: images[0],
         })
         .then((s3Key) => {
-          this.classroomImageUrl = s3Key.replace("upload/", "");
+          this.classroomForm.classroomImageUrl = s3Key.replace("upload/", "");
           this.$store.dispatch("getS3PublicFile", s3Key).then((url) => {
-            this.classroomImage = url;
+            this.classroomForm.classroomImage = url;
           });
         })
         .catch((err) => {
