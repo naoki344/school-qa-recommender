@@ -155,6 +155,12 @@
 <script>
 import schoolApiQuesionTransfer from "@/api/transfer/question.js";
 import { VueEditor } from "vue2-editor";
+const questionInit = {
+  subjectName: "",
+  questionType: "describing",
+  contents: "",
+  sortTagList: []
+}
 
 export default {
   name: "CreateQuestionDialog",
@@ -162,26 +168,12 @@ export default {
     VueEditor
   },
   data: () => ({
-    questionFormInit: {
-      subjectName: "",
-      questionType: "describing",
-      estimatedTime: "",
-      sentence: { text: "", imageUrl: "" },
-      answer: { text: "", imageUrl: "" },
-      commentary: { text: "", imageUrl: "" },
-      sortTagList: [],
-    },
     dialog: false,
     subjectList: schoolApiQuesionTransfer.getSubjectNameList(),
     tagItems: [],
     timeList: [1, 3, 5, 15, 30, 60],
     subjectNameRules: [v => !!v || "教科を選択してください"],
-    question: {
-      subjectName: "",
-      questionType: "describing",
-      contents: "",
-      sortTagList: []
-    },
+    question: JSON.parse(JSON.stringify(questionInit)),
     select: [],
     valid: true,
     customToolbarMax: [],
@@ -216,6 +208,7 @@ export default {
            questionInput: this.question
          })
          .then(() => {
+           this.question = JSON.parse(JSON.stringify(questionInit));
            this.$store.dispatch("question/fetchQuestionList");
            this.dialog = false;
          });

@@ -7,16 +7,16 @@
     <v-card-title />
     <v-card-text class="mt-3">
       <p
-        v-show="error"
+        v-show="classroomForm.error"
         id="error"
       >
-        {{ error }}
+        {{ classroomForm.error }}
       </p>
-      <p>{{ message }}</p>
+      <p>{{ classroomForm.message }}</p>
       <label>
         <v-img
-          v-if="classroomImage"
-          :src="classroomImage"
+          v-if="classroomForm.classroomImage"
+          :src="classroomForm.classroomImage"
           class="classroom_image"
         />
         <v-img
@@ -33,35 +33,42 @@
           >
         </div>
       </label>
-      <v-form>
+      <v-form
+        ref="form"
+        v-model="classroomForm.inputFormIsValid"
+        class="mt-3"
+        lazy-validation
+      >
         <v-text-field
-          v-model="classroomName"
-          counter="25"
+          v-model="classroomForm.classroomName"
           label="クラス名"
           required
+          :rules="[rules.required]"
         />
         <v-text-field
-          v-model="classroomExplain"
-          counter="25"
+          v-model="classroomForm.classroomExplain"
           label="クラス説明"
           required
+          :rules="[rules.required]"
         />
         <v-combobox
-          v-model="classroomTagList"
+          v-model="classroomForm.classroomTagList"
           label="タグ（複数追加可）"
           multiple
           required
           chips
+          :rules="[rules.required]"
         />
         <v-checkbox
-          v-model="counterEn"
+          v-model="classroomForm.counterEn"
           label="定員を設ける"
           class="mb-0"
         />
         <v-text-field
-          v-model.number="classroomMemberCapacity"
-          :disabled="!counterEn"
-          :rules="[v => Math.sign(v) || '定員は半角数字を入力してください']"
+          v-if="classroomForm.counterEn"
+          v-model.number="classroomForm.classroomMemberCapacity"
+          :disabled="!classroomForm.counterEn"
+          :rules="[(v) => Math.sign(v) || '定員は半角数字を入力してください']"
           label="定員"
           dense
           class="mt-0"
@@ -69,7 +76,7 @@
         />
 
         <v-checkbox
-          v-model="secret"
+          v-model="classroomForm.secret"
           label="非公開にする"
           required
         />
@@ -82,7 +89,7 @@
         block
         large
         :loading="loading"
-        :disabled="loading"
+        :disabled="!classroomForm.inputFormIsValid"
         @click="classroomCreate"
       >
         作成
@@ -93,25 +100,32 @@
 
 <script>
 import "@mdi/font/css/materialdesignicons.css";
+const classroomFormInit = {
+  classroomImage: "",
+  classroomImageUrl: null,
+  selectedImage: null,
+  classroomName: "",
+  classroomExplain: null,
+  classroomTagList: [],
+  counterEn: false,
+  classroomMemberCapacity: null,
+  secret: false,
+  message: "",
+  error: "",
+  inputFormIsValid: false,
+};
 export default {
   name: "ClassroomCreate",
   data: () => ({
-    classroomImage: "",
-    classroomImageUrl: null,
-    selectedImage: null,
-    classroomName: "",
-    classroomExplain: null,
-    classroomTagList: [],
-    counterEn: false,
-    classroomMemberCapacity: null,
-    secret: false,
+    classroomForm: JSON.parse(JSON.stringify(classroomFormInit)),
+    rules: {
+      required: (value) => !!value || "入力されていません",
+    },
     loading: false,
-    message: "",
-    error: ""
   }),
   methods: {
     setError(error, text) {
-      this.error =
+      this.classroomForm.error =
         (error.response && error.response.data && error.response.data.error) ||
         text;
     },
@@ -120,48 +134,51 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        reader.onerror = (error) => reject(classroomForm.error);
       });
     },
     onClassroomImageChange(e) {
       const images = e.target.files || e.dataTransfer.files;
       this.$store
         .dispatch("putS3PublicFile", {
-        file: images[0]})
+          file: images[0],
+        })
         .then((s3Key) => {
           this.classroomImageUrl = s3Key.replace("upload/", "");
-          this.$store.dispatch("getS3PublicFile", s3Key)
-            .then(url => {
-              this.classroomImage = url;
-            })
+          this.$store.dispatch("getS3PublicFile", s3Key).then((url) => {
+            this.classroomImage = url;
+          });
         })
-        .catch(err => {
-          console.log(err)
-          this.setError(err, "画像のアップロードに失敗しました。")
+        .catch((err) => {
+          console.log(err);
+          this.setError(err, "画像のアップロードに失敗しました。");
         });
     },
     classroomCreate() {
+      this.classroomForm.inputFormIsValid = this.$refs.form.validate();
+      if (this.classroomForm.inputFormIsValid === false) return;
       this.loading = true;
       this.$store
         .dispatch("classroom/createClassroom", {
-          imageUrl: this.classroomImageUrl,
-          name: this.classroomName,
-          tagList: this.classroomTagList,
-          isSecret: this.secret,
-          capacity: this.classroomMemberCapacity,
-          caption: this.classroomExplain,
+          imageUrl: this.classroomForm.classroomImageUrl,
+          name: this.classroomForm.classroomName,
+          tagList: this.classroomForm.classroomTagList,
+          isSecret: this.classroomForm.secret,
+          capacity: this.classroomForm.classroomMemberCapacity,
+          caption: this.classroomForm.classroomExplain,
         })
-        .then(result => {
-          console.log(result)
+        .then((result) => {
+          console.log(result);
           this.loading = false;
           this.$emit("classroomCreated");
+          this.classroomForm = JSON.parse(JSON.stringify(classroomFormInit));
         })
-        .catch(err => {
+        .catch((err) => {
           this.loading = false;
           console.log(err);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

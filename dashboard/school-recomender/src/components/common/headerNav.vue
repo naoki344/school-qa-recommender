@@ -1,10 +1,9 @@
 <template>
-  <v-container>
+  <div>
     <v-navigation-drawer
       v-model="drawer"
       clipped
       app
-      fixed
     >
       <v-list dense>
         <template v-for="item in items">
@@ -128,7 +127,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script>

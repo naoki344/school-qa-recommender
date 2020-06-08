@@ -20,7 +20,6 @@
         outlined
         class="user-login-input-form"
         prepend-icon="mdi-email"
-        counter="25"
         hint="ユーザー作成時のメールアドレスを入力"
         label="メールアドレス"
         required
@@ -74,10 +73,13 @@ export default {
   },
   methods: {
     toUserSignUp() {
-      if (this.originPagePath == undefined || this.originPagePath == null){
+      if (this.originPagePath == undefined || this.originPagePath == null) {
         this.$router.push({ path: "/userSignUp" });
-	  } else {
-        this.$router.push({ path: "/userSignUp", query: {originPagePath: this.originPagePath}});
+      } else {
+        this.$router.push({
+          path: "/userSignUp",
+          query: { originPagePath: this.originPagePath }
+        });
       }
     },
     userLogin() {
@@ -88,7 +90,7 @@ export default {
           password: this.password
         })
         .then(() => {
-          if (this.originPagePath == undefined || this.originPagePath == null){
+          if (this.originPagePath == undefined || this.originPagePath == null) {
             this.$router.push({ path: "/" });
           } else {
             this.$router.push({ path: this.originPagePath });
