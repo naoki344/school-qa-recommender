@@ -1,6 +1,7 @@
 import io
 import mimetypes
 import os
+import urllib
 
 from PIL import Image
 
@@ -9,7 +10,9 @@ from app.dataaccess.aws.s3_file import S3FileClient
 
 def s3_event_create_image_thumbnail_handler(event, context):
     bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
-    s3_key = event["Records"][0]["s3"]["object"]["key"]
+    s3_key = urllib.parse.unquote_plus(
+        event["Records"][0]["s3"]["object"]["key"])
+    print(f"bucket_name: {bucket_name}, s3_key: {s3_key}")
     s3_file_client = S3FileClient(bucket_name)
     image = Image.open(s3_file_client.get_fp(s3_key))
     content_type = mimetypes.guess_type(s3_key)[0]

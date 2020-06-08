@@ -39,33 +39,32 @@
           counter="25"
           label="クラス名"
           required
-          dense
         />
         <v-text-field
           v-model="classroomExplain"
           counter="25"
           label="クラス説明"
           required
-          dense
         />
-        <v-text-field
-          v-model="classroomTag"
-          counter="25"
-          label="タグ"
+        <v-combobox
+          v-model="classroomTagList"
+          label="タグ（複数追加可）"
+          multiple
           required
-          dense
+          chips
         />
         <v-checkbox
           v-model="counterEn"
-          class="ma-0 mr-2 ml-1"
           label="定員を設ける"
+          class="mb-0"
         />
         <v-text-field
           v-model.number="classroomMemberCapacity"
           :disabled="!counterEn"
-          dense
-          :rules="[v => !!v || 'You must agree to continue!']"
+          :rules="[v => Math.sign(v) || '定員は半角数字を入力してください']"
           label="定員"
+          dense
+          class="mt-0"
           required
         />
 
@@ -98,11 +97,13 @@ export default {
   name: "ClassroomCreate",
   data: () => ({
     classroomImage: "",
+    classroomImageUrl: null,
+    selectedImage: null,
     classroomName: "",
-    classroomExplain: "",
-    classroomTag: "",
+    classroomExplain: null,
+    classroomTagList: [],
     counterEn: false,
-    classroomMemberCapacity: "",
+    classroomMemberCapacity: null,
     secret: false,
     loading: false,
     message: "",
@@ -124,26 +125,36 @@ export default {
     },
     onClassroomImageChange(e) {
       const images = e.target.files || e.dataTransfer.files;
-      this.getBase64(images[0])
-        .then(image => (this.classroomImage = image))
-        .catch(error =>
-          this.setError(error, "画像のアップロードに失敗しました。")
-        );
+      this.$store
+        .dispatch("putS3PublicFile", {
+        file: images[0]})
+        .then((s3Key) => {
+          this.classroomImageUrl = s3Key.replace("upload/", "");
+          this.$store.dispatch("getS3PublicFile", s3Key)
+            .then(url => {
+              this.classroomImage = url;
+            })
+        })
+        .catch(err => {
+          console.log(err)
+          this.setError(err, "画像のアップロードに失敗しました。")
+        });
     },
     classroomCreate() {
       this.loading = true;
       this.$store
-        .dispatch("classroomCreate", {
-          classroomImage: this.classroomImage,
-          classroomName: this.classroomName,
-          classroomExplain: this.classroomExplain,
-          classroomTag: this.classroomTag,
-          checkbox: this.secret,
-          classroomMemberCapacity: this.classroomMemberCapacity
+        .dispatch("classroom/createClassroom", {
+          imageUrl: this.classroomImageUrl,
+          name: this.classroomName,
+          tagList: this.classroomTagList,
+          isSecret: this.secret,
+          capacity: this.classroomMemberCapacity,
+          caption: this.classroomExplain,
         })
-        .then(() => {
+        .then(result => {
+          console.log(result)
           this.loading = false;
-          this.$emit("closeclassroomCreateDialog");
+          this.$emit("classroomCreated");
         })
         .catch(err => {
           this.loading = false;

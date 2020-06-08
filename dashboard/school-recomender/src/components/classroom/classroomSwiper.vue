@@ -207,7 +207,9 @@
       v-model="classroomCreateDialog"
       width="400"
     >
-      <classroomCreate />
+      <classroomCreate
+        @classroomCreated="classroomCreated"
+      />
     </v-dialog>
   </v-content>
 </template>
@@ -279,8 +281,9 @@ export default {
     openClassroomCreateDialog() {
       this.classroomCreateDialog = true;
     },
-    closeclassroomCreateDialog() {
+    classroomCreated() {
       this.classroomCreateDialog = false;
+      this.fetchClassroomList();
     },
     createInviteLink(classroomId) {
       this.$store
