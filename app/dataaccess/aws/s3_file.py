@@ -10,12 +10,12 @@ class S3FileClient:
         self.s3 = boto3.resource('s3')
         self.s3_bucket = self.s3.Bucket(bucket_name)
 
-    def upload_file(
-            self, s3_key: str, data: bytes,
-            content_type: Optional[str] = None) -> str:
+    def upload_file(self,
+                    s3_key: str,
+                    data: bytes,
+                    content_type: Optional[str] = None) -> str:
         if content_type is None:
-            self.s3_bucket.put_object(Key=s3_key,
-                                      Body=data)
+            self.s3_bucket.put_object(Key=s3_key, Body=data)
         else:
             self.s3_bucket.put_object(Key=s3_key,
                                       Body=data,
