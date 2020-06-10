@@ -1,14 +1,15 @@
 <template>
   <v-app>
-    <v-toolbar
+    <v-app-bar
       fixed
+      app
       style="flex: none;"
       color="yellow darken-1"
     >
       <v-toolbar-title style="width: 100%; display: flex; padding: 0; justify-content: center;">
         <img src="@/assets/toi-toy-logo-wide-s--no-border-small.png">
       </v-toolbar-title>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <v-container
         class="pa-6"
@@ -37,6 +38,6 @@ export default {
   name: "UserSignUpPage",
   components: {
     userSignUp
-  },
+  }
 };
 </script>

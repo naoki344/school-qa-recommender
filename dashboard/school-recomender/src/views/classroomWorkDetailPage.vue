@@ -19,7 +19,7 @@
       </v-btn>
     </v-app-bar>
 
-    <v-content class="pt-11">
+    <v-content class="pt-12">
       <workDetail
         v-if="workExisted"
         :work-id="workId"

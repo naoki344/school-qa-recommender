@@ -199,7 +199,7 @@ export default {
           avatarImageDataUrl: this.avatarImageDataUrl
         })
         .then(() => {
-          if (this.originPagePath == undefined || this.originPagePath == null){
+          if (this.originPagePath == undefined || this.originPagePath == null) {
             this.$router.push({
               path: "/userVerify",
               query: { email: this.email }
