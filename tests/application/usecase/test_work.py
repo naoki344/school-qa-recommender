@@ -116,7 +116,7 @@ class CreateWorkFromQuestionTest(TestCase):
             'classroom_id': 20,
             'title': 'work title test',
             'caption': 'caption test',
-            'image_url': None,
+            'image_url': 'work-default-image.png',
             'origin_id': 1,
             'origin_type': 'question',
             'register_date': '2020-02-26T00:18:16.874000+09:00',

@@ -44,7 +44,10 @@ class SentenceContents:
 
     def get_text(self):
         soup = BeautifulSoup(self.value, features='html.parser')
-        return soup.get_text(strip=True)
+        d = soup.get_text(strip=True)
+        if not d:
+            return "-"
+        return d
 
     @staticmethod
     def create(data: str):
@@ -52,7 +55,11 @@ class SentenceContents:
         for img in soup.find_all('img'):
             img["s3-key"] = SentenceContents.parse_src(img['src'])
             img["src"] = ""
-        return SentenceContents(soup.prettify())
+        d = soup.prettify()
+        if not d:
+            return "-"
+            return SentenceContents("-")
+        return SentenceContents(d)
 
     @staticmethod
     def parse_src(src: str):
