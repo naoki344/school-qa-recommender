@@ -83,7 +83,11 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 100%; display: flex; padding: 0; justify-content: center;">
-        <img src="@/assets/toi-toy-logo-wide-s--no-border-small.png">
+        <img
+          src="@/assets/toi-toy-logo-wide-s--no-border-small.png"
+          style="cursor: pointer;"
+          @click="toTopPage"
+        >
       </v-toolbar-title>
       <v-avatar size="40">
         <v-icon v-if="myAvatarImageUrl == ''">
@@ -163,6 +167,9 @@ export default {
   methods: {
     logout() {
       this.$router.push({ path: "/userLogout" });
+    },
+    toTopPage() {
+      this.$router.push({ path: "/" });
     }
   }
 };
