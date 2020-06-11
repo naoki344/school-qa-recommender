@@ -2,20 +2,10 @@
 <template>
   <div>
     <div class="pt-4">
-      <swiper
-        ref="swiperThumbs"
-        class="classroom-swiper-thumbs"
-        :options="swiperOptionThumbs"
-      >
-        <swiper-slide
-          v-for="myClass in classroomList"
-          :key="myClass.classroom.classroom_id"
-        >
+      <swiper ref="swiperThumbs" class="classroom-swiper-thumbs" :options="swiperOptionThumbs">
+        <swiper-slide v-for="myClass in classroomList" :key="myClass.classroom.classroom_id">
           <div class="classroom-swiper-thumbs-box">
-            <v-card
-              class="classroom-swiper-v-card"
-              shaped
-            >
+            <v-card class="classroom-swiper-v-card" shaped>
               <v-img
                 v-if="getImageUrlW512(myClass.classroom)"
                 class="white--text align-end classroom-swiper-thumbs-image"
@@ -35,10 +25,7 @@
         </swiper-slide>
         <swiper-slide>
           <div class="classroom-swiper-thumbs-box">
-            <v-card
-              class="classroom-swiper-v-card"
-              shaped
-            >
+            <v-card class="classroom-swiper-v-card" shaped>
               <v-img
                 class="white--text align-end classroom-swiper-thumbs-image"
                 src="@/assets/classroom-top_small.png"
@@ -47,11 +34,7 @@
           </div>
         </swiper-slide>
       </swiper>
-      <swiper
-        ref="swiperTop"
-        :options="swiperOptionTop"
-        class="pa-0 classroom-swiper-content"
-      >
+      <swiper ref="swiperTop" :options="swiperOptionTop" class="pa-0 classroom-swiper-content">
         <swiper-slide
           v-for="myClass in classroomList"
           :key="myClass.classroom.classroom_id"
@@ -84,9 +67,7 @@
                   </div>
                   <div class="my-1 mx-3">
                     <strong>{{ item.title }}</strong>
-                    <p class="ma-0">
-                      {{ item.caption }}
-                    </p>
+                    <p class="ma-0">{{ item.caption }}</p>
                   </div>
                 </div>
                 <v-divider />
@@ -102,25 +83,15 @@
               </div>
             </v-subheader>
             <v-divider />
-            <v-list
-              subheader
-              two-line
-              style="margin-bottom: 50px;"
-            >
+            <v-list subheader two-line disabled style="margin-bottom: 50px;">
               <div
                 v-for="classmate in myClass.classmate_list"
                 :key="classmate.user_id"
                 subheader
                 two-line
               >
-                <v-list-item
-                  link
-                  class="classmate-list-item"
-                >
-                  <v-avatar
-                    tile
-                    size="40"
-                  >
+                <v-list-item link class="classmate-list-item">
+                  <v-avatar tile size="40">
                     <v-img :src="getUserAvatarImageUrl(classmate.user_id)" />
                   </v-avatar>
                   <v-list-item-content class="pa-0">
@@ -128,15 +99,12 @@
                       {{ classmate.nickname }}
                       <span>
                         {{
-                          classmate.join_status | joinStatusFilter
+                        classmate.join_status | joinStatusFilter
                         }}
                       </span>
                     </div>
                   </v-list-item-content>
-                  <v-list-item-content
-                    v-if="classmate.join_status === 'requested'"
-                    class="pa-0"
-                  >
+                  <v-list-item-content v-if="classmate.join_status === 'requested'" class="pa-0">
                     <div class="approve-join-request-text">
                       <a
                         @click="
@@ -159,42 +127,25 @@
             <v-divider />
             <h5 class="ma-4 ml-6">
               オーナーの承認をお待ちください。
-              <br>クラスの詳細情報は承認後表示されます。
+              <br />クラスの詳細情報は承認後表示されます。
             </h5>
           </div>
         </swiper-slide>
         <swiper-slide>
           <v-divider />
-          <div
-            v-if="classroomLoadFinish"
-            style="text-align: center;"
-            class="ma-5"
-          >
-            <v-btn
-              x-large
-              color="yellow darken-1"
-              @click="openClassroomCreateDialog"
-            >
-              新しくクラスを作成する
-            </v-btn>
+          <div v-if="classroomLoadFinish" style="text-align: center;" class="ma-5">
+            <v-btn x-large color="yellow darken-1" @click="openClassroomCreateDialog">新しくクラスを作成する</v-btn>
           </div>
         </swiper-slide>
       </swiper>
     </div>
 
-    <v-dialog
-      v-model="inviteDialog"
-      width="600"
-    >
+    <v-dialog v-model="inviteDialog" width="600">
       <v-card>
         <v-card-title class="pr-4">
           招待リンクを共有する
           <v-spacer />
-          <v-btn
-            icon
-            large
-            @click="closeInviteDialog"
-          >
+          <v-btn icon large @click="closeInviteDialog">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -202,46 +153,22 @@
         <v-card-text class="pb-3">
           <p>
             以下のリンクもしくはQRコードを招待したいユーザーに共有してください。
-            <br>
+            <br />
             {{ inviteUrlExpireDate | dateTimeFilter }} まで有効です。
           </p>
           <div style="text-align: center;">
-            <qriously
-              :value="inviteUrl"
-              :size="100"
-              style="text-align: center;"
-            />
+            <qriously :value="inviteUrl" :size="100" style="text-align: center;" />
           </div>
-          <div
-            style="display: flex;"
-            class="mt-2"
-          >
-            <v-text-field
-              id="copyTargetUrl"
-              v-model="inviteUrl"
-              class="mr-1"
-              readonly
-              dense
-            />
-            <v-btn
-              color="yellow darken-1"
-              @click="copyUrl"
-            >
-              コピー
-            </v-btn>
+          <div style="display: flex;" class="mt-2">
+            <v-text-field id="copyTargetUrl" v-model="inviteUrl" class="mr-1" readonly dense />
+            <v-btn color="yellow darken-1" @click="copyUrl">コピー</v-btn>
           </div>
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="classroomCreateDialog"
-      width="400"
-    >
-      <classroomCreate
-        v-if="classroomCreateDialog"
-        @classroomCreated="classroomCreated"
-      />
+    <v-dialog v-model="classroomCreateDialog" width="400">
+      <classroomCreate v-if="classroomCreateDialog" @classroomCreated="classroomCreated" />
     </v-dialog>
   </div>
 </template>
