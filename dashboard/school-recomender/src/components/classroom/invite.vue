@@ -165,6 +165,9 @@ export default {
             this.toTopPage = true
           })
           .catch(err => {
+            if (err.data.type === UserAlreadyRegisteredInThisClassroom) {
+              // 既にリクエスト済みだった場合の処理
+            }
             this.errorMessage = true
           });
       }

@@ -25,7 +25,7 @@ def create_question_handler(event, context):
         question = service.run(user_id, data)
         return APIGatewayResponse.to_response(question.to_dict())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -40,7 +40,7 @@ def update_question_handler(event, context):
         question = service.run(question_id, data)
         return APIGatewayResponse.to_response(question.to_dict())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -58,7 +58,7 @@ def get_question_list_handler(event, context):
         }
         return APIGatewayResponse.to_response(data)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -71,5 +71,5 @@ def find_question_handler(event, context):
         question = service.run(question_id)
         return APIGatewayResponse.to_response(question.to_dict())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)

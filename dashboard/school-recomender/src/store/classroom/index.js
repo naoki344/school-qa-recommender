@@ -40,13 +40,12 @@ export default {
             classroom_list.forEach((classroom) => {
               dispatch("fetchClassroomWorkList", classroom.classroom.classroom_id)
                 .catch((err) => {
-                  console.log(err);
+                  reject(err);
                 });
             });
             resolve();
           })
           .catch((err) => {
-            console.log(err);
             reject(err);
           });
       });
@@ -139,7 +138,7 @@ export default {
             resolve();
           })
           .catch((e) => {
-            reject(e);
+            reject(e.response);
           });
       });
     },
@@ -208,10 +207,6 @@ export default {
       classroomId,
       userId
     }) {
-      console.log(classroomId)
-      console.log({
-        approve_user_list: [userId, ]
-      })
       return new Promise((resolve, reject) => {
         API.put(
             "ToiToyApi",
