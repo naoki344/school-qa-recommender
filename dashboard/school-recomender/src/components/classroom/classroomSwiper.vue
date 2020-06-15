@@ -410,7 +410,7 @@ export default {
 }
 .classroom-swiper-thumbs-image {
   width: 100%;
-  max-height: 180px;
+  height: 180px;
   margin: auto;
   margin-bottom: 15px;
 }

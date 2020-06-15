@@ -1,75 +1,37 @@
 <template>
   <v-content class="pt-0">
     <v-container v-if="classroom.name != ''">
-      <v-row
-        justify="center"
-        class="mb-6 mt-12"
-      >
-        <v-img
-          max-width="180px"
-          src="@/assets/toi-toy-logo-wide-s--no-border-small.png"
-        />
+      <v-row justify="center" class="mb-6 mt-12">
+        <v-img max-width="180px" src="@/assets/toi-toy-logo-wide-s--no-border-small.png" />
       </v-row>
-      <div
-        style="height: 70px;"
-        class="mb-6"
-      >
-        <div
-          v-if="errorMessage"
-          class="alert-message"
-          align="center"
-        >
+      <div style="height: 70px;" class="mb-6">
+        <div v-if="errorMessage" class="alert-message" align="center">
           参加リクエストに失敗しました。
-          <br>再度実行してください。
+          <br />再度実行してください。
         </div>
-        <div
-          v-if="successMessage"
-          class="success-message"
-          align="center"
-        >
+        <div v-if="successMessage" class="success-message" align="center">
           参加リクエストを送信しました。
-          <br>オーナーの承認をお待ちください。
+          <br />オーナーの承認をお待ちください。
         </div>
       </div>
       <v-row justify="center">
         <div>
           <h2>「{{ classroom.name }}」に参加する</h2>
-          <p
-            align="center"
-            class="ma-0"
-          >
-            {{ classroom.caption }}
-          </p>
+          <p align="center" class="ma-0">{{ classroom.caption }}</p>
         </div>
       </v-row>
       <v-row justify="center">
         <v-col cols="7">
-          <div
-            v-for="(owner, index) in classroom.owner_list"
-            :key="index"
-            class="ma-1"
-          >
-            <v-avatar
-              tile
-              size="25"
-              style="border-radius: 6px;"
-            >
+          <div v-for="(owner, index) in classroom.owner_list" :key="index" class="ma-1">
+            <v-avatar tile size="25" style="border-radius: 6px;">
               <v-img :src="getUserAvatarImageUrl(owner.user_id)" />
             </v-avatar>
-            <p class="font-weight-bold ma-2 owner-name">
-              {{ owner.nickname }}
-            </p>
+            <p class="font-weight-bold ma-2 owner-name">{{ owner.nickname }}</p>
           </div>
         </v-col>
       </v-row>
     </v-container>
-    <v-btn
-      v-if="canJoinRequest"
-      block
-      color="yellow darken-1"
-      large
-      @click="join"
-    >
+    <v-btn v-if="canJoinRequest" block color="yellow darken-1" large @click="join">
       <strong class="login">参加する</strong>
     </v-btn>
     <v-btn
@@ -81,31 +43,16 @@
       large
       @click="goToTopPage"
     >
-      <strong
-        style="text-color: black;"
-        class="login"
-      >トップページへ</strong>
+      <strong style="text-color: black;" class="login">トップページへ</strong>
     </v-btn>
-    <v-btn
-      v-if="toTopPage"
-      block
-      color="yellow darken-1"
-      large
-      @click="goToTopPage"
-    >
+    <v-btn v-if="toTopPage" block color="yellow darken-1" large @click="goToTopPage">
       <strong class="login">トップページへ</strong>
     </v-btn>
-    <v-dialog
-      v-model="unSignUpDialog"
-      width="360px"
-    >
+    <v-dialog v-model="unSignUpDialog" width="360px">
       <v-card style="texta">
         <v-card-title>
           <v-spacer />
-          <v-img
-            max-width="180px"
-            src="@/assets/toi-toy-logo-wide-s--no-border-small.png"
-          />
+          <v-img max-width="180px" src="@/assets/toi-toy-logo-wide-s--no-border-small.png" />
           <v-spacer />
         </v-card-title>
         <v-card-text class="px-3 py-4">
@@ -114,18 +61,8 @@
           </p>
         </v-card-text>
         <v-card-actions class="justify-space-around">
-          <v-btn
-            color="yellow darken-1"
-            @click="goToSignUpPage"
-          >
-            ユーザー登録
-          </v-btn>
-          <v-btn
-            color="yellow darken-1"
-            @click="goToLoginPage"
-          >
-            ログイン
-          </v-btn>
+          <v-btn color="yellow darken-1" @click="goToSignUpPage">ユーザー登録</v-btn>
+          <v-btn color="yellow darken-1" @click="goToLoginPage">ログイン</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -177,6 +114,9 @@ export default {
             this.toTopPage = true;
           })
           .catch(err => {
+            if (err.data.type === UserAlreadyRegisteredInThisClassroom) {
+              // 既にリクエスト済みだった場合の処理
+            }
             this.errorMessage = true;
           });
       }

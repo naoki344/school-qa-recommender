@@ -45,5 +45,10 @@ class QuestionDatasource:
                                              names=names,
                                              values=values,
                                              expression=expression)
-        _list = [QuestionCard.from_db(d) for d in data]
+        _list = []
+        for d in data:
+            try:
+                _list.append(QuestionCard.from_db(d))
+            except Exception as e:
+                self.logger.error(e)
         return _list, paging_key

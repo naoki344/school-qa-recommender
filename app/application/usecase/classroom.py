@@ -105,7 +105,6 @@ class RequestJoinClassroomByInviteKey:
         classmate_invite = self.invite_datasource.find_by_invite_key(
             invite_key=invite_key)
         classmate = Classmate.create(user)
-        # TODO: 既に登録済みのユーザーの場合エラー文言を分ける
         self.classmate_datasource.insert_item(classmate_invite.classroom_id,
                                               classmate)
         return classmate

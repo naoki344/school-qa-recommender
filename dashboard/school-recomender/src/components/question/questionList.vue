@@ -152,7 +152,8 @@ export default {
       if (obj["image_url"] == null) { return false }
       const path = obj["image_url"];
       if (this.imageList[path] != null) { return true }
-      this.$store.dispatch("getS3PublicFile", path)
+      const thumbPath = "thumbnail/w512/" + path;
+      this.$store.dispatch("getS3PublicFile", thumbPath)
         .then((url) => {
           this.$set(this.imageList, path, url);
         })

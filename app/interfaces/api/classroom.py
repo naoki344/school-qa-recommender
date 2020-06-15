@@ -36,7 +36,7 @@ def create_classroom_handler(event, context):
         return APIGatewayResponse.to_response(
             {"classroom": classroom.to_dict()})
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -55,7 +55,7 @@ def find_classroom_handler(event, context):
             classmate_list.to_list()
         })
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -70,7 +70,7 @@ def find_classroom_by_invite_key_handler(event, context):
         return APIGatewayResponse.to_response(
             {"classroom": classroom.to_dict()})
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -86,7 +86,7 @@ def create_classmate_invite_link_handler(event, context):
         return APIGatewayResponse.to_response(
             {"classmate_invite": classmate_invite.to_dict()})
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -102,8 +102,10 @@ def request_join_classroom_by_invite_key_handler(event, context):
         return APIGatewayResponse.to_response(
             {"classmate": classmate.to_dict()})
     except Exception as e:
-        logger.eception(e)
-        return APIGatewayErrorResponse.to_response(e)
+        logger.exception(e)
+        response = APIGatewayErrorResponse.to_response(e)
+        logger.exception(response)
+        return response
 
 
 def request_join_classroom_handler(event, context):
@@ -117,7 +119,7 @@ def request_join_classroom_handler(event, context):
         return APIGatewayResponse.to_response(
             {"classmate": classmate.to_dict()})
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -138,7 +140,7 @@ def approve_join_classroom_request_handler(event, context):
                     [UserId(d) for d in approve_user_list])
         return APIGatewayResponse.to_response({})
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -151,5 +153,5 @@ def get_my_classroom_list_handler(event, context):
         return APIGatewayResponse.to_response(
             {"my_classroom_list": classroom_list.to_response()})
     except Exception as e:
-        logger.eception(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)

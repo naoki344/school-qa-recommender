@@ -14,5 +14,5 @@ def upload_user_avatar_image_handler(event, context):
         url = service.run(data)
         return APIGatewayResponse.to_response({"avatar_url": url.value})
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
