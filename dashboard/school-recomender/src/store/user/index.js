@@ -135,11 +135,11 @@ export default {
       });
     },
     fetchMyAvatarImageUrl({ commit, state }) {
-      const userId = state.loginUser.attributes["custom:avatar_url"];
+      const userId = state.loginUser.attributes.sub
       if (userId === undefined) {
         return "";
       }
-      return userId;
+      return `${process.env.VUE_APP_TOITOY_PUBLIC_IMAGE_STORAGE_URL}/user/${userId}/avatar_image`;
     }
   }
 };

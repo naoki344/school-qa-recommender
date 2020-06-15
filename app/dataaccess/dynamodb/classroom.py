@@ -1,6 +1,8 @@
 from logging import Logger
 from typing import List
 
+from botocore.exceptions import ClientError
+
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.dynamodb.sequences import SequensesDatasource
 from app.model.classroom.classmate import Classmate
@@ -9,6 +11,7 @@ from app.model.classroom.classroom import Classroom
 from app.model.classroom.classroom import ClassroomId
 from app.model.classroom.invite import ClassmateInvite
 from app.model.classroom.invite import InviteKey
+from app.model.error import UserAlreadyRegisteredInThisClassroom
 from app.model.user.user import UserId
 
 
@@ -44,10 +47,17 @@ class ClassmateDatasource:
 
     def insert_item(self, classroom_id: ClassroomId,
                     classmate: Classmate) -> None:
-        self.client.insert_item(
-            {
-                **classmate.to_dict(), "classroom_id": classroom_id.value
-            }, "classroom_id", "user_id")
+        try:
+            self.client.insert_item(
+                {
+                    **classmate.to_dict(), "classroom_id": classroom_id.value
+                }, "classroom_id", "user_id")
+        except ClientError as e:
+            if e.response['Error']['Code'] == \
+                    'ConditionalCheckFailedException':
+                raise UserAlreadyRegisteredInThisClassroom(
+                    f"The user Already registered. [user_id={classmate.user_id}]"
+                )
 
     def put_item(self, classroom_id: ClassroomId,
                  classmate: Classmate) -> None:

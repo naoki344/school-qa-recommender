@@ -7,7 +7,7 @@ Resources:
 #       EmailConfiguration:
 #         EmailSendingAccount: ${self:custom.cognitoEmailSendingAccount}
 #         SourceArn: "arn:aws:ses:[ここにArn]:identity/[ここにemailAddress]"
-      EmailVerificationMessage: "アカウントが作成されました。認証を行ってください{####}."
+      EmailVerificationMessage: "アカウントが作成されました。以下のコードを入力し認証を行ってください\r\n\r\n 認証コード: {####}."
       EmailVerificationSubject: "[ToiToy] アカウント認証"
       MfaConfiguration: "OFF"
       Policies:

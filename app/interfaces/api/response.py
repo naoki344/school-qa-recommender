@@ -24,11 +24,15 @@ class APIGatewayErrorResponse:
     @staticmethod
     def to_response(error: Exception):
         return {
-            "statusCode": 500,
-            "body": {
-                "type": "SystemError",
-                "message": str(error)
-            },
+            "statusCode":
+            500,
+            "body":
+            json.dumps(
+                {
+                    "type": error.__class__.__name__,
+                    "message": str(error)
+                },
+                cls=CustomJSONEncoder),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*"

@@ -28,7 +28,7 @@ def register_work_comment_handler(event, context):
                               data=data)
         return APIGatewayResponse.to_response({"comment": comment.to_dict()})
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -46,5 +46,5 @@ def get_work_comment_list_handler(event, context):
                                         work_id=work_id)
         return APIGatewayResponse.to_response(work_comment_list.to_response())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
