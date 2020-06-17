@@ -1,46 +1,72 @@
 <template>
-  <v-card class="elevation-6" height="100%" width="100%">
+  <v-card
+    class="elevation-6"
+    height="100%"
+    width="100%"
+  >
     <v-card-title />
     <v-card-text class="mt-3">
-      <p v-show="error" id="error">{{ error }}</p>
+      <p
+        v-show="error"
+        id="error"
+      >
+        {{ error }}
+      </p>
       <p>{{ message }}</p>
       <label>
         <v-img
-          v-if="classroomForm.classroomImage"
-          :src="classroomForm.classroomImage"
+          v-if="classroomForm.imageUrl != ''"
+          :src="classroomForm.imageUrl"
           class="classroom_image"
         />
-        <v-img v-else src="@/assets/classroom-top_small.png" class="classroom_image" />
+        <v-img
+          v-else-if="getImageUrlW512(modifyClassroom)"
+          :src="imageListW512[modifyClassroom.image_url]"
+          class="classroom_image"
+        />
         <div>
-          <input id="classroom_image" type="file" accept="image/*" @change="onClassroomImageChange" />
+          <input
+            id="classroom_image"
+            type="file"
+            accept="image/*"
+            @change="onClassroomImageChange"
+          >
         </div>
       </label>
-      <p>{{modifyClassroom}}</p>
-      <v-form ref="form" v-model="inputFormIsValid" class="mt-3" lazy-validation>
+      <v-form
+        ref="form"
+        v-model="inputFormIsValid"
+        class="mt-3"
+        lazy-validation
+      >
         <v-text-field
-          v-model="classroomForm.classroomName"
+          v-model="classroomForm.name"
           label="クラス名"
           required
           :rules="[rules.required]"
         />
         <v-text-field
-          v-model="classroomForm.classroomExplain"
+          v-model="classroomForm.caption"
           label="クラス説明"
           required
           :rules="[rules.required]"
         />
         <v-combobox
-          v-model="classroomForm.classroomTagList"
+          v-model="classroomForm.tagList"
           label="タグ（複数追加可）"
           multiple
           required
           chips
           :rules="[rules.required]"
         />
-        <v-checkbox v-model="classroomForm.counterEn" label="定員を設ける" class="mb-0" />
+        <v-checkbox
+          v-model="classroomForm.counterEn"
+          label="定員を設ける"
+          class="mb-0"
+        />
         <v-text-field
           v-if="classroomForm.counterEn"
-          v-model.number="classroomForm.classroomMemberCapacity"
+          v-model.number="classroomForm.capacity"
           :disabled="!classroomForm.counterEn"
           :rules="[(v) => Math.sign(v) || '定員は半角数字を入力してください']"
           label="定員"
@@ -49,7 +75,11 @@
           required
         />
 
-        <v-checkbox v-model="classroomForm.secret" label="非公開にする" required />
+        <v-checkbox
+          v-model="classroomForm.secret"
+          label="非公開にする"
+          required
+        />
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -59,9 +89,11 @@
         block
         large
         :loading="loading"
-        :disabled="!classroomForm.inputFormIsValid"
+        :disabled="!inputFormIsValid"
         @click="classroomCreate"
-      >作成</v-btn>
+      >
+        作成
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -71,16 +103,24 @@ import "@mdi/font/css/materialdesignicons.css";
 import schoolApiClassroomTransfer from "@/api/transfer/classroom.js";
 export default {
   name: "ClassroomModify",
+  props: {
+    modifyClassroom: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       classroomForm: {
-        imageUrl: null,
-        name: this.modifyClassroom.name,
-        explain: this.modifyClassroom.caption,
-        tagList: this.modifyClassroom.tag_list,
-        capacity: this.modifyClassroom.capacity,
-        secret: false
+        imageUrl: "",
+        name: "",
+        caption: "",
+        tagList: [],
+        capacity: "",
+        secret: null,
+        counterEn: false
       },
+      imageListW512: [],
       counterEn: 10,
       classroomImage: "",
       selectedImage: null,
@@ -92,9 +132,6 @@ export default {
       },
       loading: false
     };
-  },
-  props: {
-    modifyClassroom: Object
   },
   created() {
     this.classroomForm = schoolApiClassroomTransfer.toFormData(
@@ -115,6 +152,26 @@ export default {
         reader.onerror = error => reject(classroomForm.error);
       });
     },
+    getImageUrlW512(obj) {
+      console.log("完了");
+      if (obj["image_url"] == null) {
+        return false;
+      }
+      const path = obj["image_url"];
+      if (this.imageListW512[path] != null) {
+        return true;
+      }
+      const thumbPath = "thumbnail/w512/" + path;
+      this.$store
+        .dispatch("getS3PublicFile", thumbPath)
+        .then(url => {
+          this.$set(this.imageListW512, path, url);
+        })
+        .catch(() => {
+          return false;
+        });
+      return true;
+    },
     onClassroomImageChange(e) {
       const images = e.target.files || e.dataTransfer.files;
       this.$store
@@ -122,9 +179,9 @@ export default {
           file: images[0]
         })
         .then(s3Key => {
-          this.classroomImageUrl = s3Key.replace("upload/", "");
+          this.classroomForm.imageUrl = s3Key.replace("upload/", "");
           this.$store.dispatch("getS3PublicFile", s3Key).then(url => {
-            this.classroomImage = url;
+            this.classroomForm.imageUrl = url;
           });
         })
         .catch(err => {

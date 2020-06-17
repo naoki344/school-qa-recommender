@@ -33,7 +33,6 @@
 <script>
 // @ is an alias to /src
 import userSignUp from "@/components/user/userSignUp.vue";
-
 export default {
   name: "UserSignUpPage",
   components: {

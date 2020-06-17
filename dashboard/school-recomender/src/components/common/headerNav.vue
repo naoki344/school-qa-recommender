@@ -86,19 +86,26 @@
         <img
           src="@/assets/toi-toy-logo-wide-s--no-border-small.png"
           style="cursor: pointer;"
-          @click="toTopPage"
+          @click="goToTopPage"
         >
       </v-toolbar-title>
-      <v-avatar size="40">
-        <v-icon v-if="myAvatarImageUrl == ''">
-          mdi-account
-        </v-icon>
-        <v-img
-          v-if="myAvatarImageUrl != ''"
-          :src="myAvatarImageUrl"
-          alt="Cropped Image"
-        />
-      </v-avatar>
+      <v-btn
+        fab
+        depressed
+        color="yellow darken-1"
+        @click="goToQuestionTop"
+      >
+        <v-avatar size="34">
+          <v-icon v-if="myAvatarImageUrl == ''">
+            mdi-account
+          </v-icon>
+          <v-img
+            v-if="myAvatarImageUrl != ''"
+            :src="myAvatarImageUrl"
+            alt="Cropped Image"
+          />
+        </v-avatar>
+      </v-btn>
     </v-app-bar>
     <v-dialog
       v-model="logoutDialog"
@@ -134,7 +141,7 @@
   </div>
 </template>
 
-<script>
+  <script>
 export default {
   name: "HeaderNav",
   components: {},
@@ -168,8 +175,11 @@ export default {
     logout() {
       this.$router.push({ path: "/userLogout" });
     },
-    toTopPage() {
+    goToTopPage() {
       this.$router.push({ path: "/" });
+    },
+    goToQuestionTop() {
+      this.$router.push({ path: "/questionTop" });
     }
   }
 };

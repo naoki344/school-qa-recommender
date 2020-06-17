@@ -103,7 +103,6 @@ import "@mdi/font/css/materialdesignicons.css";
 const classroomFormInit = {
   classroomImage: "",
   classroomImageUrl: null,
-  selectedImage: null,
   classroomName: "",
   classroomExplain: null,
   classroomTagList: [],
@@ -112,16 +111,16 @@ const classroomFormInit = {
   secret: false,
   message: "",
   error: "",
-  inputFormIsValid: false,
+  inputFormIsValid: false
 };
 export default {
   name: "ClassroomCreate",
   data: () => ({
     classroomForm: JSON.parse(JSON.stringify(classroomFormInit)),
     rules: {
-      required: (value) => !!value || "入力されていません",
+      required: value => !!value || "入力されていません"
     },
-    loading: false,
+    loading: false
   }),
   methods: {
     setError(error, text) {
@@ -134,22 +133,22 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(classroomForm.error);
+        reader.onerror = error => reject(classroomForm.error);
       });
     },
     onClassroomImageChange(e) {
       const images = e.target.files || e.dataTransfer.files;
       this.$store
         .dispatch("putS3PublicFile", {
-          file: images[0],
+          file: images[0]
         })
-        .then((s3Key) => {
-          this.classroomImageUrl = s3Key.replace("upload/", "");
-          this.$store.dispatch("getS3PublicFile", s3Key).then((url) => {
-            this.classroomImage = url;
+        .then(s3Key => {
+          this.classroomForm.classroomImageUrl = s3Key.replace("upload/", "");
+          this.$store.dispatch("getS3PublicFile", s3Key).then(url => {
+            this.classroomForm.classroomImage = url;
           });
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
           this.setError(err, "画像のアップロードに失敗しました。");
         });
@@ -165,20 +164,20 @@ export default {
           tagList: this.classroomForm.classroomTagList,
           isSecret: this.classroomForm.secret,
           capacity: this.classroomForm.classroomMemberCapacity,
-          caption: this.classroomForm.classroomExplain,
+          caption: this.classroomForm.classroomExplain
         })
-        .then((result) => {
+        .then(result => {
           console.log(result);
           this.loading = false;
           this.$emit("classroomCreated");
           this.classroomForm = JSON.parse(JSON.stringify(classroomFormInit));
         })
-        .catch((err) => {
+        .catch(err => {
           this.loading = false;
           console.log(err);
         });
-    },
-  },
+    }
+  }
 };
 </script>
 
