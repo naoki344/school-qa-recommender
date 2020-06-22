@@ -18,3 +18,11 @@ class ServerError(Exception):
 
 class UserAlreadyRegisteredInThisClassroom(ClientError):
     pass
+
+
+class OnlyTheOwnerCanCreate(ClientError):
+    pass
+
+
+class OnlyTheOwnerCanUpdate(ClientError):
+    pass

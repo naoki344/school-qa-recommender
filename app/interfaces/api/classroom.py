@@ -7,6 +7,7 @@ from app.application.usecase.classroom import CreateClassmateInviteLink
 from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import FindClassroomByInviteKey
+from app.application.usecase.classroom import ModifyClassroom
 from app.application.usecase.classroom import RequestJoinClassroom
 from app.application.usecase.classroom import RequestJoinClassroomByInviteKey
 from app.configure.usecase.classroom import approve_join_classroom_request
@@ -15,6 +16,7 @@ from app.configure.usecase.classroom import create_classroom
 from app.configure.usecase.classroom import find_classroom
 from app.configure.usecase.classroom import find_classroom_by_invite_key
 from app.configure.usecase.classroom import get_my_classroom_list
+from app.configure.usecase.classroom import modify_classroom
 from app.configure.usecase.classroom import request_join_classroom
 from app.configure.usecase.classroom import \
     request_join_classroom_by_invite_key
@@ -33,6 +35,22 @@ def create_classroom_handler(event, context):
         service: CreateClassroom = create_classroom(logger=logger)
         user_id = AuthenticationEventPerser.parse(event)
         classroom = service.run(user_id, data)
+        return APIGatewayResponse.to_response(
+            {"classroom": classroom.to_dict()})
+    except Exception as e:
+        logger.exception(e)
+        return APIGatewayErrorResponse.to_response(e)
+
+
+def modify_classroom_handler(event, context):
+    try:
+        logger = getLogger()
+        path = event["pathParameters"]
+        classroom_id = ClassroomId(int(path["classroom_id"]))
+        data = json.loads(event["body"])
+        service: ModifyClassroom = modify_classroom(logger=logger)
+        user_id = AuthenticationEventPerser.parse(event)
+        classroom = service.run(user_id, classroom_id, data)
         return APIGatewayResponse.to_response(
             {"classroom": classroom.to_dict()})
     except Exception as e:
