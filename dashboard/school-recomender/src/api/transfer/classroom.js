@@ -1,6 +1,5 @@
 export default {
   toRequest(inputData) {
-    console.log(inputData);
     let publishType = "private";
     if (inputData.isSecret === false) {
       publishType = "public";
@@ -15,12 +14,11 @@ export default {
     }
   },
   toFormData(data) {
-    console.log(data);
     let publish_type = true;
-    let counterEn = false;
     if (data.publish_type === "public") {
       publish_type = false;
     }
+    let counterEn = false;
     if (data.capacity != null) {
       counterEn = true
     }

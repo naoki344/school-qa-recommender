@@ -261,6 +261,7 @@
       <classroom-modify
         v-if="classroomModifyDialog"
         :modify-classroom="modifyClassroom"
+        @classroomModified="classroomModified"
       />
     </v-dialog>
   </div>
@@ -347,6 +348,10 @@ export default {
     },
     classroomCreated() {
       this.classroomCreateDialog = false;
+      this.fetchClassroomList();
+    },
+    classroomModified() {
+      this.classroomModifyDialog = false;
       this.fetchClassroomList();
     },
     createInviteLink(classroomId) {

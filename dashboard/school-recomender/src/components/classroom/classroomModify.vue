@@ -90,7 +90,7 @@
         large
         :loading="loading"
         :disabled="!inputFormIsValid"
-        @click="classroomCreate"
+        @click="classroomModify"
       >
         作成
       </v-btn>
@@ -113,11 +113,12 @@ export default {
     return {
       classroomForm: {
         imageUrl: "",
+        s3Key: "",
         name: "",
         caption: "",
         tagList: [],
         capacity: "",
-        secret: null,
+        secret: true,
         counterEn: false
       },
       imageListW512: [],
@@ -153,7 +154,6 @@ export default {
       });
     },
     getImageUrlW512(obj) {
-      console.log("完了");
       if (obj["image_url"] == null) {
         return false;
       }
@@ -179,7 +179,7 @@ export default {
           file: images[0]
         })
         .then(s3Key => {
-          this.classroomForm.imageUrl = s3Key.replace("upload/", "");
+          this.classroomForm.s3Key = s3Key.replace("upload/", "");
           this.$store.dispatch("getS3PublicFile", s3Key).then(url => {
             this.classroomForm.imageUrl = url;
           });
@@ -189,23 +189,29 @@ export default {
           this.setError(err, "画像のアップロードに失敗しました。");
         });
     },
-    classroomCreate() {
+    classroomModify() {
       this.classroomForm.inputFormIsValid = this.$refs.form.validate();
       if (this.classroomForm.inputFormIsValid === false) return;
       this.loading = true;
+      let imageUrl = this.modifyClassroom.image_url;
+      if (this.classroomForm.s3Key != null) {
+        imageUrl = this.classroomForm.s3Key;
+      }
       this.$store
-        .dispatch("classroom/createClassroom", {
-          imageUrl: this.classroomForm.classroomImageUrl,
-          name: this.classroomForm.classroomName,
-          tagList: this.classroomForm.classroomTagList,
-          isSecret: this.classroomForm.secret,
-          capacity: this.classroomForm.classroomMemberCapacity,
-          caption: this.classroomForm.classroomExplain
-        })
+        .dispatch("classroom/modifyClassroom", {
+          classroomId: this.modifyClassroom.classroom_id,
+          inputData: {
+            imageUrl: imageUrl,
+            name: this.classroomForm.name,
+            tagList: this.classroomForm.tagList,
+            isSecret: this.classroomForm.secret,
+            capacity: this.classroomForm.capacity,
+            caption: this.classroomForm.caption,
+            }
+          })
         .then(result => {
-          console.log(result);
           this.loading = false;
-          this.$emit("classroomCreated");
+          this.$emit("classroomModified");
           this.classroomForm = JSON.parse(JSON.stringify(classroomFormInit));
         })
         .catch(err => {
