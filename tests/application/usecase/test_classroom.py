@@ -9,6 +9,7 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import FindClassroomByInviteKey
 from app.application.usecase.classroom import GetMyClassroomList
+from app.application.usecase.classroom import ModifyClassroom
 from app.application.usecase.classroom import RequestJoinClassroom
 from app.application.usecase.classroom import RequestJoinClassroomByInviteKey
 from app.dataaccess.dynamodb.classroom import ClassroomDatasource
@@ -84,6 +85,86 @@ class CreateClassroomTest(TestCase):
 
         usecase.classmate_datasource.insert_item.assert_called_once_with(
             ClassroomId(1), Classmate.create_owner(self.user))
+
+
+class ModifyClassroomTest(TestCase):
+    def setUp(self):
+        self.user_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'user_name': {
+                'first_name': '直紀',
+                'last_name': '三好'
+            },
+            'user_name_kana': {
+                'first_name_kana': 'ナオキ',
+                'last_name_kana': 'ミヨシ'
+            },
+            'email': 'trombone344@gmail.com',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
+        }
+        self.user = User.from_dict(self.user_dict)
+
+        self.class_dict = {
+            'classroom_id':
+            1,
+            'owner_list': [{
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
+            }, {
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39-1',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
+            }],
+            'name':
+            'test name',
+            'image_url':
+            'https://example.example.com/test.jpg',
+            'publish_type':
+            'private',
+            'tag_list': ['tag1', 'tag2'],
+            'capacity':
+            10,
+            'caption':
+            'test caption'
+        }
+        self.old_classroom = Classroom.from_dict(self.class_dict)
+        self.input_dict = {
+            'name': 'test name updated',
+            'image_url': 'https://example.example.com/test-updated.jpg',
+            'publish_type': 'public',
+            'tag_list': ['tag1', 'tag2'],
+            'capacity': 100,
+            'caption': 'test caption updated'
+        }
+
+    def test_run(self):
+        datasource = MagicMock()
+        datasource.find_by_id = MagicMock(return_value=self.old_classroom)
+        service = ModifyClassroom(
+            datasource=datasource,
+            user_service=MagicMock(find=MagicMock(return_value=self.user)),
+            logger=MagicMock())
+        result = service.run(user_id=self.user.user_id,
+                             classroom_id=self.old_classroom.classroom_id,
+                             item=self.input_dict)
+        expect = {
+            **self.input_dict,
+            'classroom_id':
+            1,
+            'owner_list': [{
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
+            }, {
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39-1',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
+            }],
+        }
+        self.assertEqual(result.to_dict(), expect)
 
 
 class FindClassroomTest(TestCase):

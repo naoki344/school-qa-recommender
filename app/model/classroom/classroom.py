@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from dataclasses import replace
 from enum import Enum
 from enum import auto
 from typing import List
@@ -109,6 +110,24 @@ class Classroom:
                          if data.get('capacity') else None,
                          caption=ClassroomCaption(str(data['caption']))
                          if data.get('caption') else None)
+
+    def update(self, input_data: dict) -> 'Classroom':
+        data = {}
+        if input_data.get("name"):
+            data["name"] = ClassroomName(input_data["name"])
+        if input_data.get("image_url"):
+            data["image_url"] = ClassroomImageUrl(input_data["image_url"])
+        if input_data.get("tag_list") is not None:
+            data["tag_list"] = ClassroomTagList.from_list(
+                input_data["tag_list"])
+        if input_data.get("publish_type"):
+            data["publish_type"] = ClassroomPublishType[
+                input_data["publish_type"]]
+        if input_data.get("capacity"):
+            data["capacity"] = ClassroomCapacity(int(input_data["capacity"]))
+        if input_data.get("caption"):
+            data["caption"] = ClassroomCaption(str(input_data["caption"]))
+        return replace(self, **data)
 
     def can_join_request(self) -> bool:
         if self.publish_type is ClassroomPublishType.public:

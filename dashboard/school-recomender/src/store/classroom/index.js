@@ -125,6 +125,21 @@ export default {
           })
       });
     },
+    modifyClassroom({
+      dispatch,
+      state
+    }, {classroomId, inputData}) {
+      return new Promise(async (resolve, reject) => {
+        API.put(
+            "ToiToyApi",
+            `/classroom/${classroomId}`, {
+              body: schoolApiClassroomTransfer.toRequest(inputData)
+            })
+          .then(result => {
+            resolve(result);
+          })
+      });
+    },
     fetchClassroomByInviteKey(_, inviteKey) {
       return new Promise((resolve, reject) => {
         API.get(
