@@ -1,10 +1,27 @@
 <template>
   <v-card
     class="elevation-6"
-    height="100%"
     width="100%"
   >
-    <v-card-title />
+    <v-card-title class="pa-3">
+      <v-btn icon>
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      <v-spacer />
+      <h4 class="card-title-item">
+        クラス情報を編集
+      </h4>
+      <v-spacer />
+      <v-btn
+        color="yellow darken-1"
+        :loading="loading"
+        :disabled="!inputFormIsValid"
+        @click="classroomModify"
+      >
+        保存
+      </v-btn>
+    </v-card-title>
+    <v-divider />
     <v-card-text class="mt-3">
       <p
         v-show="error"
@@ -74,7 +91,6 @@
           class="mt-0"
           required
         />
-
         <v-checkbox
           v-model="classroomForm.secret"
           label="非公開にする"
@@ -82,19 +98,6 @@
         />
       </v-form>
     </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        color="yellow darken-1"
-        block
-        large
-        :loading="loading"
-        :disabled="!inputFormIsValid"
-        @click="classroomModify"
-      >
-        作成
-      </v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -122,9 +125,6 @@ export default {
         counterEn: false
       },
       imageListW512: [],
-      counterEn: 10,
-      classroomImage: "",
-      selectedImage: null,
       message: "",
       error: "",
       inputFormIsValid: false,
@@ -206,9 +206,9 @@ export default {
             tagList: this.classroomForm.tagList,
             isSecret: this.classroomForm.secret,
             capacity: this.classroomForm.capacity,
-            caption: this.classroomForm.caption,
-            }
-          })
+            caption: this.classroomForm.caption
+          }
+        })
         .then(result => {
           this.loading = false;
           this.$emit("classroomModified");
@@ -229,5 +229,9 @@ export default {
 }
 .classroom_image:hover {
   opacity: 0.7;
+}
+.card-title-item {
+  text-align: center;
+  margin: 0 auto;
 }
 </style>

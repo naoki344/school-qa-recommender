@@ -256,7 +256,8 @@
 
     <v-dialog
       v-model="classroomModifyDialog"
-      width="400"
+      width="450"
+      scrollable
     >
       <classroom-modify
         v-if="classroomModifyDialog"
@@ -275,7 +276,6 @@ import classroomModify from "@/components/classroom/classroomModify.vue";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import { components } from "aws-amplify-vue";
 import moment from "moment";
-
 export default {
   name: "ClassroomSwiper",
   components: {
@@ -323,8 +323,7 @@ export default {
       inviteUrl: "",
       classroomCreateDialog: false,
       classroomModifyDialog: false,
-      modifyClassroom: "",
-      parent: "親です"
+      modifyClassroom: ""
     };
   },
   computed: {
