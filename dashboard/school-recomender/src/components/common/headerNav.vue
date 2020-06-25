@@ -156,7 +156,6 @@ export default {
         text: "トイ（TOI）"
       }
     ],
-
     logoutItem: { icon: "mdi-logout", text: "ログアウト" },
     myAvatarImageUrl: ""
   }),

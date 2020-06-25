@@ -1,5 +1,7 @@
 import axios from "axios";
-import { Auth } from "aws-amplify";
+import {
+  Auth
+} from "aws-amplify";
 
 const userApiClient = {
   userSignUp(inputData) {
@@ -17,10 +19,10 @@ const userApiClient = {
         };
       }
       Auth.signUp({
-        username: inputData.email,
-        password: inputData.password,
-        attributes: attributes
-      })
+          username: inputData.email,
+          password: inputData.password,
+          attributes: attributes
+        })
         .then(() => {
           resolve();
         })
@@ -70,11 +72,16 @@ export default {
         return false;
       } else {
         return true;
-	  }
+      }
     }
   },
   actions: {
-    userLogin({ commit }, { username, password }) {
+    userLogin({
+      commit
+    }, {
+      username,
+      password
+    }) {
       return new Promise((resolve, reject) => {
         Auth.signIn(username, password)
           .then(cognitoUser => {
@@ -86,7 +93,9 @@ export default {
           });
       });
     },
-    userLogout({ commit }) {
+    userLogout({
+      commit
+    }) {
       return new Promise((resolve, reject) => {
         Auth.signOut()
           .then(() => {
@@ -98,7 +107,10 @@ export default {
           });
       });
     },
-    userVerify(_, { email, verificationCode }) {
+    userVerify(_, {
+      email,
+      verificationCode
+    }) {
       return new Promise((resolve, reject) => {
         Auth.confirmSignUp(email, verificationCode)
           .then(() => {
@@ -109,7 +121,9 @@ export default {
           });
       });
     },
-    async userSignUp({ commit }, inputData) {
+    async userSignUp({
+      commit
+    }, inputData) {
       try {
         if (inputData.avatarImageDataUrl != "") {
           const res = await userApiClient.publicApiPutClient(
@@ -123,7 +137,9 @@ export default {
         throw new Error(err);
       }
     },
-    fetchLoginUserInfo({ commit }) {
+    fetchLoginUserInfo({
+      commit
+    }) {
       return new Promise((resolve, reject) => {
         Auth.currentAuthenticatedUser()
           .then(user => {
@@ -134,7 +150,10 @@ export default {
           });
       });
     },
-    fetchMyAvatarImageUrl({ commit, state }) {
+    fetchMyAvatarImageUrl({
+      commit,
+      state
+    }) {
       const userId = state.loginUser.attributes.sub
       if (userId === undefined) {
         return "";

@@ -2,19 +2,25 @@
   <v-container>
     <div class="all-info">
       <v-avatar
-        size="120"
+        size="110"
         class="avatar"
       >
-        <v-img v-if="userAvatar" />
+        <v-icon v-if="myAvatarImageUrl == ''">
+          mdi-account
+        </v-icon>
         <v-img
-          v-else
-          src="@/assets/question-no-image.png"
+          v-if="myAvatarImageUrl != ''"
+          :src="myAvatarImageUrl"
+          alt="Cropped Image"
         />
       </v-avatar>
-      <div class>
-        <p>ニックネーム</p>
-        <p>本名</p>
+      <div class="user-info">
+        <h3 class="name">
+          {{ nickname }}
+          <span class="real-name">(本名:{{ fullName }})</span>
+        </h3>
         <v-btn
+          class="mt-2"
           depressed
           outlined
           @click="openUserModifyDialog"
@@ -23,13 +29,21 @@
         </v-btn>
       </div>
     </div>
-    <v-dialog v-model="userModifyDialog">
-      <userModify />
+    <v-dialog
+      v-model="userModifyDialog"
+      scrollable
+      width="450"
+    >
+      <userModify
+        v-if="userModifyDialog"
+        @close="closeUserModifyDialog"
+      />
     </v-dialog>
   </v-container>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import userModify from "@/components/user/userModify.vue";
 export default {
   name: "UserBoard",
@@ -38,13 +52,44 @@ export default {
   },
   data() {
     return {
-      userAvatar: "",
-      userModifyDialog: false
+      userModifyDialog: false,
+      myAvatarImageUrl: "",
+      firstName: "",
+      lastName: "",
+      nickname: ""
     };
+  },
+  computed: {
+    fullName() {
+      return this.lastName + " " + this.firstName;
+    },
+    ...mapState({
+      loginUser: state => state.user.loginUser.attributes
+    })
+  },
+  mounted() {
+    this.formInitialize();
+    this.$store
+      .dispatch("user/fetchMyAvatarImageUrl")
+      .then(res => {
+        console.log(res);
+        this.myAvatarImageUrl = res;
+      })
+      .catch(() => {
+        return "";
+      });
   },
   methods: {
     openUserModifyDialog() {
       this.userModifyDialog = true;
+    },
+    formInitialize() {
+      this.nickname = this.loginUser["nickname"];
+      this.firstName = this.loginUser["custom:first_name"];
+      this.lastName = this.loginUser["custom:last_name"];
+    },
+    closeUserModifyDialog() {
+      this.userModifyDialog = false;
     }
   }
 };
@@ -53,15 +98,18 @@ export default {
 <style lang="scss" scoped>
 .all-info {
   display: flex;
-  text-align: center;
   justify-content: center;
+  text-align: center;
   margin-top: 10px;
 }
 .avatar {
   display: inline-block;
-  margin-right: 40px;
+  margin-right: 36px;
+}
+.real-name {
+  font-size: 70%;
 }
 .user-info {
-  display: inline-block;
+  margin: auto 0;
 }
 </style>
