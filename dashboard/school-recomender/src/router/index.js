@@ -4,6 +4,8 @@ import userLoginPage from "../views/userLoginPage.vue";
 import userSignUpPage from "../views/userSignUpPage.vue";
 import userLogoutPage from "../views/userLogoutPage.vue";
 import userVerifyPage from "../views/userVerifyPage.vue";
+import passwordForgotPage from "../views/passwordForgotPage.vue";
+import passwordResetPage from "../views/passwordResetPage.vue";
 import invitePage from "../views/invitePage.vue";
 import questionTopPage from "../views/questionTopPage.vue";
 import topPage from "../views/topPage.vue";
@@ -50,13 +52,21 @@ const routes = [{
     name: "questionTopPage",
     component: questionTopPage,
   },
-
   {
     path: "/classroomWorkDetail",
     name: "classroomWorkDetailPage",
     component: classroomWorkDetailPage
   },
-
+  {
+    path: "/passwordForgot",
+    name: "passwordForgotPage",
+    component: passwordForgotPage
+  },
+  {
+    path: "/passwordReset",
+    name: "passwordResetPage",
+    component: passwordResetPage
+  },
 ];
 
 const router = new VueRouter({

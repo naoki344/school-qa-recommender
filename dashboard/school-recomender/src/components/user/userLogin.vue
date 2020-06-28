@@ -14,7 +14,7 @@
     >
       メールアドレス または パスワードが間違っています
     </p>
-    <v-form class="pt-3">
+    <v-for class="pt-3">
       <v-text-field
         v-model="username"
         outlined
@@ -39,7 +39,11 @@
         @keydown.enter="userLogin"
         @click:append="showPassword = !showPassword"
       />
-    </v-form>
+    </v-for>
+    <p>
+      パスワードを忘れた方は
+      <a @click="toForgotPassword">こちら</a>
+    </p>
     <v-spacer />
     <v-btn
       block
@@ -81,6 +85,9 @@ export default {
           query: { originPagePath: this.originPagePath }
         });
       }
+    },
+    toForgotPassword() {
+      this.$router.push({ path: "/passwordForgot" });
     },
     userLogin() {
       this.loading = true;
