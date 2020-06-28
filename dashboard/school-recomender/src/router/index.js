@@ -11,41 +11,40 @@ import questionTopPage from "../views/questionTopPage.vue";
 import topPage from "../views/topPage.vue";
 import classroomWorkDetailPage from "../views/classroomWorkDetailPage.vue";
 
-import {
-  Auth
-} from "aws-amplify";
+import { Auth } from "aws-amplify";
 
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
     path: "/",
     name: "topPage",
-    component: topPage
+    component: topPage,
   },
   {
     path: "/userLogout",
     name: "userLogoutPage",
-    component: userLogoutPage
+    component: userLogoutPage,
   },
   {
     path: "/userLogin",
     name: "userLoginPage",
-    component: userLoginPage
+    component: userLoginPage,
   },
   {
     path: "/userSignUp",
     name: "userSignUpPage",
-    component: userSignUpPage
+    component: userSignUpPage,
   },
   {
     path: "/userVerify",
     name: "userVerifyPage",
-    component: userVerifyPage
+    component: userVerifyPage,
   },
   {
     path: "/invite",
     name: "invitePage",
-    component: invitePage
+    component: invitePage,
   },
   {
     path: "/questionTop",
@@ -55,47 +54,53 @@ const routes = [{
   {
     path: "/classroomWorkDetail",
     name: "classroomWorkDetailPage",
-    component: classroomWorkDetailPage
+    component: classroomWorkDetailPage,
   },
   {
     path: "/passwordForgot",
     name: "passwordForgotPage",
-    component: passwordForgotPage
+    component: passwordForgotPage,
   },
   {
     path: "/passwordReset",
     name: "passwordResetPage",
-    component: passwordResetPage
+    component: passwordResetPage,
   },
 ];
 
 const router = new VueRouter({
-  routes
+  routes,
 });
 
 router.beforeEach(async (to, from, next) => {
   const isLogin = await Auth.currentAuthenticatedUser()
-    .then(data => {
+    .then((data) => {
       return true;
     })
-    .catch(err => {
+    .catch((err) => {
       return false;
     });
-  if (to.name === "userSignUpPage" || to.name === "userVerifyPage" || to.name === "invitePage") {
+  if (
+    to.name === "userSignUpPage" ||
+    to.name === "userVerifyPage" ||
+    to.name === "invitePage" ||
+    to.name === "passwordForgotPage" ||
+    to.name === "passwordResetPage"
+  ) {
     next();
-    return
+    return;
   }
   if (to.name === "userLoginPage") {
     if (isLogin) {
-      next('/');
-      return
+      next("/");
+      return;
     }
     next();
-    return
+    return;
   }
   if (!isLogin) {
-    next('/userLogin');
-    return
+    next("/userLogin");
+    return;
   }
   next();
 });

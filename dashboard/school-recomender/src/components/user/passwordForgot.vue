@@ -4,18 +4,44 @@
       ご登録のメールアドレス宛に
       「認証コード」をお送りします。
     </h3>
-    <div v-if="isFailure" :class="error_class" align="center">
+    <div
+      v-if="isFailure"
+      :class="error_class"
+      align="center"
+    >
       認証コードが間違っています。
-      <br />再度入力してください。
+      <br>再度入力してください。
     </div>
-    <v-text-field
-      v-model="email"
+    <v-form
+      ref="form"
+      v-model="inputFormIsValid"
+    >
+      <v-text-field
+        v-model="email"
+        outlined
+        prepend-icon="mdi-email"
+        label="メールアドレス"
+        :rules="[rules.required, rules.email]"
+      />
+    </v-form>
+    <v-btn
+      color="yellow darken-1"
+      large
+      block
+      :disabled="!inputFormIsValid"
+      @click="forgotPassword"
+    >
+      コードを送信する
+    </v-btn>
+    <v-btn
+      color="grey darken-2"
+      large
+      block
       outlined
-      prepend-icon="mdi-email"
-      label="メールアドレス"
-      :rules="[rules.required, rules.email]"
-    />
-    <v-btn color="yellow darken-1" block large @click="forgotPassword">コードを送信する</v-btn>
+      @click="toUserLogin()"
+    >
+      戻る
+    </v-btn>
   </v-content>
 </template>
 
@@ -33,7 +59,8 @@ export default {
         required: value => !!value || "入力されていません",
         email: value =>
           /.+@.+\..+/.test(value) || "メールアドレスの形式が正しくありません"
-      }
+      },
+      inputFormIsValid: false
     };
   },
   methods: {
@@ -41,8 +68,13 @@ export default {
       this.$router.push({ path: "/passwordReset" });
     },
     forgotPassword() {
+      this.inputFormIsValid = this.$refs.form.validate();
+      if (this.inputFormIsValid === false) return;
       Auth.forgotPassword(this.email);
       this.toPasswordReset();
+    },
+    toUserLogin() {
+      this.$router.push({ path: "/userLogin" });
     }
   }
 };

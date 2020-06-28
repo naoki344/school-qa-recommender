@@ -193,7 +193,6 @@ export default {
           nickname: this.nickname,
           firstName: this.firstName,
           lastName: this.lastName,
-
           username: this.username,
           password: this.password,
           avatarImageDataUrl: this.avatarImageDataUrl

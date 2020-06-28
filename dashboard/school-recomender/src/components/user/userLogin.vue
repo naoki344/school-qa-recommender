@@ -14,7 +14,7 @@
     >
       メールアドレス または パスワードが間違っています
     </p>
-    <v-for class="pt-3">
+    <v-form class="pt-3">
       <v-text-field
         v-model="username"
         outlined
@@ -39,7 +39,7 @@
         @keydown.enter="userLogin"
         @click:append="showPassword = !showPassword"
       />
-    </v-for>
+    </v-form>
     <p>
       パスワードを忘れた方は
       <a @click="toForgotPassword">こちら</a>
