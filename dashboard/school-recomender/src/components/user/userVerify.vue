@@ -7,35 +7,14 @@
       「認証コード」を入力してアカウントを有効化してください。
     </h3>
 
-    <div
-      v-if="isFailure"
-      :class="error_class"
-      align="center"
-    >
+    <div v-if="isFailure" :class="error_class" align="center">
       認証コードが間違っています。
-      <br>再度入力してください。
+      <br />再度入力してください。
     </div>
-    <v-text-field
-      v-model="email"
-      prepend-icon
-      label="メールアドレス"
-      required
-    />
-    <v-text-field
-      v-model="verificationCode"
-      prepend-icon
-      label="認証コード"
-      required
-    />
+    <v-text-field v-model="email" prepend-icon label="メールアドレス" required />
+    <v-text-field v-model="verificationCode" prepend-icon label="認証コード" required />
 
-    <v-btn
-      color="yellow darken-1"
-      block
-      large
-      @click="userVerify"
-    >
-      有効化する
-    </v-btn>
+    <v-btn color="yellow darken-1" block large @click="userVerify">有効化する</v-btn>
   </v-content>
 </template>
 
@@ -65,10 +44,13 @@ export default {
           verificationCode: this.verificationCode
         })
         .then(() => {
-          if (this.originPagePath == undefined || this.originPagePath == null){
+          if (this.originPagePath == undefined || this.originPagePath == null) {
             this.$router.push({ path: "/userLogin" });
           } else {
-            this.$router.push({ path: "/userLogin", query: { originPagePath: this.originPagePath }});
+            this.$router.push({
+              path: "/userLogin",
+              query: { originPagePath: this.originPagePath }
+            });
           }
         })
         .catch(() => {

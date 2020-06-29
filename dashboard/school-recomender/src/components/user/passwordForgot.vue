@@ -4,18 +4,11 @@
       ご登録のメールアドレス宛に
       「認証コード」をお送りします。
     </h3>
-    <div
-      v-if="isFailure"
-      :class="error_class"
-      align="center"
-    >
+    <div v-if="isFailure" :class="error_class" align="center">
       認証コードが間違っています。
-      <br>再度入力してください。
+      <br />再度入力してください。
     </div>
-    <v-form
-      ref="form"
-      v-model="inputFormIsValid"
-    >
+    <v-form ref="form" v-model="inputFormIsValid">
       <v-text-field
         v-model="email"
         outlined
@@ -30,18 +23,8 @@
       block
       :disabled="!inputFormIsValid"
       @click="forgotPassword"
-    >
-      コードを送信する
-    </v-btn>
-    <v-btn
-      color="grey darken-2"
-      large
-      block
-      outlined
-      @click="toUserLogin()"
-    >
-      戻る
-    </v-btn>
+    >コードを送信する</v-btn>
+    <v-btn color="grey darken-2" large block outlined @click="toUserLogin()">戻る</v-btn>
   </v-content>
 </template>
 
@@ -64,14 +47,14 @@ export default {
     };
   },
   methods: {
-    toPasswordReset() {
-      this.$router.push({ path: "/passwordReset" });
-    },
     forgotPassword() {
       this.inputFormIsValid = this.$refs.form.validate();
       if (this.inputFormIsValid === false) return;
       Auth.forgotPassword(this.email);
-      this.toPasswordReset();
+      this.$router.push({
+        path: "/passwordReset",
+        query: { email: this.email }
+      });
     },
     toUserLogin() {
       this.$router.push({ path: "/userLogin" });
