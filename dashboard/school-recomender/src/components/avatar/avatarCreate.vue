@@ -1,12 +1,13 @@
 <template>
   <div>
     <v-container class="pt-0">
-      <v-col
+      <div
         class="pt-0"
         align="center"
       >
         <label for="avatarImage">
           <v-avatar
+            class="avatar"
             color="indigo"
             size="66"
           >
@@ -22,7 +23,8 @@
               alt="Cropped Image"
             />
           </v-avatar>
-          <h4>画像を選択</h4>
+          <br>
+          <strong class="avatar">画像を選択</strong>
         </label>
         <input
           id="avatarImage"
@@ -33,7 +35,7 @@
           @change="setImage"
           @click="openDialog"
         >
-      </v-col>
+      </div>
     </v-container>
     <v-dialog
       v-if="imgSrc != ''"
@@ -146,5 +148,8 @@ export default {
 <style scoped>
 .round {
   border-radius: 50%;
+}
+.avatar:hover {
+  cursor: pointer;
 }
 </style>

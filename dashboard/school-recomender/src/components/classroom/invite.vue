@@ -1,8 +1,6 @@
 <template>
   <v-content class="pt-0">
-    <v-container
-      v-if="classroom.name != ''"
-    >
+    <v-container v-if="classroom.name != ''">
       <v-row
         justify="center"
         class="mb-6 mt-12"
@@ -75,6 +73,20 @@
       <strong class="login">参加する</strong>
     </v-btn>
     <v-btn
+      v-if="canJoinRequest"
+      color="grey darken-1"
+      class="mt-3"
+      outlined
+      block
+      large
+      @click="goToTopPage"
+    >
+      <strong
+        style="text-color: black;"
+        class="login"
+      >トップページへ</strong>
+    </v-btn>
+    <v-btn
       v-if="toTopPage"
       block
       color="yellow darken-1"
@@ -133,7 +145,7 @@ export default {
     errorMessage: false,
     canJoinRequest: true,
     toTopPage: false,
-    unSignUpDialog: false,
+    unSignUpDialog: false
   }),
   computed: {
     inviteKey() {
@@ -155,20 +167,20 @@ export default {
       const isLogin = await this.$store.getters["user/isLogin"];
       if (!isLogin) {
         this.unSignUpDialog = true;
-	  } else {
-        this.errorMessage = false
+      } else {
+        this.errorMessage = false;
         this.$store
           .dispatch("classroom/joinRequestByinviteKey", this.inviteKey)
           .then(data => {
-            this.successMessage = true
-            this.canJoinRequest = false
-            this.toTopPage = true
+            this.successMessage = true;
+            this.canJoinRequest = false;
+            this.toTopPage = true;
           })
           .catch(err => {
             if (err.data.type === UserAlreadyRegisteredInThisClassroom) {
               // 既にリクエスト済みだった場合の処理
             }
-            this.errorMessage = true
+            this.errorMessage = true;
           });
       }
     },
@@ -179,10 +191,16 @@ export default {
       this.$router.push({ path: "/" });
     },
     goToLoginPage() {
-      this.$router.push({ path: "/userLogin", query: {originPagePath: this.$route.fullPath} });
+      this.$router.push({
+        path: "/userLogin",
+        query: { originPagePath: this.$route.fullPath }
+      });
     },
     goToSignUpPage() {
-      this.$router.push({ path: "/userSignUp", query: {originPagePath: this.$route.fullPath} });
+      this.$router.push({
+        path: "/userSignUp",
+        query: { originPagePath: this.$route.fullPath }
+      });
     }
   }
 };

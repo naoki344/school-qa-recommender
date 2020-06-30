@@ -29,7 +29,7 @@ export default {
     }) {
       return new Promise((resolve, reject) => {
         if (state.myClassroomList !== null) {
-	      resolve();
+          resolve();
         }
         API.get(
             "ToiToyApi",
@@ -50,14 +50,17 @@ export default {
           });
       });
     },
-    fetchClassroom({ dispatch, state }, classroomId) {
+    fetchClassroom({
+      dispatch,
+      state
+    }, classroomId) {
       return new Promise(async (resolve, reject) => {
         if (state.myClassroomList === null) {
           await dispatch("fetchMyClassroomList")
             .then(result => {
               const classroom = state.myClassroomList.find(classroom => {
                 return classroom.classroom.classroom_id == classroomId
-	          })
+              })
               resolve(classroom.classroom)
             })
             .catch((err) => {
@@ -66,12 +69,15 @@ export default {
         } else {
           const classroom = state.myClassroomList.find(classroom => {
             return classroom.classroom.classroom_id == classroomId
-	      })
+          })
           resolve(classroom.classroom)
-		}
+        }
       });
     },
-    createInviteLink({ dispatch, state }, classroomId) {
+    createInviteLink({
+      dispatch,
+      state
+    }, classroomId) {
       return new Promise(async (resolve, reject) => {
         API.post(
             "ToiToyApi",
@@ -80,7 +86,10 @@ export default {
             })
           .then(result => {
             const invite_url = process.env.VUE_APP_TOITOY_PAGE_URL + "invite?inviteKey=" + result.classmate_invite.invite_key;
-            resolve({"invite_url": invite_url, "expire_date": result.classmate_invite.expire_date});
+            resolve({
+              "invite_url": invite_url,
+              "expire_date": result.classmate_invite.expire_date
+            });
           })
           .catch(() => {
             reject();
@@ -101,14 +110,31 @@ export default {
           });
       });
     },
-    createClassroom({ dispatch, state }, inputData) {
+    createClassroom({
+      dispatch,
+      state
+    }, inputData) {
       return new Promise(async (resolve, reject) => {
         API.post(
             "ToiToyApi",
-            `/classroom`,
-            {
+            `/classroom`, {
               body: schoolApiClassroomTransfer.toRequest(inputData)
-		    })
+            })
+          .then(result => {
+            resolve(result);
+          })
+      });
+    },
+    modifyClassroom({
+      dispatch,
+      state
+    }, {classroomId, inputData}) {
+      return new Promise(async (resolve, reject) => {
+        API.put(
+            "ToiToyApi",
+            `/classroom/${classroomId}`, {
+              body: schoolApiClassroomTransfer.toRequest(inputData)
+            })
           .then(result => {
             resolve(result);
           })

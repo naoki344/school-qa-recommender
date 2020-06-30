@@ -83,18 +83,29 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title style="width: 100%; display: flex; padding: 0; justify-content: center;">
-        <img src="@/assets/toi-toy-logo-wide-s--no-border-small.png">
+        <img
+          src="@/assets/toi-toy-logo-wide-s--no-border-small.png"
+          style="cursor: pointer;"
+          @click="goToTopPage"
+        >
       </v-toolbar-title>
-      <v-avatar size="40">
-        <v-icon v-if="myAvatarImageUrl == ''">
-          mdi-account
-        </v-icon>
-        <v-img
-          v-if="myAvatarImageUrl != ''"
-          :src="myAvatarImageUrl"
-          alt="Cropped Image"
-        />
-      </v-avatar>
+      <v-btn
+        fab
+        depressed
+        color="yellow darken-1"
+        @click="goToQuestionTop"
+      >
+        <v-avatar size="34">
+          <v-icon v-if="myAvatarImageUrl == ''">
+            mdi-account
+          </v-icon>
+          <v-img
+            v-if="myAvatarImageUrl != ''"
+            :src="myAvatarImageUrl"
+            alt="Cropped Image"
+          />
+        </v-avatar>
+      </v-btn>
     </v-app-bar>
     <v-dialog
       v-model="logoutDialog"
@@ -130,7 +141,7 @@
   </div>
 </template>
 
-<script>
+  <script>
 export default {
   name: "HeaderNav",
   components: {},
@@ -145,7 +156,6 @@ export default {
         text: "トイ（TOI）"
       }
     ],
-
     logoutItem: { icon: "mdi-logout", text: "ログアウト" },
     myAvatarImageUrl: ""
   }),
@@ -163,6 +173,12 @@ export default {
   methods: {
     logout() {
       this.$router.push({ path: "/userLogout" });
+    },
+    goToTopPage() {
+      this.$router.push({ path: "/" });
+    },
+    goToQuestionTop() {
+      this.$router.push({ path: "/questionTop" });
     }
   }
 };

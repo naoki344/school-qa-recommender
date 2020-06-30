@@ -148,30 +148,32 @@ export default {
   components: {
     avatarCreate
   },
-  data: () => ({
-    email: "",
-    emailConfirm: "",
-    nickname: "",
-    lastName: "",
-    firstName: "",
-    password: "",
-    passwordConfirm: "",
-    checkbox: false,
-    showPassword: false,
-    showPasswordConfirm: false,
-    rules: {
-      required: value => !!value || "入力されていません",
-      email: value =>
-        /.+@.+\..+/.test(value) || "メールアドレスの形式が正しくありません",
-      password: value =>
-        /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{6,100}$/.test(
-          value
-        ) || "パスワードには、大文字、小文字、記号を使用してください"
-    },
-    errorMessage: "",
-    avatarImageDataUrl: "",
-    inputFormIsValid: false
-  }),
+  data() {
+    return {
+      email: "",
+      emailConfirm: "",
+      nickname: "",
+      lastName: "",
+      firstName: "",
+      password: "",
+      passwordConfirm: "",
+      checkbox: false,
+      showPassword: false,
+      showPasswordConfirm: false,
+      rules: {
+        required: value => !!value || "入力されていません",
+        email: value =>
+          /.+@.+\..+/.test(value) || "メールアドレスの形式が正しくありません",
+        password: value =>
+          /^(?=.*?[a-z])(?=.*?\d)(?=.*?[!-\/:-@[-`{-~])[!-~]{6,100}$/.test(
+            value
+          ) || "パスワードには、大文字、小文字、記号を使用してください"
+      },
+      errorMessage: "",
+      avatarImageDataUrl: "",
+      inputFormIsValid: false
+    };
+  },
   computed: {
     elements() {
       return [...document.getElementsByClassName("user-register-input-form")];
@@ -193,13 +195,12 @@ export default {
           nickname: this.nickname,
           firstName: this.firstName,
           lastName: this.lastName,
-
           username: this.username,
           password: this.password,
           avatarImageDataUrl: this.avatarImageDataUrl
         })
         .then(() => {
-          if (this.originPagePath == undefined || this.originPagePath == null){
+          if (this.originPagePath == undefined || this.originPagePath == null) {
             this.$router.push({
               path: "/userVerify",
               query: { email: this.email }

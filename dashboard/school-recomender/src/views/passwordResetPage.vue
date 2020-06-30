@@ -22,7 +22,7 @@
             sm8
             md4
           >
-            <userSignUp />
+            <password-reset />
           </v-flex>
         </v-layout>
       </v-container>
@@ -32,11 +32,11 @@
 
 <script>
 // @ is an alias to /src
-import userSignUp from "@/components/user/userSignUp.vue";
+import passwordReset from "@/components/user/passwordReset.vue";
 export default {
-  name: "UserSignUpPage",
+  name: "PasswordReset",
   components: {
-    userSignUp
+    passwordReset
   }
 };
 </script>

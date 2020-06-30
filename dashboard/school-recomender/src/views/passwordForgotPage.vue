@@ -22,7 +22,7 @@
             sm8
             md4
           >
-            <userSignUp />
+            <password-forgot />
           </v-flex>
         </v-layout>
       </v-container>
@@ -32,11 +32,11 @@
 
 <script>
 // @ is an alias to /src
-import userSignUp from "@/components/user/userSignUp.vue";
+import passwordForgot from "@/components/user/passwordForgot.vue";
 export default {
-  name: "UserSignUpPage",
+  name: "PasswordForgotPage",
   components: {
-    userSignUp
+    passwordForgot
   }
 };
 </script>

@@ -40,6 +40,10 @@
         @click:append="showPassword = !showPassword"
       />
     </v-form>
+    <p>
+      パスワードを忘れた方は
+      <a @click="toForgotPassword">こちら</a>
+    </p>
     <v-spacer />
     <v-btn
       block
@@ -81,6 +85,9 @@ export default {
           query: { originPagePath: this.originPagePath }
         });
       }
+    },
+    toForgotPassword() {
+      this.$router.push({ path: "/passwordForgot" });
     },
     userLogin() {
       this.loading = true;

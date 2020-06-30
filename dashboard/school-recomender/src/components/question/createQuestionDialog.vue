@@ -160,7 +160,7 @@ const questionInit = {
   questionType: "describing",
   contents: "",
   sortTagList: []
-}
+};
 
 export default {
   name: "CreateQuestionDialog",
@@ -177,41 +177,45 @@ export default {
     select: [],
     valid: true,
     customToolbarMax: [],
-    customToolbarMin: [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["image", "code-block"]],
-    customToolbarType: "max",
+    customToolbarMin: [
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["image", "code-block"]
+    ],
+    customToolbarType: "max"
   }),
   watch: {
     customToolbarType(value) {
-      let maxInputDisplay = 'unset';
-      let minInputDisplay = 'none';
-      if (value === 'min') {
-        maxInputDisplay = 'none';
-        minInputDisplay = 'unset';
+      let maxInputDisplay = "unset";
+      let minInputDisplay = "none";
+      if (value === "min") {
+        maxInputDisplay = "none";
+        minInputDisplay = "unset";
       }
-      const minEle = document.getElementsByClassName("custom-toolbar-min")[0]
-	  if (minEle !== undefined) {
+      const minEle = document.getElementsByClassName("custom-toolbar-min")[0];
+      if (minEle !== undefined) {
         minEle.style.display = minInputDisplay;
       }
-      const maxEle = document.getElementsByClassName("custom-toolbar-max")[0]
-	  if (maxEle !== undefined) {
+      const maxEle = document.getElementsByClassName("custom-toolbar-max")[0];
+      if (maxEle !== undefined) {
         maxEle.style.display = maxInputDisplay;
       }
     }
   },
   mounted() {
-    this.customToolbarType = "min"
+    this.customToolbarType = "min";
   },
   methods: {
     async createQuestion() {
-       this.$store
-         .dispatch("question/createQuestion", {
-           questionInput: this.question
-         })
-         .then(() => {
-           this.question = JSON.parse(JSON.stringify(questionInit));
-           this.$store.dispatch("question/fetchQuestionList");
-           this.dialog = false;
-         });
+      this.$store
+        .dispatch("question/createQuestion", {
+          questionInput: this.question
+        })
+        .then(() => {
+          this.question = JSON.parse(JSON.stringify(questionInit));
+          this.$store.dispatch("question/fetchQuestionList");
+          this.dialog = false;
+        });
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
       console.log(cursorLocation);
@@ -220,7 +224,8 @@ export default {
           file: file
         })
         .then(s3_key => {
-          this.$store.dispatch("getS3PublicFile", s3_key)
+          this.$store
+            .dispatch("getS3PublicFile", s3_key)
             .then(url => {
               Editor.insertEmbed(cursorLocation, "image", url);
               resetUploader();
@@ -234,10 +239,10 @@ export default {
         });
     },
     showMaxCustomToolbar() {
-      this.customToolbarType = "max"
+      this.customToolbarType = "max";
     },
     showMinCustomToolbar() {
-      this.customToolbarType = "min"
+      this.customToolbarType = "min";
     }
   }
 };
