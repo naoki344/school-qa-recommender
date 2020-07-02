@@ -1,12 +1,21 @@
 <template>
   <v-content class="pt-5">
-    <h3 align="center">ご登録のメールアドレス宛にお送りした認証コードと新しいメールアドレスを記入してください。</h3>
+    <h3 align="center">
+      ご登録のメールアドレス宛にお送りした認証コードと新しいメールアドレスを記入してください。
+    </h3>
 
-    <div v-if="isFailure" :class="error_class" align="center">
+    <div
+      v-if="isFailure"
+      :class="error_class"
+      align="center"
+    >
       認証コードが間違っています。
-      <br />再度入力してください。
+      <br>再度入力してください。
     </div>
-    <v-form ref="form" v-model="inputFormIsValid">
+    <v-form
+      ref="form"
+      v-model="inputFormIsValid"
+    >
       <v-text-field
         v-model="email"
         outlined
@@ -66,7 +75,9 @@
       large
       :disabled="!inputFormIsValid"
       @click="passwordReset"
-    >パスワードをリセットする</v-btn>
+    >
+      パスワードをリセットする
+    </v-btn>
   </v-content>
 </template>
 
