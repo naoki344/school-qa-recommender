@@ -15,20 +15,22 @@
               >
                 {{ work.title }}
               </v-card-title>
-              <v-chip
-                color="green"
-                text-color="white"
-              >
-                {{ question.subject_name }}
-              </v-chip>
             </div>
             <div
               class="px-4 pb-4"
               style="display: flex; justify-content: flex-start;"
             >
               <v-chip
+                small
+                color="green"
+                text-color="white"
+              >
+                {{ question.subject_name }}
+              </v-chip>
+              <v-chip
                 v-for="tag in question.sort_tag_list"
                 :key="tag"
+                small
                 style="margin-right:5px;"
               >
                 {{ tag }}
@@ -125,9 +127,11 @@
                       class="message-area ms-3"
                     >
                       <textarea
+                        :id="'textarea' + item.comment_id"
                         v-model="modifyingComment"
-                        style="width: 100%;"
                         class="textarea"
+                        @input="textAreaHeightSet(item.comment_id)"
+                        @change="textAreaHeightSet(item.comment_id)"
                       />
                       <v-btn @click="cancelModifyingComment()">
                         キャンセル
@@ -468,14 +472,40 @@ export default {
       img.setAttribute("src", url);
       img.style.width = "100%";
     });
+    if (this.modifyingCommentId != "") {
+      console.log("success");
+      this.textAreaHeightSet(modifyingCommentId);
+    }
   },
   methods: {
+    textAreaHeightSet(Id) {
+      console.log("dekita");
+      let element = document.getElementById("textarea" + Id);
+      // テキストエリアにフォーカスを当てる
+      element.focus();
+      // 一旦テキストエリアを小さくしてスクロールバー（縦の長さを取得）
+      element.style.height = "10px";
+      let wSclollHeight = parseInt(element.scrollHeight);
+      // 1行の長さを取得する
+      let wLineH = parseInt(element.style.lineHeight.replace(/px/, ""));
+      // 最低2行の表示エリアにする
+      if (wSclollHeight < wLineH * 2) {
+        wSclollHeight = wLineH * 2;
+      }
+      // テキストエリアの高さを設定する
+      element.style.height = wSclollHeight + "px";
+    },
     cancelModifyingComment() {
       this.modifyingCommentId = "";
     },
     openCommentModifyArea(body, Id) {
       this.modifyingCommentId = Id;
       this.modifyingComment = body;
+      if (this.modifyingCommentId != "") {
+        this.$nextTick(() => {
+          this.textAreaHeightSet(this.modifyingCommentId);
+        });
+      }
     },
     openCommentModifyDialog(body) {
       this.commentModifyDialog = true;
@@ -670,10 +700,11 @@ export default {
 }
 .message-whole {
   display: flex;
-  max-width: 600px;
+  max-width: 100%;
 }
 .message-area {
   display: inline-block;
+  width: 100%;
   .textarea {
     width: 100%;
     height: 10vh;
