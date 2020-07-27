@@ -1,25 +1,25 @@
 import moment from "moment";
 
 export default {
-  toRequest(questionInput){
+  toRequest(questionInput) {
     var sentenceText = ''
     if (questionInput.contents == '') {
-        sentenceText = '-'
+      sentenceText = '-'
     } else {
-        sentenceText = questionInput.contents
+      sentenceText = questionInput.contents
     }
     return {
-    "estimated_time": questionInput.estimatedTime,
-    "question_sentence": {
+      "estimated_time": questionInput.estimatedTime,
+      "question_sentence": {
         "contents": sentenceText,
-	},
-    "register_date": moment().utc().format(),
-    "subject_name": questionInput.subjectName,
-    "question_type": questionInput.questionType,
-    "sort_tag_list": questionInput.sortTagList
+      },
+      "register_date": moment().utc().format(),
+      "subject_name": questionInput.subjectName,
+      "question_type": questionInput.questionType,
+      "sort_tag_list": questionInput.sortTagList
     }
   },
-  getSubjectNameList(){
+  getSubjectNameList() {
     return [
       '国語', '数学', '英語', '世界史', '日本史',
       '地理', '現代社会', '物理', '化学', '生物', '地学'
@@ -38,6 +38,6 @@ export default {
       "register_user_name": "",
       "sort_tag_list": [],
       "subject_type": ""
-    } 
+    }
   }
 }
