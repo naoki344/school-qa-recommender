@@ -246,6 +246,19 @@ functions:
       TYPE: API
       SERVICE: Work
 
+  LambdaApiModifyWorkComment:
+    handler: ${self:custom.lambdaHandlerPrefix}api/comment.modify_work_comment_handler
+    name: ${self:custom.resourcePrefix}-modify-work-comment
+    events:
+      - http:
+          path: comment/{comment_id}
+          method: PUT
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Comment
+
   LambdaApiGetWorkCommentList:
     handler: ${self:custom.lambdaHandlerPrefix}api/comment.get_work_comment_list_handler
     name: ${self:custom.resourcePrefix}-get-work-comment-list-handler

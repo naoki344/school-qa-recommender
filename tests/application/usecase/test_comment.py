@@ -8,10 +8,13 @@ from app.application.query.user import UserQueryService
 from app.application.query.work import WorkQueryService
 from app.application.usecase.comment import GetWorkCommentList
 from app.application.usecase.comment import RegisterWorkComment
+from app.application.usecase.comment import ModifyWorkComment
 from app.dataaccess.dynamodb.work import WorkDatasource
+from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.model.classroom.classroom import ClassroomId
 from app.model.comment.comment import WorkComment
 from app.model.comment.comment import WorkCommentList
+from app.model.comment.comment import CommentId
 from app.model.user.user import User
 from app.model.user.user import UserId
 from app.model.work.work import Work
@@ -91,6 +94,63 @@ class RegisterWorkCommentTest(TestCase):
         }
         datasource.fetch_sequense_id.assert_called_once()
         datasource.insert_item.assert_called_once_with(
+            WorkComment.from_dict(expect))
+        user_service.find.assert_called_once_with(user_id)
+        self.assertEqual(result.to_dict(), expect)
+
+
+class ModifyWorkCommentTest(TestCase):
+    def setUp(self):
+        self.user_dict = {
+            'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'nickname': 'Naoki',
+            'user_name': {
+                'first_name': '直紀',
+                'last_name': '三好'
+            },
+            'user_name_kana': {
+                'first_name_kana': 'ナオキ',
+                'last_name_kana': 'ミヨシ'
+            },
+            'email': 'trombone344@gmail.com',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'cognito_user_sub': '79434f7e-b53f-4d3a-8c79-aedc7b73af39'
+        }
+        self.user = User.from_dict(self.user_dict)
+
+        self.comment = WorkComment.from_dict({
+            'comment_id': 100,
+            'comment_type': 'message',
+            'work_id': 5,
+            'parent_comment_id': 2,
+            'body': 'commend body',
+            'register_date': '2020-02-26T00:18:16.874000+09:00',
+            'register_user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+            'register_user_name': 'Naoki',
+        })
+
+    @freezegun.freeze_time('2020-02-26T00:18:16.874000+09:00')
+    def test_run(self):
+        # datasource の作成
+        datasource = MagicMock(spec=WorkCommentDatasource)
+        datasource.find = MagicMock(return_value=self.comment)
+        # user service の作成
+        user_service = MagicMock(spec=UserQueryService)
+        user_service.find = MagicMock(return_value=self.user)
+
+        usecase = ModifyWorkComment(comment_datasource=datasource,
+                                    user_service=user_service,
+                                    logger=MagicMock())
+        user_id = UserId('79434f7e-b53f-4d3a-8c79-aedc7b73af39')
+        result = usecase.run(user_id=user_id,
+                             comment_id=CommentId(100),
+                             data={
+                                 'body': 'updated comment',
+                             })
+        expect = {**self.comment.to_dict(), "body": "updated comment"}
+
+        datasource.find.assert_called_once_with(CommentId(100))
+        datasource.put_item.assert_called_once_with(
             WorkComment.from_dict(expect))
         user_service.find.assert_called_once_with(user_id)
         self.assertEqual(result.to_dict(), expect)

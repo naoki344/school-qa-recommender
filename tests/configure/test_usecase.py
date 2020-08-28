@@ -13,6 +13,7 @@ from app.application.usecase.classroom import RequestJoinClassroom
 from app.application.usecase.classroom import RequestJoinClassroomByInviteKey
 from app.application.usecase.comment import GetWorkCommentList
 from app.application.usecase.comment import RegisterWorkComment
+from app.application.usecase.comment import ModifyWorkComment
 from app.application.usecase.question import CreateQuestion
 from app.application.usecase.question import FindQuestion
 from app.application.usecase.question import GetQuestionList
@@ -33,6 +34,7 @@ from app.configure.usecase.classroom import \
     request_join_classroom_by_invite_key
 from app.configure.usecase.comment import get_work_comment_list
 from app.configure.usecase.comment import register_work_comment
+from app.configure.usecase.comment import modify_work_comment
 from app.configure.usecase.question import create_question
 from app.configure.usecase.question import find_question
 from app.configure.usecase.question import get_question_list
@@ -120,3 +122,8 @@ class QuestionUsecaseTest(TestCase):
             isinstance(
                 request_join_classroom_by_invite_key(logger=MagicMock()),
                 RequestJoinClassroomByInviteKey), True)
+
+        self.assertEqual(
+            isinstance(
+                modify_work_comment(logger=MagicMock()),
+                ModifyWorkComment), True)

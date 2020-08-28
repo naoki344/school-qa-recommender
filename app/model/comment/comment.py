@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from dataclasses import replace
 from enum import Enum
 from enum import auto
 from itertools import groupby
@@ -6,7 +7,6 @@ from operator import itemgetter
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 
 from app.model.register import RegisterDate
 from app.model.register import RegisterUserId
@@ -80,6 +80,14 @@ class WorkComment:
             'register_user_name':
             self.register_user_name.value
         }
+
+    def update(self, input_data: dict) -> 'WorkComment':
+        if input_data.get('body'):
+            return replace(self, **{'body': CommentBody(input_data['body'])})
+        return self
+
+    def is_own_comment(self, user: User):
+        return self.register_user_id.value == user.user_id.value
 
     @staticmethod
     def create(work_id: WorkId, user: User, _id: int, comment_type: str,

@@ -4,8 +4,10 @@ from logging import getLogger
 from app.anticorruption.model.user.parser import AuthenticationEventPerser
 from app.application.usecase.comment import GetWorkCommentList
 from app.application.usecase.comment import RegisterWorkComment
+from app.application.usecase.comment import ModifyWorkComment
 from app.configure.usecase.comment import get_work_comment_list
 from app.configure.usecase.comment import register_work_comment
+from app.configure.usecase.comment import modify_work_comment
 from app.interfaces.api.response import APIGatewayErrorResponse
 from app.interfaces.api.response import APIGatewayResponse
 from app.model.classroom.classroom import ClassroomId
@@ -25,6 +27,24 @@ def register_work_comment_handler(event, context):
         comment = service.run(user_id,
                               classroom_id=classroom_id,
                               work_id=work_id,
+                              data=data)
+        return APIGatewayResponse.to_response({"comment": comment.to_dict()})
+    except Exception as e:
+        logger.exception(e)
+        return APIGatewayErrorResponse.to_response(e)
+
+
+def modify_work_comment_handler(event, context):
+    try:
+        logger = getLogger()
+        path = event["pathParameters"]
+        comment_id = WorkId(int(path["comment_id"]))
+        data = json.loads(event["body"])
+        service: ModifyWorkComment = \
+            modify_work_comment(logger=logger)
+        user_id = AuthenticationEventPerser.parse(event)
+        comment = service.run(user_id,
+                              comment_id=comment_id,
                               data=data)
         return APIGatewayResponse.to_response({"comment": comment.to_dict()})
     except Exception as e:

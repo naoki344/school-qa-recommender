@@ -4,6 +4,7 @@ from typing import List
 from app.dataaccess.aws.dynamodb import DynamoDBClient
 from app.dataaccess.dynamodb.sequences import SequensesDatasource
 from app.model.comment.comment import WorkComment
+from app.model.comment.comment import CommentId
 from app.model.comment.comment import WorkCommentList
 from app.model.work.work import WorkId
 
@@ -31,3 +32,9 @@ class WorkCommentDatasource:
                                           value=work_id.value,
                                           index_name='WorkId-Index')
         return WorkCommentList.from_list(item_list)
+
+    def find(self, comment_id: CommentId) -> WorkComment:
+        item = self.client.get_item({
+            'comment_id': comment_id.value
+        })
+        return WorkComment.from_dict(item)

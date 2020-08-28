@@ -6,6 +6,7 @@ from app.application.query.work import WorkQueryService
 from app.dataaccess.dynamodb.comment import WorkCommentDatasource
 from app.model.classroom.classroom import ClassroomId
 from app.model.comment.comment import WorkComment
+from app.model.comment.comment import CommentId
 from app.model.comment.comment import WorkCommentList
 from app.model.user.user import UserId
 from app.model.work.work import WorkId
@@ -35,6 +36,26 @@ class RegisterWorkComment:
                                      data.get("parent_comment_id"),
                                      data["body"])
         self.comment_datasource.insert_item(comment)
+        return comment
+
+
+class ModifyWorkComment:
+    def __init__(self, comment_datasource: WorkCommentDatasource,
+                 user_service: UserQueryService, logger: Logger) -> None:
+        self.comment_datasource = comment_datasource
+        self.user_service = user_service
+        self.logger = logger
+
+    def run(self, user_id: UserId, comment_id: CommentId,
+            data: dict) -> WorkComment:
+        user = self.user_service.find(user_id)
+        # TODO: Classmateかどうかのチェック
+        old_comment = self.comment_datasource.find(comment_id)
+        if not old_comment.is_own_comment(user):
+            raise Exception(
+                "can't update comment. update only create user.")
+        comment = old_comment.update(data)
+        self.comment_datasource.put_item(comment)
         return comment
 
 

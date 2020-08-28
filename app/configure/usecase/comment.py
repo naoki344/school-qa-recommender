@@ -2,6 +2,7 @@ from logging import Logger
 
 from app.application.usecase.comment import GetWorkCommentList
 from app.application.usecase.comment import RegisterWorkComment
+from app.application.usecase.comment import ModifyWorkComment
 from app.configure.query.classroom import classroom_query_service
 from app.configure.query.user import user_query_service
 from app.configure.query.work import work_query_service
@@ -18,6 +19,14 @@ def register_work_comment(logger: Logger) -> RegisterWorkComment:
                                classroom_service=classroom_service,
                                user_service=user_service,
                                logger=logger)
+
+
+def modify_work_comment(logger: Logger) -> ModifyWorkComment:
+    datasource = work_comment_datasource(logger)
+    user_service = user_query_service(logger)
+    return ModifyWorkComment(comment_datasource=datasource,
+                             user_service=user_service,
+                             logger=logger)
 
 
 def get_work_comment_list(logger: Logger) -> RegisterWorkComment:
