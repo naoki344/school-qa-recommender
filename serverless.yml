@@ -103,6 +103,19 @@ functions:
       TYPE: API
       SERVICE: Classroom
 
+  LambdaApiModifyClassroom:
+    handler: ${self:custom.lambdaHandlerPrefix}api/classroom.modify_classroom_handler
+    name: ${self:custom.resourcePrefix}-modify-class-room
+    events:
+      - http:
+          path: classroom/{classroom_id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+    tags:
+      TYPE: API
+      SERVICE: Classroom
+
   LambdaApiFindClassroom:
     handler: ${self:custom.lambdaHandlerPrefix}api/classroom.find_classroom_handler
     name: ${self:custom.resourcePrefix}-find-class-room

@@ -26,7 +26,7 @@ def create_work_from_question_handler(event, context):
         work = service.run(user_id, classroom_id=classroom_id, data=data)
         return APIGatewayResponse.to_response({"work": work.to_dict()})
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -42,7 +42,7 @@ def get_classroom_work_list_handler(event, context):
         return APIGatewayResponse.to_response(
             {"work_list": [work.to_dict() for work in work_list]})
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)
 
 
@@ -64,5 +64,5 @@ def find_classroom_work_handler(event, context):
             "comment_list": comment_list
         })
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return APIGatewayErrorResponse.to_response(e)

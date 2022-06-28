@@ -14,6 +14,8 @@ from app.model.classroom.invite import ClassmateInvite
 from app.model.classroom.invite import InviteKey
 from app.model.classroom.my_classroom import MyClassroom
 from app.model.classroom.my_classroom import MyClassroomList
+from app.model.error import OnlyTheOwnerCanCreate
+from app.model.error import OnlyTheOwnerCanUpdate
 from app.model.user.user import UserId
 
 
@@ -56,6 +58,24 @@ class FindClassroom:
         return classroom, classmate_list
 
 
+class ModifyClassroom:
+    def __init__(self, datasource: ClassroomDatasource,
+                 user_service: UserQueryService, logger: Logger) -> None:
+        self.datasource = datasource
+        self.user_service = user_service
+
+    def run(self, user_id: UserId, classroom_id: ClassroomId,
+            item: dict) -> Classroom:
+        user = self.user_service.find(user_id)
+        old_classroom = self.datasource.find_by_id(classroom_id)
+        if not old_classroom.is_owner(user.user_id):
+            raise OnlyTheOwnerCanUpdate(
+                "Class information can only be updated by the owner")
+        new_classroom = old_classroom.update(item)
+        self.datasource.put_item(new_classroom)
+        return new_classroom
+
+
 class CreateClassmateInviteLink:
     def __init__(self, datasource: ClassroomDatasource,
                  invite_datasource: ClassmateInviteDatasource,
@@ -69,7 +89,8 @@ class CreateClassmateInviteLink:
         user = self.user_service.find(user_id)
         classroom = self.datasource.find_by_id(classroom_id)
         if not classroom.is_owner(user.user_id):
-            raise Exception('Can not create classroom invite link')
+            raise OnlyTheOwnerCanCreate(
+                "Classroom invite key can only be create by the owner")
         classmate_invite = ClassmateInvite.create(classroom_id)
         self.invite_datasource.put_item(classmate_invite)
         return classmate_invite
@@ -105,7 +126,6 @@ class RequestJoinClassroomByInviteKey:
         classmate_invite = self.invite_datasource.find_by_invite_key(
             invite_key=invite_key)
         classmate = Classmate.create(user)
-        # TODO: 既に登録済みのユーザーの場合エラー文言を分ける
         self.classmate_datasource.insert_item(classmate_invite.classroom_id,
                                               classmate)
         return classmate
@@ -147,7 +167,7 @@ class ApproveJoinClassroomRequest:
         classroom = self.datasource.find_by_id(classroom_id)
 
         if not classroom.is_owner(owner.user_id):
-            raise Exception('can not approve join request')
+            raise OnlyTheOwnerCanUpdate("can not approve join request")
 
         for classmate_id in accept_user_list:
             classmate = self.classmate_datasource.find(classroom_id,

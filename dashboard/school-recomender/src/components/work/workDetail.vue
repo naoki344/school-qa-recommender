@@ -15,20 +15,22 @@
               >
                 {{ work.title }}
               </v-card-title>
-              <v-chip
-                color="green"
-                text-color="white"
-              >
-                {{ question.subject_name }}
-              </v-chip>
             </div>
             <div
               class="px-4 pb-4"
               style="display: flex; justify-content: flex-start;"
             >
               <v-chip
+                small
+                color="green"
+                text-color="white"
+              >
+                {{ question.subject_name }}
+              </v-chip>
+              <v-chip
                 v-for="tag in question.sort_tag_list"
                 :key="tag"
+                small
                 style="margin-right:5px;"
               >
                 {{ tag }}
@@ -104,29 +106,76 @@
             <div
               v-for="item in topicMessageList"
               :key="item.comment_id"
-              class="message-whole ma-3"
+              class="message px-3 py-2"
             >
-              <v-avatar
-                tile
-                style="border-radius: 6px;"
-                size="44"
-              >
-                <v-img :src="getUserAvatarImageUrl(item.register_user_id)" />
-              </v-avatar>
+              <v-hover v-slot:default="{ hover }">
+                <div style="display:flex;">
+                  <div
+                    style="width: 100%;"
+                    class="message-whole"
+                  >
+                    <v-avatar
+                      tile
+                      style="border-radius: 6px;"
+                      size="44"
+                    >
+                      <v-img :src="getUserAvatarImageUrl(item.register_user_id)" />
+                    </v-avatar>
 
-              <div class="message-area ms-3">
-                <p class="font-weight-bold ma-0 message-contributer-name">
-                  {{ item.register_user_name }}
-                  <span class="font-weight-medium message-time">
-                    {{
-                      item.register_date | messageTimeSortFilter
-                    }}
-                  </span>
-                </p>
-                <p class="font-weight-light mb-0 message-body">
-                  {{ item.body }}
-                </p>
-              </div>
+                    <div
+                      v-if="modifyingCommentId === item.comment_id"
+                      class="message-area ms-3"
+                    >
+                      <textarea
+                        :id="'textarea' + item.comment_id"
+                        v-model="modifyingComment"
+                        class="textarea"
+                        @input="textAreaHeightSet(item.comment_id)"
+                        @change="textAreaHeightSet(item.comment_id)"
+                      />
+                      <v-btn @click="cancelModifyingComment()">
+                        キャンセル
+                      </v-btn>
+                      <v-btn color="yellow darken-1">
+                        変更を保存する
+                      </v-btn>
+                    </div>
+
+                    <div
+                      v-else
+                      class="message-area ms-3"
+                    >
+                      <p class="font-weight-bold ma-0 message-contributer-name">
+                        {{ item.register_user_name }}
+                        <span class="font-weight-medium message-time">
+                          {{
+                            item.register_date | messageTimeSortFilter
+                          }}
+                        </span>
+                      </p>
+                      <p class="font-weight-light mb-0 message-body">
+                        {{ item.body }}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <v-btn
+                      icon
+                      :class="{'show-btn': hover}"
+                      color="transparent"
+                      @click="showModifyingComment(item.body,item.comment_id)"
+                    >
+                      <v-icon
+                        small
+                        :class="{'show-btn': hover}"
+                        color="transparent"
+                      >
+                        mdi-pencil
+                      </v-icon>
+                    </v-btn>
+                  </div>
+                </div>
+              </v-hover>
             </div>
           </div>
           <div class="split-right">
@@ -143,6 +192,7 @@
                 cols="40"
                 class="textarea"
                 name="editingComment"
+                autofocus
                 @keydown.enter.shift.exact="postTopicCommentBody"
               />
               <v-btn
@@ -239,12 +289,46 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <!-- コメントを編集するダイアログ -->
+    <!-- ただし他人のコメントは編集できない -->
+    <v-dialog v-model="commentModifyDialog">
+      <v-card class="pa-0">
+        <v-card-actions>
+          <v-btn
+            depressed
+            icon
+            @click="commentModifyDialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            :loading="loading"
+            :disabled="loading"
+            color="yellow darken-1"
+            @click="postTopicCommentBody"
+          >
+            変更を保存する
+          </v-btn>
+        </v-card-actions>
+        <v-divider />
+        <v-card-text class="pa-1">
+          <v-textarea
+            v-model="modifyingComment"
+            autofocus
+            solo
+            flat
+            label="コメントを記入"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import "swiper/dist/css/swiper.css";
-import sanitizeHTML from 'sanitize-html'
+import sanitizeHTML from "sanitize-html";
 import moment from "moment";
 export default {
   name: "WorkDetail",
@@ -306,6 +390,9 @@ export default {
       topicBody: "",
       selectedTopicId: null,
       postCommentDialog: false,
+      commentModifyDialog: false,
+      modifyingComment: "",
+      modifyingCommentId: "",
       editingComment: "",
       editingCommentDict: {},
       loading: false
@@ -334,14 +421,48 @@ export default {
     console.log("created終わり" + this.topicSelectList);
   },
   mounted() {
-    const contents = document.getElementById("work-detail-dialog-contents-text");
-    contents.innerHTML = sanitizeHTML(this.question.question_sentence.contents,
+    const contents = document.getElementById(
+      "work-detail-dialog-contents-text"
+    );
+    contents.innerHTML = sanitizeHTML(
+      this.question.question_sentence.contents,
       {
-        allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
-  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'abbr', 'code', 'hr', 'br', 'div',
-  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'img' ],
-        allowedAttributes: {"img": ["s3-key"], "a": ["href", "target"]}
-      })
+        allowedTags: [
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "a",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "abbr",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "iframe",
+          "img"
+        ],
+        allowedAttributes: { img: ["s3-key"], a: ["href", "target"] }
+      }
+    );
     console.log(contents.innerHTML);
     const imgList = contents.getElementsByTagName("img");
     imgList.forEach(async img => {
@@ -351,8 +472,57 @@ export default {
       img.setAttribute("src", url);
       img.style.width = "100%";
     });
+    if (this.modifyingCommentId != "") {
+      console.log("success");
+      this.textAreaHeightSet(modifyingCommentId);
+    }
   },
   methods: {
+    textAreaHeightSet(Id) {
+      console.log("dekita");
+      let element = document.getElementById("textarea" + Id);
+      // テキストエリアにフォーカスを当てる
+      element.focus();
+      // 一旦テキストエリアを小さくしてスクロールバー（縦の長さを取得）
+      element.style.height = "10px";
+      let wSclollHeight = parseInt(element.scrollHeight);
+      // 1行の長さを取得する
+      let wLineH = parseInt(element.style.lineHeight.replace(/px/, ""));
+      // 最低2行の表示エリアにする
+      if (wSclollHeight < wLineH * 2) {
+        wSclollHeight = wLineH * 2;
+      }
+      // テキストエリアの高さを設定する
+      element.style.height = wSclollHeight + "px";
+    },
+    cancelModifyingComment() {
+      this.modifyingCommentId = "";
+    },
+    openCommentModifyArea(body, Id) {
+      this.modifyingCommentId = Id;
+      this.modifyingComment = body;
+      if (this.modifyingCommentId != "") {
+        this.$nextTick(() => {
+          this.textAreaHeightSet(this.modifyingCommentId);
+        });
+      }
+    },
+    openCommentModifyDialog(body) {
+      this.commentModifyDialog = true;
+      this.modifyingComment = body;
+    },
+    showModifyingComment(body, Id) {
+      let windowWidth = window.innerWidth;
+      const breakPoint = 760;
+      let isMobileSize = windowWidth < breakPoint;
+      let isPcSize = windowWidth >= breakPoint;
+      if (isMobileSize) {
+        this.openCommentModifyDialog(body);
+      }
+      if (isPcSize) {
+        this.openCommentModifyArea(body, Id);
+      }
+    },
     setInitialTopic() {
       console.log("初期表示" + this.topicList);
       this.selectedTopic = this.topicList.find(item => item.body === "メイン");
@@ -522,12 +692,37 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.message {
+  word-break: break-all;
+}
+.message:hover {
+  background-color: #ededed;
+}
 .message-whole {
   display: flex;
-  max-width: 600px;
+  max-width: 100%;
 }
 .message-area {
   display: inline-block;
+  width: 100%;
+  .textarea {
+    width: 100%;
+    height: 10vh;
+    resize: vertical;
+    outline: 0;
+    border-style: solid;
+    color: black;
+    background: #fff8e8;
+    font-family: HiraginoSans-W4;
+    line-height: 1.5;
+  }
+  .textarea:focus {
+    box-shadow: 0 0 7px gray;
+    border: 2px solid #fdd836;
+  }
+}
+.show-btn {
+  color: rgba(0, 0, 0, 1) !important;
 }
 .message-contributer-name {
   justify-items: start;
@@ -541,6 +736,7 @@ export default {
   font-family: HiraginoSans-W5;
   font-size: 14px;
   line-height: 1.5;
+  word-break: break-all;
 }
 .message-time {
   font-size: 70%;
@@ -560,6 +756,7 @@ export default {
   width: 100%;
 }
 
+// pc/タブレットの時
 @media screen and (min-width: 760px) {
   .split-left {
     width: 60%;

@@ -65,10 +65,13 @@ export default {
           verificationCode: this.verificationCode
         })
         .then(() => {
-          if (this.originPagePath == undefined || this.originPagePath == null){
+          if (this.originPagePath == undefined || this.originPagePath == null) {
             this.$router.push({ path: "/userLogin" });
           } else {
-            this.$router.push({ path: "/userLogin", query: { originPagePath: this.originPagePath }});
+            this.$router.push({
+              path: "/userLogin",
+              query: { originPagePath: this.originPagePath }
+            });
           }
         })
         .catch(() => {

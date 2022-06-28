@@ -53,6 +53,8 @@ functions:
           pool: ${self:custom.resourcePrefix}-ToiToyUserPool
           trigger: PostConfirmation
           existing: true
+    environment:
+      TOI_TOY_PUBLICK_BUCKET: ${self:custom.toiToyPublicBucketName}
 
 resources:
   - ${file(resources/cognito.yml)}

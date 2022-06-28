@@ -9,14 +9,21 @@
       >
         <v-card>
           <v-card-title
-            class="pb-2 px-4 title"
+            class="pb-2 px-4"
             style="text-align: center;"
           >
             Toi
+            <v-spacer />
+            <v-btn
+              icon
+              @click="openQuestionModifyDialog()"
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
           </v-card-title>
           <div
             class="px-4 pt-3 pb-2"
-            style="display: flex; justify-content: space-between"
+            style="display: flex;"
           >
             <v-chip
               class
@@ -26,7 +33,7 @@
               {{ question.subject_name }}
             </v-chip>
             <div
-              class="px-4 pb-4"
+              class="px-1 pb-4"
               style="display: flex;"
             >
               <v-chip
@@ -66,9 +73,7 @@
               :value="room.classroom.classroom_id"
             />
           </v-container>
-          <v-form
-            v-model="inputFormIsValid"
-          >
+          <v-form v-model="inputFormIsValid">
             <div
               v-if="selectedClassroom.length > 0"
               align="center"
@@ -96,7 +101,8 @@
                 :disabled="!inputFormIsValid"
                 @click="registerWorkSelectedClassroom()"
               >
-                選択した{{ selectedClassroom.length }}つのクラスに<br>この問いを投稿
+                選択した{{ selectedClassroom.length }}つのクラスに
+                <br>この問いを投稿
               </v-btn>
             </div>
             <v-card-actions>
@@ -113,28 +119,46 @@
         </v-card>
       </v-dialog>
     </v-row>
+    <v-dialog
+      v-model="questionModifyDialog"
+      fullscreen
+      persistent
+      scrollable
+      transition="dialog-bottom-transition"
+    >
+      <question-modify
+        v-if="questionModifyDialog"
+        :selected-question="question"
+        :selected-contents="contentsElement"
+        @closeQuestionModifyDialog="closeQuestionModifyDialog"
+      />
+    </v-dialog>
   </v-content>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import moment from "moment";
-import sanitizeHTML from 'sanitize-html'
+import sanitizeHTML from "sanitize-html";
+import questionModify from "@/components/question/questionModify.vue";
 
 export default {
   name: "QuestionDetailDialog",
+  components: {
+    questionModify,
+  },
   filters: {
-    questionTypeFilter: function(value) {
+    questionTypeFilter: function (value) {
       if (!value) return "";
       if (value === "describing") return "記述式";
       if (value === "selectable") return "選択式";
       return "";
     },
-    dateTimeFilter: function(value) {
+    dateTimeFilter: function (value) {
       if (!value) return "";
       return moment(value).format("MM月DD日 hh:mm");
     },
-    estimatedColorFilter: function(value) {
+    estimatedColorFilter: function (value) {
       if (!value) return "green";
       if (value <= 1) return "blue";
       if (value <= 5) return "green";
@@ -145,42 +169,77 @@ export default {
   props: {
     dialogVisible: {
       type: Boolean,
-      required: true
+      required: true,
     },
     question: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     imageList: [],
     selectedClassroom: [],
-    workCaption: '',
-    workTitle: '',
-    contents: '',
+    workCaption: "",
+    workTitle: "",
+    contentsElement: "",
     rules: {
-      required: value => !!value || "入力されていません",
+      required: (value) => !!value || "入力されていません",
     },
     inputFormIsValid: false,
+    questionModifyDialog: false,
   }),
   computed: {
     ...mapState({
-      classroomList: state => state.classroom.myClassroomList
-    })
+      classroomList: (state) => state.classroom.myClassroomList,
+    }),
   },
   mounted() {
     this.fetchClassroomList();
-    const contents = document.getElementById('question-detail-dialog-contents-text');
-    contents.innerHTML = sanitizeHTML(this.question.question_sentence.contents,
+    const contents = document.getElementById(
+      "question-detail-dialog-contents-text"
+    );
+    contents.innerHTML = sanitizeHTML(
+      this.question.question_sentence.contents,
       {
-        allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
-  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'abbr', 'code', 'hr', 'br', 'div',
-  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'img' ],
-        allowedAttributes: {"img": ["s3-key"], "a": ["href", "target"]}
-      })
+        allowedTags: [
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "blockquote",
+          "p",
+          "a",
+          "ul",
+          "ol",
+          "nl",
+          "li",
+          "b",
+          "i",
+          "strong",
+          "em",
+          "strike",
+          "abbr",
+          "code",
+          "hr",
+          "br",
+          "div",
+          "table",
+          "thead",
+          "caption",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+          "pre",
+          "iframe",
+          "img",
+        ],
+        allowedAttributes: { img: ["s3-key"], a: ["href", "target"] },
+      }
+    );
     console.log(contents.innerHTML);
     const imgList = contents.getElementsByTagName("img");
-    imgList.forEach(async img => {
+    imgList.forEach(async (img) => {
       const url = await this.getImageUrl(
         "thumbnail/w512/" + img.getAttribute("s3-key")
       );
@@ -189,14 +248,29 @@ export default {
     });
   },
   methods: {
+    closeQuestionModifyDialog() {
+      this.questionModifyDialog = false;
+    },
+    openQuestionModifyDialog() {
+      this.questionModifyDialog = true;
+      this.contentsElement = document.getElementById(
+        "question-detail-dialog-contents-text"
+      ).innerHTML;
+      console.log(this.contentsElement);
+    },
     closeDialog() {
       this.selectedClassroom = [];
-      this.$emit('closeDialog');
+      this.$emit("closeDialog");
     },
     async getImageUrl(s3Key) {
-      if (s3Key == null) { return null }
-      if (this.imageList[s3Key] != null) { return this.imageList[s3Key] }
-      const url = await this.$store.dispatch("getS3PublicFile", s3Key)
+      if (s3Key == null) {
+        return null;
+      }
+      if (this.imageList[s3Key] != null) {
+        return this.imageList[s3Key];
+      }
+      const url = await this.$store
+        .dispatch("getS3PublicFile", s3Key)
         .then(async (url) => {
           await this.$set(this.imageList, s3Key, url);
           return this.imageList[s3Key];
@@ -210,14 +284,18 @@ export default {
       this.$store.dispatch("classroom/fetchMyClassroomList");
     },
     registerWorkSelectedClassroom() {
-      this.$store.dispatch("classroom/registerWork",
-        {question: this.question, selectedClassroom: this.selectedClassroom,
-		title: this.workTitle, caption: this.workCaption})
+      this.$store
+        .dispatch("classroom/registerWork", {
+          question: this.question,
+          selectedClassroom: this.selectedClassroom,
+          title: this.workTitle,
+          caption: this.workCaption,
+        })
         .then(() => {
           alert("クラスへの投稿に成功しました。");
           this.closeDialog();
         });
-    }
+    },
   },
 };
 </script>

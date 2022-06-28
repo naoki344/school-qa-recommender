@@ -3,11 +3,9 @@
     <v-content>
       <v-container
         fluid
-        class="pa-0 pt-6"
+        class="pa-0"
       >
-        <keep-alive
-          :include="cacheComponentName"
-        >
+        <keep-alive :include="cacheComponentName">
           <router-view />
         </keep-alive>
       </v-container>
@@ -20,7 +18,7 @@ export default {
   data() {
     return {
       cacheComponentName: ["TopPage", "UserLoginPage", "UserSignUpPage"]
-	}
+    };
   },
   computed: {
     isLogin() {

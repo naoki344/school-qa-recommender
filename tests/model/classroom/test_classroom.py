@@ -98,3 +98,54 @@ class ClassroomTest(TestCase):
         }
         self.assertEqual(expect,
                          Classroom.create(2, user, class_dict).to_dict())
+
+    def test_update(self):
+        class_dict = {
+            'classroom_id':
+            1,
+            'owner_list': [{
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
+            }, {
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39-1',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
+            }],
+            'name':
+            'test name',
+            'image_url':
+            'https://example.example.com/test.jpg',
+            'publish_type':
+            'private',
+            'tag_list': ['tag1', 'tag2'],
+            'capacity':
+            10,
+            'caption':
+            'test caption'
+        }
+        old_classroom = Classroom.from_dict(class_dict)
+        input_dict = {
+            'name': 'test name updated',
+            'image_url': 'https://example.example.com/test-updated.jpg',
+            'publish_type': 'public',
+            'tag_list': ['tag1', 'tag2'],
+            'capacity': 100,
+            'caption': 'test caption updated'
+        }
+        new_classroom = old_classroom.update(input_dict)
+        expect = {
+            **input_dict,
+            'classroom_id':
+            1,
+            'owner_list': [{
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39',
+                'nickname': 'Naoki',
+                'email': 'trombone344@gmail.com'
+            }, {
+                'user_id': '79434f7e-b53f-4d3a-8c79-aedc7b73af39-1',
+                'nickname': 'Naoki-1',
+                'email': 'trombone344@gmail.com'
+            }],
+        }
+        self.assertEqual(new_classroom.to_dict(), expect)

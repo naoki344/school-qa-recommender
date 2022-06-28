@@ -6,6 +6,7 @@ from app.application.usecase.classroom import CreateClassroom
 from app.application.usecase.classroom import FindClassroom
 from app.application.usecase.classroom import FindClassroomByInviteKey
 from app.application.usecase.classroom import GetMyClassroomList
+from app.application.usecase.classroom import ModifyClassroom
 from app.application.usecase.classroom import RequestJoinClassroom
 from app.application.usecase.classroom import RequestJoinClassroomByInviteKey
 from app.configure.query.user import user_query_service
@@ -20,6 +21,14 @@ def create_classroom(logger: Logger) -> CreateClassroom:
     user_service = user_query_service(logger)
     return CreateClassroom(datasource=datasource,
                            classmate_datasource=classmate,
+                           user_service=user_service,
+                           logger=logger)
+
+
+def modify_classroom(logger: Logger) -> CreateClassroom:
+    datasource = classroom_datasource(logger=logger)
+    user_service = user_query_service(logger)
+    return ModifyClassroom(datasource=datasource,
                            user_service=user_service,
                            logger=logger)
 
